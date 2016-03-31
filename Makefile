@@ -4,12 +4,9 @@ endif
 
 # set this the operating system you're building for
 # (actually you'll probably need your own main makefile anyways)
-# MAMEOS = msdos
-#MAMEOS = gp2x
 MAMEOS = rpi
 
 # extension for executables
-# EXE = .exe
 EXE =
 
 # CPU core include paths
@@ -27,7 +24,6 @@ STRIP = strip
 EMULATOR = $(TARGET)$(EXE)
 
 DEFS = -DGP2X -DLSB_FIRST -DALIGN_INTS -DALIGN_SHORTS -DINLINE="static __inline" -Dasm="__asm__ __volatile__" -DMAME_UNDERCLOCK -DENABLE_AUTOFIRE -DBIGCASE
-##sq DEFS = -DGP2X -DLSB_FIRST -DALIGN_INTS -DALIGN_SHORTS -DINLINE="static __inline" -Dasm="__asm__ __volatile__" -DMAME_UNDERCLOCK -DMAME_FASTSOUND -DENABLE_AUTOFIRE -DBIGCASE
 
 CFLAGS = -fsigned-char $(DEVLIBS) \
 	-Isrc -Isrc/$(MAMEOS) -Isrc/zlib \
@@ -35,7 +31,7 @@ CFLAGS = -fsigned-char $(DEVLIBS) \
 	-I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads \
 	-I$(SDKSTAGE)/opt/vc/include/interface/vmcs_host/linux \
 	-I/usr/include/glib-2.0 -I/usr/lib/arm-linux-gnueabihf/glib-2.0/include \
-	-march=armv6 -mfpu=vfp -mfloat-abi=hard \
+	-mcpu=native -mtune=native -mfloat-abi=hard \
 	-O3 -ffast-math -fomit-frame-pointer -fstrict-aliasing \
 	-mstructure-size-boundary=32 -fexpensive-optimizations \
 	-fweb -frename-registers -falign-functions=16 -falign-loops -falign-labels -falign-jumps \
