@@ -140,6 +140,9 @@ SDL_Joystick* myjoy[4];
 
 int init_SDL(void)
 {
+	//Initialise dispmanx
+    bcm_host_init();
+
     myjoy[0] = 0;
     myjoy[1] = 0;
     myjoy[2] = 0;
@@ -179,9 +182,6 @@ int init_SDL(void)
     SDL_EventState(SDL_VIDEORESIZE, SDL_IGNORE);
     SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
     SDL_ShowCursor(SDL_DISABLE);
-
-    //Initialise dispmanx
-    bcm_host_init();
 
     //Clean exits, hopefully!
     atexit(exitfunc);
