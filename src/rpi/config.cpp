@@ -10,6 +10,9 @@
 #include <ctype.h>
 #include "allegro.h"
 #include <glib.h>
+#include <pwd.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 /* from video.c */
 extern int frameskip, autoframeskip;
@@ -90,9 +93,25 @@ static GKeyFile *gkeyfile = 0;
 void open_config_file(void)
 {
     GError *error = NULL;
+    const char *homedir;
+    struct stat sb;
+    char filename[1024];
+
+    strcpy(filename, "mame.cfg");
+    if (stat(filename, &sb) == 0) {
+        /* Config file exists in the current dir, so use it (backward compatible) */
+    }
+    else {
+        /* look for the config in user's home dir */
+        if ((homedir = getenv("HOME")) == NULL) {
+            homedir = getpwuid(getuid())->pw_dir;
+        }
+        strcpy(filename, homedir);
+        strcat(filename, "/.config/mame-rpi/config");
+    }
 
     gkeyfile = g_key_file_new();
-    if (!(int) g_key_file_load_from_file(gkeyfile, "mame.cfg", G_KEY_FILE_NONE, &error)) {
+    if (!(int) g_key_file_load_from_file(gkeyfile, filename, G_KEY_FILE_NONE, &error)) {
         gkeyfile = 0;
     }
 }

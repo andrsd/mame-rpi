@@ -40,7 +40,7 @@ CFLAGS = -fsigned-char $(DEVLIBS) \
 	-mstructure-size-boundary=32 -fexpensive-optimizations \
 	-fweb -frename-registers -falign-functions=16 -falign-loops -falign-labels -falign-jumps \
 	-finline -finline-functions -fno-common -fno-builtin -fsingle-precision-constant \
-	-Wall -Wno-sign-compare -Wunused -Wpointer-arith -Wcast-align -Waggregate-return -Wshadow 
+	-Wall -Wno-sign-compare -Wunused -Wpointer-arith -Wcast-align -Waggregate-return -Wshadow
 
 LDFLAGS = $(CFLAGS)
 
@@ -65,7 +65,7 @@ CDEFS = $(DEFS) $(COREDEFS) $(CPUDEFS) $(SOUNDDEFS)
 
 $(EMULATOR): $(COREOBJS) $(OSOBJS) $(DRVOBJS)
 	$(LD) $(LDFLAGS) $(COREOBJS) $(OSOBJS) $(LIBS) $(DRVOBJS) -o $@
-	$(STRIP) $(EMULATOR)	
+	$(STRIP) $(EMULATOR)
 
 $(OBJ)/%.o: src/%.c
 	@echo Compiling $<...
