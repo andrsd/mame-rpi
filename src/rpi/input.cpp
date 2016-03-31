@@ -307,34 +307,26 @@ void joyprocess(Uint8 button, SDL_bool pressed, Uint8 njoy)
     case 8:
         val = GP2X_9;
         break;
-        break;
     case 9:
         val = GP2X_10;
-        break;
         break;
     case 10:
         val = GP2X_11;
         break;
-        break;
     case 11:
         val = GP2X_12;
-        break;
         break;
     case 12:
         val = GP2X_13;
         break;
-        break;
     case 13:
         val = GP2X_14;
-        break;
         break;
     case 14:
         val = GP2X_15;
         break;
-        break;
     case 15:
         val = GP2X_16;
-        break;
         break;
     default:
         return;
