@@ -720,7 +720,6 @@ int osd_is_joy_pressed(int joycode)
         break;
     case MOUSE_BUTTON(3) :
         return mouse_button & 1 << 2;
-        break;
     }
 
     joy_num = GET_JOYCODE_JOY(joycode);
@@ -745,16 +744,12 @@ int osd_is_joy_pressed(int joycode)
         switch (joy_num) {
         case 0:
             return is_joy_button_pressed(button, ExKey1);
-            break;
         case 1:
             return is_joy_button_pressed(button, ExKey2);
-            break;
         case 2:
             return is_joy_button_pressed(button, ExKey3);
-            break;
         case 3:
             return is_joy_button_pressed(button, ExKey4);
-            break;
         default:
             break;
         }
