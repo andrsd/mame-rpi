@@ -56,11 +56,11 @@ static void load_bmp_16bpp(unsigned short *out, unsigned short *in)
     int y;
 
     //Load bitmap, file will be flipped y so invert
-    in += (640 * 480) - 1;
-    for (y = 479; y != -1; y--) {
-        memcpy(out, in, 640 * 2);
-        out += 640;
-        in -= 640;
+    in += (SURFACE_WIDTH * SURFACE_HEIGHT) - 1;
+    for (y = SURFACE_HEIGHT - 1; y != -1; y--) {
+        memcpy(out, in, SURFACE_WIDTH * 2);
+        out += SURFACE_WIDTH;
+        in -= SURFACE_WIDTH;
     }
 }
 

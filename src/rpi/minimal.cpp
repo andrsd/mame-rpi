@@ -401,11 +401,11 @@ void gp2x_frontend_init(void)
     VC_RECT_T dst_rect;
     VC_RECT_T src_rect;
 
-    surface_width = 640;
-    surface_height = 480;
+    surface_width = SURFACE_WIDTH;
+    surface_height = SURFACE_HEIGHT;
 
     gp2x_screen8 = 0;
-    gp2x_screen15 = (unsigned short *) calloc(1, 640 * 480 * 2);
+    gp2x_screen15 = (unsigned short *) calloc(1, SURFACE_WIDTH * SURFACE_HEIGHT * 2);
 
     graphics_get_display_size(0 /* LCD */, &display_width, &display_height);
 
@@ -419,12 +419,12 @@ void gp2x_frontend_init(void)
     //Create two surfaces for flipping between
     //Make sure bitmap type matches the source for better performance
     uint32_t crap;
-    resource0 = vc_dispmanx_resource_create(VC_IMAGE_RGB565, 640, 480, &crap);
-    resource1 = vc_dispmanx_resource_create(VC_IMAGE_RGB565, 640, 480, &crap);
+    resource0 = vc_dispmanx_resource_create(VC_IMAGE_RGB565, SURFACE_WIDTH, SURFACE_HEIGHT, &crap);
+    resource1 = vc_dispmanx_resource_create(VC_IMAGE_RGB565, SURFACE_WIDTH, SURFACE_HEIGHT, &crap);
 
     vc_dispmanx_rect_set(&dst_rect, options.display_border, options.display_border,
                          display_width, display_height);
-    vc_dispmanx_rect_set(&src_rect, 0, 0, 640 << 16, 480 << 16);
+    vc_dispmanx_rect_set(&src_rect, 0, 0, SURFACE_WIDTH << 16, SURFACE_HEIGHT << 16);
 
     //Make sure mame and background overlay the menu program
     dispman_update = vc_dispmanx_update_start(0);
@@ -555,59 +555,59 @@ static unsigned char fontdata8x8[] = {
 static void gp2x_text(unsigned short *screen, int x, int y, char *text, int color)
 {
     unsigned int i, l;
-    screen = screen + (x * 2) + (y * 2) * 640;
+    screen = screen + (x * 2) + (y * 2) * SURFACE_WIDTH;
 
     for (i = 0; i < strlen(text); i++) {
 
         for (l = 0; l < 16; l = l + 2) {
-            screen[l * 640 + 0] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x80) ? color : screen[l * 640 + 0];
-            screen[l * 640 + 1] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x80) ? color : screen[l * 640 + 1];
+            screen[l * SURFACE_WIDTH + 0] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x80) ? color : screen[l * SURFACE_WIDTH + 0];
+            screen[l * SURFACE_WIDTH + 1] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x80) ? color : screen[l * SURFACE_WIDTH + 1];
 
-            screen[l * 640 + 2] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x40) ? color : screen[l * 640 + 2];
-            screen[l * 640 + 3] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x40) ? color : screen[l * 640 + 3];
+            screen[l * SURFACE_WIDTH + 2] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x40) ? color : screen[l * SURFACE_WIDTH + 2];
+            screen[l * SURFACE_WIDTH + 3] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x40) ? color : screen[l * SURFACE_WIDTH + 3];
 
-            screen[l * 640 + 4] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x20) ? color : screen[l * 640 + 4];
-            screen[l * 640 + 5] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x20) ? color : screen[l * 640 + 5];
+            screen[l * SURFACE_WIDTH + 4] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x20) ? color : screen[l * SURFACE_WIDTH + 4];
+            screen[l * SURFACE_WIDTH + 5] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x20) ? color : screen[l * SURFACE_WIDTH + 5];
 
-            screen[l * 640 + 6] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x10) ? color : screen[l * 640 + 6];
-            screen[l * 640 + 7] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x10) ? color : screen[l * 640 + 7];
+            screen[l * SURFACE_WIDTH + 6] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x10) ? color : screen[l * SURFACE_WIDTH + 6];
+            screen[l * SURFACE_WIDTH + 7] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x10) ? color : screen[l * SURFACE_WIDTH + 7];
 
-            screen[l * 640 + 8] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x08) ? color : screen[l * 640 + 8];
-            screen[l * 640 + 9] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x08) ? color : screen[l * 640 + 9];
+            screen[l * SURFACE_WIDTH + 8] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x08) ? color : screen[l * SURFACE_WIDTH + 8];
+            screen[l * SURFACE_WIDTH + 9] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x08) ? color : screen[l * SURFACE_WIDTH + 9];
 
-            screen[l * 640 + 10] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x04) ? color : screen[l * 640 + 10];
-            screen[l * 640 + 11] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x04) ? color : screen[l * 640 + 11];
+            screen[l * SURFACE_WIDTH + 10] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x04) ? color : screen[l * SURFACE_WIDTH + 10];
+            screen[l * SURFACE_WIDTH + 11] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x04) ? color : screen[l * SURFACE_WIDTH + 11];
 
-            screen[l * 640 + 12] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x02) ? color : screen[l * 640 + 12];
-            screen[l * 640 + 13] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x02) ? color : screen[l * 640 + 13];
+            screen[l * SURFACE_WIDTH + 12] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x02) ? color : screen[l * SURFACE_WIDTH + 12];
+            screen[l * SURFACE_WIDTH + 13] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x02) ? color : screen[l * SURFACE_WIDTH + 13];
 
-            screen[l * 640 + 14] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x01) ? color : screen[l * 640 + 14];
-            screen[l * 640 + 15] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x01) ? color : screen[l * 640 + 15];
+            screen[l * SURFACE_WIDTH + 14] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x01) ? color : screen[l * SURFACE_WIDTH + 14];
+            screen[l * SURFACE_WIDTH + 15] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x01) ? color : screen[l * SURFACE_WIDTH + 15];
         }
         for (l = 1; l < 16; l = l + 2) {
-            screen[l * 640 + 0] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x80) ? color : screen[l * 640 + 0];
-            screen[l * 640 + 1] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x80) ? color : screen[l * 640 + 1];
+            screen[l * SURFACE_WIDTH + 0] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x80) ? color : screen[l * SURFACE_WIDTH + 0];
+            screen[l * SURFACE_WIDTH + 1] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x80) ? color : screen[l * SURFACE_WIDTH + 1];
 
-            screen[l * 640 + 2] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x40) ? color : screen[l * 640 + 2];
-            screen[l * 640 + 3] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x40) ? color : screen[l * 640 + 3];
+            screen[l * SURFACE_WIDTH + 2] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x40) ? color : screen[l * SURFACE_WIDTH + 2];
+            screen[l * SURFACE_WIDTH + 3] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x40) ? color : screen[l * SURFACE_WIDTH + 3];
 
-            screen[l * 640 + 4] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x20) ? color : screen[l * 640 + 4];
-            screen[l * 640 + 5] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x20) ? color : screen[l * 640 + 5];
+            screen[l * SURFACE_WIDTH + 4] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x20) ? color : screen[l * SURFACE_WIDTH + 4];
+            screen[l * SURFACE_WIDTH + 5] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x20) ? color : screen[l * SURFACE_WIDTH + 5];
 
-            screen[l * 640 + 6] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x10) ? color : screen[l * 640 + 6];
-            screen[l * 640 + 7] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x10) ? color : screen[l * 640 + 7];
+            screen[l * SURFACE_WIDTH + 6] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x10) ? color : screen[l * SURFACE_WIDTH + 6];
+            screen[l * SURFACE_WIDTH + 7] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x10) ? color : screen[l * SURFACE_WIDTH + 7];
 
-            screen[l * 640 + 8] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x08) ? color : screen[l * 640 + 8];
-            screen[l * 640 + 9] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x08) ? color : screen[l * 640 + 9];
+            screen[l * SURFACE_WIDTH + 8] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x08) ? color : screen[l * SURFACE_WIDTH + 8];
+            screen[l * SURFACE_WIDTH + 9] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x08) ? color : screen[l * SURFACE_WIDTH + 9];
 
-            screen[l * 640 + 10] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x04) ? color : screen[l * 640 + 10];
-            screen[l * 640 + 11] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x04) ? color : screen[l * 640 + 11];
+            screen[l * SURFACE_WIDTH + 10] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x04) ? color : screen[l * SURFACE_WIDTH + 10];
+            screen[l * SURFACE_WIDTH + 11] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x04) ? color : screen[l * SURFACE_WIDTH + 11];
 
-            screen[l * 640 + 12] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x02) ? color : screen[l * 640 + 12];
-            screen[l * 640 + 13] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x02) ? color : screen[l * 640 + 13];
+            screen[l * SURFACE_WIDTH + 12] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x02) ? color : screen[l * SURFACE_WIDTH + 12];
+            screen[l * SURFACE_WIDTH + 13] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x02) ? color : screen[l * SURFACE_WIDTH + 13];
 
-            screen[l * 640 + 14] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x01) ? color : screen[l * 640 + 14];
-            screen[l * 640 + 15] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x01) ? color : screen[l * 640 + 15];
+            screen[l * SURFACE_WIDTH + 14] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x01) ? color : screen[l * SURFACE_WIDTH + 14];
+            screen[l * SURFACE_WIDTH + 15] = (fontdata8x8[((text[i]) * 8) + l / 2] & 0x01) ? color : screen[l * SURFACE_WIDTH + 15];
         }
         screen += 16;
     }
