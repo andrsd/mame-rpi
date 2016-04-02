@@ -63,36 +63,37 @@ include src/$(MAMEOS)/$(MAMEOS).mak
 CDEFS = $(DEFS) $(COREDEFS) $(CPUDEFS) $(SOUNDDEFS)
 
 $(EMULATOR): $(COREOBJS) $(OSOBJS) $(DRVOBJS)
-	$(LD) $(LDFLAGS) $(COREOBJS) $(OSOBJS) $(LIBS) $(DRVOBJS) -o $@
-	$(STRIP) $(EMULATOR)
+	@echo Linking $<...
+	@$(LD) $(LDFLAGS) $(COREOBJS) $(OSOBJS) $(LIBS) $(DRVOBJS) -o $@
+	@$(STRIP) $(EMULATOR)
 
 $(OBJ)/%.o: src/%.c
 	@echo Compiling $<...
-	$(CC) $(CDEFS) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CDEFS) $(CFLAGS) -c $< -o $@
 
 $(OBJ)/%.o: src/%.cpp
 	@echo Compiling $<...
-	$(CPP) $(CDEFS) $(CFLAGS) -fno-rtti -c $< -o $@
+	@$(CPP) $(CDEFS) $(CFLAGS) -std=c++98 -fno-rtti -c $< -o $@
 
 $(OBJ)/%.o: src/%.s
 	@echo Compiling $<...
-	$(CPP) $(CDEFS) $(CFLAGS) -c $< -o $@
+	@$(CPP) $(CDEFS) $(CFLAGS) -c $< -o $@
 
 $(OBJ)/%.o: src/%.S
 	@echo Compiling $<...
-	$(CPP) $(CDEFS) $(CFLAGS) -c $< -o $@
+	@$(CPP) $(CDEFS) $(CFLAGS) -c $< -o $@
 
 $(sort $(OBJDIRS)):
-	$(MD) $@
+	@$(MD) $@
 
 maketree: $(sort $(OBJDIRS))
 
 install:
-	cp $(EMULATOR) $(DESTDIR)/bin
+	@cp $(EMULATOR) $(DESTDIR)/bin
 
 uninstall:
-	rm $(DESTDIR)/bin$(EMULATOR)
+	@rm $(DESTDIR)/bin$(EMULATOR)
 
 clean:
-	$(RM) -r $(OBJ)
-	$(RM) $(EMULATOR)
+	@$(RM) -r $(OBJ)
+	@$(RM) $(EMULATOR)
