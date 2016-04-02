@@ -15,26 +15,25 @@
 
 
 /* constants for the  DMA chip */
-enum
-{
-	DMA_LRSKIP = 0,
-	DMA_COMMAND,
-	DMA_OFFSETLO,
-	DMA_OFFSETHI,
-	DMA_XSTART,
-	DMA_YSTART,
-	DMA_WIDTH,
-	DMA_HEIGHT,
-	DMA_PALETTE,
-	DMA_COLOR,
-	DMA_SCALE_X,
-	DMA_SCALE_Y,
-	DMA_TOPCLIP,
-	DMA_BOTCLIP,
-	DMA_UNKNOWN_E,	/* MK1/2 never write here; NBA only writes 0 */
-	DMA_CONTROL,
-	DMA_LEFTCLIP,	/* pseudo-register */
-	DMA_RIGHTCLIP	/* pseudo-register */
+enum {
+    DMA_LRSKIP = 0,
+    DMA_COMMAND,
+    DMA_OFFSETLO,
+    DMA_OFFSETHI,
+    DMA_XSTART,
+    DMA_YSTART,
+    DMA_WIDTH,
+    DMA_HEIGHT,
+    DMA_PALETTE,
+    DMA_COLOR,
+    DMA_SCALE_X,
+    DMA_SCALE_Y,
+    DMA_TOPCLIP,
+    DMA_BOTCLIP,
+    DMA_UNKNOWN_E,	/* MK1/2 never write here; NBA only writes 0 */
+    DMA_CONTROL,
+    DMA_LEFTCLIP,	/* pseudo-register */
+    DMA_RIGHTCLIP	/* pseudo-register */
 };
 
 
@@ -42,7 +41,7 @@ enum
 /* graphics-related variables */
 extern UINT8 *	wms_gfx_rom;
 extern size_t	wms_gfx_rom_size;
-       UINT8	wms_gfx_rom_large;
+UINT8	wms_gfx_rom_large;
 static UINT16	wms_control;
 
 /* videoram-related variables */
@@ -52,29 +51,28 @@ static UINT8	videobank_select;
 
 /* DMA-related variables */
 static UINT16	dma_register[18];
-static struct
-{
-	UINT32		offset;			/* source offset, in bits */
-	INT32 		rowbits;		/* source bits to skip each row */
-	INT32 		xpos;			/* x position, clipped */
-	INT32		ypos;			/* y position, clipped */
-	INT32		width;			/* horizontal pixel count */
-	INT32		height;			/* vertical pixel count */
-	UINT16		palette;		/* palette base */
-	UINT16		color;			/* current foreground color with palette */
+static struct {
+    UINT32		offset;			/* source offset, in bits */
+    INT32 		rowbits;		/* source bits to skip each row */
+    INT32 		xpos;			/* x position, clipped */
+    INT32		ypos;			/* y position, clipped */
+    INT32		width;			/* horizontal pixel count */
+    INT32		height;			/* vertical pixel count */
+    UINT16		palette;		/* palette base */
+    UINT16		color;			/* current foreground color with palette */
 
-	UINT8		yflip;			/* yflip? */
-	UINT8		bpp;			/* bits per pixel */
-	UINT8		preskip;		/* preskip scale */
-	UINT8		postskip;		/* postskip scale */
-	INT32		topclip;		/* top clipping scanline */
-	INT32		botclip;		/* bottom clipping scanline */
-	INT32		leftclip;		/* left clipping column */
-	INT32		rightclip;		/* right clipping column */
-	INT32		startskip;		/* pixels to skip at start */
-	INT32		endskip;		/* pixels to skip at end */
-	UINT16		xstep;			/* 8.8 fixed number scale x factor */
-	UINT16		ystep;			/* 8.8 fixed number scale y factor */
+    UINT8		yflip;			/* yflip? */
+    UINT8		bpp;			/* bits per pixel */
+    UINT8		preskip;		/* preskip scale */
+    UINT8		postskip;		/* postskip scale */
+    INT32		topclip;		/* top clipping scanline */
+    INT32		botclip;		/* bottom clipping scanline */
+    INT32		leftclip;		/* left clipping column */
+    INT32		rightclip;		/* right clipping column */
+    INT32		startskip;		/* pixels to skip at start */
+    INT32		endskip;		/* pixels to skip at end */
+    UINT16		xstep;			/* 8.8 fixed number scale x factor */
+    UINT16		ystep;			/* 8.8 fixed number scale y factor */
 } dma_state;
 
 
@@ -92,32 +90,31 @@ void wms_tunit_vh_stop(void);
 
 int wms_tunit_vh_start(void)
 {
-	/* allocate memory */
-	local_videoram = (UINT16*)malloc(0x100000);
-	
-	/* handle failure */
-	if (!local_videoram)
-	{
-		wms_tunit_vh_stop();
-		return 1;
-	}
-	
-	/* reset all the globals */
-	gfxbank_offset[0] = 0x000000;
-	gfxbank_offset[1] = 0x400000;
-	
-	memset(dma_register, 0, sizeof(dma_register));
-	memset(&dma_state, 0, sizeof(dma_state));
+    /* allocate memory */
+    local_videoram = (UINT16*) malloc(0x100000);
 
-	return 0;
+    /* handle failure */
+    if (!local_videoram) {
+        wms_tunit_vh_stop();
+        return 1;
+    }
+
+    /* reset all the globals */
+    gfxbank_offset[0] = 0x000000;
+    gfxbank_offset[1] = 0x400000;
+
+    memset(dma_register, 0, sizeof(dma_register));
+    memset(&dma_state, 0, sizeof(dma_state));
+
+    return 0;
 }
 
 
 int wms_wolfu_vh_start(void)
 {
-	int result = wms_tunit_vh_start();
-	wms_gfx_rom_large = 1;
-	return result;
+    int result = wms_tunit_vh_start();
+    wms_gfx_rom_large = 1;
+    return result;
 }
 
 
@@ -130,9 +127,9 @@ int wms_wolfu_vh_start(void)
 
 void wms_tunit_vh_stop(void)
 {
-	if (local_videoram)
-		free(local_videoram);
-	local_videoram = NULL;
+    if (local_videoram)
+        free(local_videoram);
+    local_videoram = NULL;
 }
 
 
@@ -143,18 +140,18 @@ void wms_tunit_vh_stop(void)
  *
  *************************************/
 
-READ_HANDLER( wms_tunit_gfxrom_r )
+READ_HANDLER(wms_tunit_gfxrom_r)
 {
-	UINT8 *base = &wms_gfx_rom[gfxbank_offset[(offset >> 22) & 1]];
-	offset &= 0x03fffff;
-	return base[offset] | (base[offset + 1] << 8);
+    UINT8 *base = &wms_gfx_rom[gfxbank_offset[(offset >> 22) & 1]];
+    offset &= 0x03fffff;
+    return base[offset] | (base[offset + 1] << 8);
 }
 
 
-READ_HANDLER( wms_wolfu_gfxrom_r )
+READ_HANDLER(wms_wolfu_gfxrom_r)
 {
-	UINT8 *base = &wms_gfx_rom[gfxbank_offset[0]];
-	return base[offset] | (base[offset + 1] << 8);
+    UINT8 *base = &wms_gfx_rom[gfxbank_offset[0]];
+    return base[offset] | (base[offset + 1] << 8);
 }
 
 
@@ -165,31 +162,28 @@ READ_HANDLER( wms_wolfu_gfxrom_r )
  *
  *************************************/
 
-WRITE_HANDLER( wms_tunit_vram_w )
+WRITE_HANDLER(wms_tunit_vram_w)
 {
-	if (videobank_select)
-	{
-		if (!(data & 0x00ff0000))
-			local_videoram[offset] = (data & 0xff) | ((dma_register[DMA_PALETTE] & 0xff) << 8);
-		if (!(data & 0xff000000))
-			local_videoram[offset + 1] = ((data >> 8) & 0xff) | (dma_register[DMA_PALETTE] & 0xff00);
-	}
-	else
-	{
-		if (!(data & 0x00ff0000))
-			local_videoram[offset] = (local_videoram[offset] & 0xff) | ((data & 0xff) << 8);
-		if (!(data & 0xff000000))
-			local_videoram[offset + 1] = (local_videoram[offset + 1] & 0xff) | (data & 0xff00);
-	}
+    if (videobank_select) {
+        if (!(data & 0x00ff0000))
+            local_videoram[offset] = (data & 0xff) | ((dma_register[DMA_PALETTE] & 0xff) << 8);
+        if (!(data & 0xff000000))
+            local_videoram[offset + 1] = ((data >> 8) & 0xff) | (dma_register[DMA_PALETTE] & 0xff00);
+    } else {
+        if (!(data & 0x00ff0000))
+            local_videoram[offset] = (local_videoram[offset] & 0xff) | ((data & 0xff) << 8);
+        if (!(data & 0xff000000))
+            local_videoram[offset + 1] = (local_videoram[offset + 1] & 0xff) | (data & 0xff00);
+    }
 }
 
 
-READ_HANDLER( wms_tunit_vram_r )
+READ_HANDLER(wms_tunit_vram_r)
 {
-	if (videobank_select)
-		return (local_videoram[offset] & 0x00ff) | (local_videoram[offset + 1] << 8);
-	else
-		return (local_videoram[offset] >> 8) | (local_videoram[offset + 1] & 0xff00);
+    if (videobank_select)
+        return (local_videoram[offset] & 0x00ff) | (local_videoram[offset + 1] << 8);
+    else
+        return (local_videoram[offset] >> 8) | (local_videoram[offset + 1] & 0xff00);
 }
 
 
@@ -202,13 +196,13 @@ READ_HANDLER( wms_tunit_vram_r )
 
 void wms_tunit_to_shiftreg(UINT32 address, UINT16 *shiftreg)
 {
-	memcpy(shiftreg, &local_videoram[address >> 3], 2 * 512 * sizeof(UINT16));
+    memcpy(shiftreg, &local_videoram[address >> 3], 2 * 512 * sizeof(UINT16));
 }
 
 
 void wms_tunit_from_shiftreg(UINT32 address, UINT16 *shiftreg)
 {
-	memcpy(&local_videoram[address >> 3], shiftreg, 2 * 512 * sizeof(UINT16));
+    memcpy(&local_videoram[address >> 3], shiftreg, 2 * 512 * sizeof(UINT16));
 }
 
 
@@ -219,48 +213,48 @@ void wms_tunit_from_shiftreg(UINT32 address, UINT16 *shiftreg)
  *
  *************************************/
 
-WRITE_HANDLER( wms_tunit_control_w )
+WRITE_HANDLER(wms_tunit_control_w)
 {
-	/* 
-		other important bits:
-			bit 2 (0x0004) is toggled periodically
-	*/
-	//logerror("T-unit control = %04X\n", data);
-	
-	COMBINE_WORD_MEM(&wms_control, data);
+    /*
+    	other important bits:
+    		bit 2 (0x0004) is toggled periodically
+    */
+    //logerror("T-unit control = %04X\n", data);
 
-	/* gfx bank select is bit 7 */
-	if (!(wms_control & 0x0080) || !wms_gfx_rom_large)
-		gfxbank_offset[0] = 0x000000;
-	else
-		gfxbank_offset[0] = 0x800000;
+    COMBINE_WORD_MEM(&wms_control, data);
 
-	/* video bank select is bit 5 */
-	videobank_select = (wms_control >> 5) & 1;
+    /* gfx bank select is bit 7 */
+    if (!(wms_control & 0x0080) || !wms_gfx_rom_large)
+        gfxbank_offset[0] = 0x000000;
+    else
+        gfxbank_offset[0] = 0x800000;
+
+    /* video bank select is bit 5 */
+    videobank_select = (wms_control >> 5) & 1;
 }
 
 
-WRITE_HANDLER( wms_wolfu_control_w )
+WRITE_HANDLER(wms_wolfu_control_w)
 {
-	/* 
-		other important bits:
-			bit 2 (0x0004) is toggled periodically
-	*/
-	//logerror("Wolf-unit control = %04X\n", data);
-	
-	COMBINE_WORD_MEM(&wms_control, data);
-	
-	/* gfx bank select is bits 8-9 */
-	gfxbank_offset[0] = 0x800000 * ((wms_control >> 8) & 3);
-	
-	/* video bank select is unknown */
-	videobank_select = (wms_control >> 11) & 1;
+    /*
+    	other important bits:
+    		bit 2 (0x0004) is toggled periodically
+    */
+    //logerror("Wolf-unit control = %04X\n", data);
+
+    COMBINE_WORD_MEM(&wms_control, data);
+
+    /* gfx bank select is bits 8-9 */
+    gfxbank_offset[0] = 0x800000 * ((wms_control >> 8) & 3);
+
+    /* video bank select is unknown */
+    videobank_select = (wms_control >> 11) & 1;
 }
 
 
-READ_HANDLER( wms_wolfu_control_r )
+READ_HANDLER(wms_wolfu_control_r)
 {
-	return wms_control;
+    return wms_control;
 }
 
 
@@ -271,21 +265,21 @@ READ_HANDLER( wms_wolfu_control_r )
  *
  *************************************/
 
-WRITE_HANDLER( wms_tunit_paletteram_w )
+WRITE_HANDLER(wms_tunit_paletteram_w)
 {
-	int oldword = READ_WORD(&paletteram[offset]);
-	int newword = COMBINE_WORD(oldword, data);
-	
-	int r = (newword >> 10) & 0x1f;
-	int g = (newword >>  5) & 0x1f;
-	int b = (newword      ) & 0x1f;
-	
-	r = (r << 3) | (r >> 2);
-	g = (g << 3) | (g >> 2);
-	b = (b << 3) | (b >> 2);
-	
-	WRITE_WORD(&paletteram[offset], newword);
-	palette_change_color(offset / 2, r, g, b);
+    int oldword = READ_WORD(&paletteram[offset]);
+    int newword = COMBINE_WORD(oldword, data);
+
+    int r = (newword >> 10) & 0x1f;
+    int g = (newword >>  5) & 0x1f;
+    int b = (newword) & 0x1f;
+
+    r = (r << 3) | (r >> 2);
+    g = (g << 3) | (g >> 2);
+    b = (b << 3) | (b >> 2);
+
+    WRITE_WORD(&paletteram[offset], newword);
+    palette_change_color(offset / 2, r, g, b);
 }
 
 
@@ -570,21 +564,19 @@ DECLARE_BLITTER_SET(dma_draw_noskip_noscale,   dma_state.bpp, EXTRACTGEN,   SKIP
 
 static int temp_irq_callback(int irqline)
 {
-	tms34010_set_irq_line(0, CLEAR_LINE);
-	return 0;
+    tms34010_set_irq_line(0, CLEAR_LINE);
+    return 0;
 }
 
 
 static void dma_callback(int is_in_34010_context)
 {
-	dma_register[DMA_COMMAND] &= ~0x8000; /* tell the cpu we're done */
-	if (is_in_34010_context)
-	{
-		tms34010_set_irq_callback(temp_irq_callback);
-		tms34010_set_irq_line(0, ASSERT_LINE);
-	}
-	else
-		cpu_cause_interrupt(0,TMS34010_INT1);
+    dma_register[DMA_COMMAND] &= ~0x8000; /* tell the cpu we're done */
+    if (is_in_34010_context) {
+        tms34010_set_irq_callback(temp_irq_callback);
+        tms34010_set_irq_line(0, ASSERT_LINE);
+    } else
+        cpu_cause_interrupt(0, TMS34010_INT1);
 }
 
 
@@ -595,9 +587,9 @@ static void dma_callback(int is_in_34010_context)
  *
  *************************************/
 
-READ_HANDLER( wms_tunit_dma_r )
+READ_HANDLER(wms_tunit_dma_r)
 {
-	return READ_WORD(&dma_register[offset / 2]);
+    return READ_WORD(&dma_register[offset / 2]);
 }
 
 
@@ -642,162 +634,148 @@ READ_HANDLER( wms_tunit_dma_r )
  *    13     | xxxxxxxxxxxxxxxx | bottom clip
  */
 
-WRITE_HANDLER( wms_tunit_dma_w )
+WRITE_HANDLER(wms_tunit_dma_w)
 {
-	static const UINT8 register_map[2][16] =
-	{
-		{ 0,1,2,3,4,5,6,7,8,9,10,11,16,17,14,15 },
-		{ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 }
-	};
-	int regbank = (dma_register[DMA_CONTROL] >> 5) & 1;
-	int command, bpp, regnum;
-	UINT32 gfxoffset;
+    static const UINT8 register_map[2][16] = {
+        { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 17, 14, 15 },
+        { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }
+    };
+    int regbank = (dma_register[DMA_CONTROL] >> 5) & 1;
+    int command, bpp, regnum;
+    UINT32 gfxoffset;
 
-	/* blend with the current register contents */
-	regnum = register_map[regbank][offset / 2];
-	COMBINE_WORD_MEM(&dma_register[regnum], data);
-
-#if LOG_DMA
-	if (keyboard_pressed(KEYCODE_L))
-		logerror("%08X:DMA %d = %04X\n", cpu_get_pc(), regnum, data);
-#endif
-
-	/* only writes to DMA_COMMAND actually cause actions */
-	if (regnum != DMA_COMMAND)
-		return;
-
-	/* high bit triggers action */
-	command = dma_register[DMA_COMMAND];
-	if (!(command & 0x8000))
-	{
-		tms34010_set_irq_line(0, CLEAR_LINE);
-		return;
-	}
+    /* blend with the current register contents */
+    regnum = register_map[regbank][offset / 2];
+    COMBINE_WORD_MEM(&dma_register[regnum], data);
 
 #if LOG_DMA
-	if (keyboard_pressed(KEYCODE_L))
-	{
-		logerror("DMA command %04X: (bpp=%d skip=%d xflip=%d yflip=%d preskip=%d postskip=%d)\n",
-				command, (command >> 12) & 7, (command >> 7) & 1, (command >> 4) & 1, (command >> 5) & 1, (command >> 8) & 3, (command >> 10) & 3);
-		logerror("  offset=%08X pos=(%d,%d) w=%d h=%d clip=(%d,%d)\n", 
-				dma_register[DMA_OFFSETLO] | (dma_register[DMA_OFFSETHI] << 16),
-				(INT16)dma_register[DMA_XSTART], (INT16)dma_register[DMA_YSTART],
-				dma_register[DMA_WIDTH], dma_register[DMA_HEIGHT],
-				dma_register[DMA_TOPCLIP], dma_register[DMA_BOTCLIP]);
-		logerror("  palette=%04X color=%04X lskip=%02X rskip=%02X xstep=%04X ystep=%04X unkE=%04X unkF=%04X\n",
-				dma_register[DMA_PALETTE], dma_register[DMA_COLOR],
-				dma_register[DMA_LRSKIP] >> 8, dma_register[DMA_LRSKIP] & 0xff,
-				dma_register[DMA_SCALE_X], dma_register[DMA_SCALE_Y], dma_register[DMA_UNKNOWN_E],
-				dma_register[DMA_CONTROL]);
-		logerror("----\n");
-	}
+    if (keyboard_pressed(KEYCODE_L))
+        logerror("%08X:DMA %d = %04X\n", cpu_get_pc(), regnum, data);
 #endif
-	
-	profiler_mark(PROFILER_USER1);
 
-	/* determine bpp */
-	bpp = (command >> 12) & 7;
+    /* only writes to DMA_COMMAND actually cause actions */
+    if (regnum != DMA_COMMAND)
+        return;
 
-	/* fill in the basic data */
-	dma_state.xpos = (INT16)dma_register[DMA_XSTART];
-	dma_state.ypos = (INT16)dma_register[DMA_YSTART];
-	dma_state.width = dma_register[DMA_WIDTH];
-	dma_state.height = dma_register[DMA_HEIGHT];
-	dma_state.palette = dma_register[DMA_PALETTE] & 0x7f00;
-	dma_state.color = dma_register[DMA_COLOR] & 0xff;
+    /* high bit triggers action */
+    command = dma_register[DMA_COMMAND];
+    if (!(command & 0x8000)) {
+        tms34010_set_irq_line(0, CLEAR_LINE);
+        return;
+    }
 
-	/* fill in the rev 2 data */
-	dma_state.yflip = (command & 0x20) >> 5;
-	dma_state.bpp = bpp ? bpp : 8;
-	dma_state.preskip = (command >> 8) & 3;
-	dma_state.postskip = (command >> 10) & 3;
-	dma_state.topclip = (INT16)dma_register[DMA_TOPCLIP];
-	dma_state.botclip = (INT16)dma_register[DMA_BOTCLIP];
-	dma_state.leftclip = (INT16)dma_register[DMA_LEFTCLIP];
-	dma_state.rightclip = (INT16)dma_register[DMA_RIGHTCLIP];
-	dma_state.xstep = dma_register[DMA_SCALE_X] ? dma_register[DMA_SCALE_X] : 0x100;
-	dma_state.ystep = dma_register[DMA_SCALE_Y] ? dma_register[DMA_SCALE_Y] : 0x100;
+#if LOG_DMA
+    if (keyboard_pressed(KEYCODE_L)) {
+        logerror("DMA command %04X: (bpp=%d skip=%d xflip=%d yflip=%d preskip=%d postskip=%d)\n",
+                 command, (command >> 12) & 7, (command >> 7) & 1, (command >> 4) & 1, (command >> 5) & 1, (command >> 8) & 3, (command >> 10) & 3);
+        logerror("  offset=%08X pos=(%d,%d) w=%d h=%d clip=(%d,%d)\n",
+                 dma_register[DMA_OFFSETLO] | (dma_register[DMA_OFFSETHI] << 16),
+                 (INT16) dma_register[DMA_XSTART], (INT16) dma_register[DMA_YSTART],
+                 dma_register[DMA_WIDTH], dma_register[DMA_HEIGHT],
+                 dma_register[DMA_TOPCLIP], dma_register[DMA_BOTCLIP]);
+        logerror("  palette=%04X color=%04X lskip=%02X rskip=%02X xstep=%04X ystep=%04X unkE=%04X unkF=%04X\n",
+                 dma_register[DMA_PALETTE], dma_register[DMA_COLOR],
+                 dma_register[DMA_LRSKIP] >> 8, dma_register[DMA_LRSKIP] & 0xff,
+                 dma_register[DMA_SCALE_X], dma_register[DMA_SCALE_Y], dma_register[DMA_UNKNOWN_E],
+                 dma_register[DMA_CONTROL]);
+        logerror("----\n");
+    }
+#endif
 
-	/* clip the clippers */	
-	if (dma_state.topclip < 0) dma_state.topclip = 0;
-	if (dma_state.botclip > 512) dma_state.botclip = 512;
-	if (dma_state.leftclip < 0) dma_state.leftclip = 0;
-	if (dma_state.rightclip > 512) dma_state.rightclip = 512;
-	
-	/* determine the offset */
-	gfxoffset = dma_register[DMA_OFFSETLO] | (dma_register[DMA_OFFSETHI] << 16);
-	
-	/* special case: drawing mode C doesn't need to know about any pixel data */
-	if ((command & 0x0f) == 0x0c)
-		gfxoffset = 0;
-	
-	/* determine the location */
-	if (!wms_gfx_rom_large && gfxoffset >= 0x2000000)
-		gfxoffset -= 0x2000000;
-	if (gfxoffset < 0x10000000)
-		dma_state.offset = gfxoffset;
-	else
-	{
-		//logerror("DMA source out of range: %08X\n", gfxoffset);
-		goto skipdma;
-	}
+    profiler_mark(PROFILER_USER1);
 
-	/* there seems to be two types of behavior for the DMA chip */
-	/* for MK1 and MK2, the upper byte of the LRSKIP is the     */
-	/* starting skip value, and the lower byte is the ending    */
-	/* skip value; for the NBA Jam, Hangtime, and Open Ice, the */
-	/* full word seems to be the starting skip value.           */
-	if (command & 0x40)
-	{
-		dma_state.startskip = dma_register[DMA_LRSKIP] & 0xff;
-		dma_state.endskip = dma_register[DMA_LRSKIP] >> 8;
-	}
-	else
-	{
-		dma_state.startskip = 0;
-		dma_state.endskip = dma_register[DMA_LRSKIP];
-	}
-	
-	/* then draw */
-	if (dma_state.xstep == 0x100 && dma_state.ystep == 0x100)
-	{
-		if (command & 0x80) 
-			(*dma_draw_skip_noscale[command & 0x1f])();
-		else 
-			(*dma_draw_noskip_noscale[command & 0x1f])();
-	}
-	else
-	{
-		if (command & 0x80) 
-			(*dma_draw_skip_scale[command & 0x1f])();
-		else 
-			(*dma_draw_noskip_scale[command & 0x1f])();
-	}
+    /* determine bpp */
+    bpp = (command >> 12) & 7;
 
-	/* signal we're done */
+    /* fill in the basic data */
+    dma_state.xpos = (INT16) dma_register[DMA_XSTART];
+    dma_state.ypos = (INT16) dma_register[DMA_YSTART];
+    dma_state.width = dma_register[DMA_WIDTH];
+    dma_state.height = dma_register[DMA_HEIGHT];
+    dma_state.palette = dma_register[DMA_PALETTE] & 0x7f00;
+    dma_state.color = dma_register[DMA_COLOR] & 0xff;
+
+    /* fill in the rev 2 data */
+    dma_state.yflip = (command & 0x20) >> 5;
+    dma_state.bpp = bpp ? bpp : 8;
+    dma_state.preskip = (command >> 8) & 3;
+    dma_state.postskip = (command >> 10) & 3;
+    dma_state.topclip = (INT16) dma_register[DMA_TOPCLIP];
+    dma_state.botclip = (INT16) dma_register[DMA_BOTCLIP];
+    dma_state.leftclip = (INT16) dma_register[DMA_LEFTCLIP];
+    dma_state.rightclip = (INT16) dma_register[DMA_RIGHTCLIP];
+    dma_state.xstep = dma_register[DMA_SCALE_X] ? dma_register[DMA_SCALE_X] : 0x100;
+    dma_state.ystep = dma_register[DMA_SCALE_Y] ? dma_register[DMA_SCALE_Y] : 0x100;
+
+    /* clip the clippers */
+    if (dma_state.topclip < 0) dma_state.topclip = 0;
+    if (dma_state.botclip > 512) dma_state.botclip = 512;
+    if (dma_state.leftclip < 0) dma_state.leftclip = 0;
+    if (dma_state.rightclip > 512) dma_state.rightclip = 512;
+
+    /* determine the offset */
+    gfxoffset = dma_register[DMA_OFFSETLO] | (dma_register[DMA_OFFSETHI] << 16);
+
+    /* special case: drawing mode C doesn't need to know about any pixel data */
+    if ((command & 0x0f) == 0x0c)
+        gfxoffset = 0;
+
+    /* determine the location */
+    if (!wms_gfx_rom_large && gfxoffset >= 0x2000000)
+        gfxoffset -= 0x2000000;
+    if (gfxoffset < 0x10000000)
+        dma_state.offset = gfxoffset;
+    else {
+        //logerror("DMA source out of range: %08X\n", gfxoffset);
+        goto skipdma;
+    }
+
+    /* there seems to be two types of behavior for the DMA chip */
+    /* for MK1 and MK2, the upper byte of the LRSKIP is the     */
+    /* starting skip value, and the lower byte is the ending    */
+    /* skip value; for the NBA Jam, Hangtime, and Open Ice, the */
+    /* full word seems to be the starting skip value.           */
+    if (command & 0x40) {
+        dma_state.startskip = dma_register[DMA_LRSKIP] & 0xff;
+        dma_state.endskip = dma_register[DMA_LRSKIP] >> 8;
+    } else {
+        dma_state.startskip = 0;
+        dma_state.endskip = dma_register[DMA_LRSKIP];
+    }
+
+    /* then draw */
+    if (dma_state.xstep == 0x100 && dma_state.ystep == 0x100) {
+        if (command & 0x80)
+            (*dma_draw_skip_noscale[command & 0x1f])();
+        else
+            (*dma_draw_noskip_noscale[command & 0x1f])();
+    } else {
+        if (command & 0x80)
+            (*dma_draw_skip_scale[command & 0x1f])();
+        else
+            (*dma_draw_noskip_scale[command & 0x1f])();
+    }
+
+    /* signal we're done */
 skipdma:
 
-	/* special case for Open Ice: use a timer for command 0x8000, which is */
-	/* used to initiate the DMA. What they do is start the DMA, *then* set */
-	/* up the memory for it, which means that there must be some non-zero  */
-	/* delay that gives them enough time to build up the DMA command list  */
-	if (FAST_DMA)
-	{
-		if (command != 0x8000)
-			dma_callback(1);
-		else
-		{
-			tms34010_set_irq_line(0, CLEAR_LINE);
-			timer_set(TIME_IN_NSEC(41 * dma_state.width * dma_state.height * 4), 0, dma_callback);
-		}
-	}
-	else
-	{
-		tms34010_set_irq_line(0, CLEAR_LINE);
-		timer_set(TIME_IN_NSEC(41 * dma_state.width * dma_state.height), 0, dma_callback);
-	}
+    /* special case for Open Ice: use a timer for command 0x8000, which is */
+    /* used to initiate the DMA. What they do is start the DMA, *then* set */
+    /* up the memory for it, which means that there must be some non-zero  */
+    /* delay that gives them enough time to build up the DMA command list  */
+    if (FAST_DMA) {
+        if (command != 0x8000)
+            dma_callback(1);
+        else {
+            tms34010_set_irq_line(0, CLEAR_LINE);
+            timer_set(TIME_IN_NSEC(41 * dma_state.width * dma_state.height * 4), 0, dma_callback);
+        }
+    } else {
+        tms34010_set_irq_line(0, CLEAR_LINE);
+        timer_set(TIME_IN_NSEC(41 * dma_state.width * dma_state.height), 0, dma_callback);
+    }
 
-	profiler_mark(PROFILER_END);
+    profiler_mark(PROFILER_END);
 }
 
 
@@ -810,59 +788,55 @@ skipdma:
 
 static void update_screen(struct osd_bitmap *bitmap)
 {
-	UINT16 *pens = Machine->pens;
-	int v, h, width, xoffs;
-	UINT32 offset;
+    UINT16 *pens = Machine->pens;
+    int v, h, width, xoffs;
+    UINT32 offset;
 
-	/* determine the base of the videoram */
-	offset = ((~tms34010_get_DPYSTRT(0) & 0x1ff0) << 5) & 0x3ffff;
+    /* determine the base of the videoram */
+    offset = ((~tms34010_get_DPYSTRT(0) & 0x1ff0) << 5) & 0x3ffff;
 
-	/* determine how many pixels to copy */
-	xoffs = Machine->visible_area.min_x;
-	width = Machine->visible_area.max_x - xoffs + 1;
-	
-	/* adjust the offset */
-	offset += xoffs;
-	offset += 512 * Machine->visible_area.min_y;
-	offset &= 0x3ffff;
+    /* determine how many pixels to copy */
+    xoffs = Machine->visible_area.min_x;
+    width = Machine->visible_area.max_x - xoffs + 1;
 
-	/* 16-bit refresh case */
-	if (bitmap->depth == 16)
-	{
-		/* loop over rows */
-		for (v = Machine->visible_area.min_y; v <= Machine->visible_area.max_y; v++)
-		{
-			/* handle the refresh */
-			UINT16 *src = &local_videoram[offset];
-			UINT16 *dst = &((UINT16 *)bitmap->line[v])[xoffs];
-			UINT32 diff = dst - src;
+    /* adjust the offset */
+    offset += xoffs;
+    offset += 512 * Machine->visible_area.min_y;
+    offset &= 0x3ffff;
 
-			/* copy one row */
-			for (h = 0; h < width; h++, src++)
-				*(src + diff) = pens[*src];
+    /* 16-bit refresh case */
+    if (bitmap->depth == 16) {
+        /* loop over rows */
+        for (v = Machine->visible_area.min_y; v <= Machine->visible_area.max_y; v++) {
+            /* handle the refresh */
+            UINT16 *src = &local_videoram[offset];
+            UINT16 *dst = & ((UINT16 *) bitmap->line[v]) [xoffs];
+            UINT32 diff = dst - src;
 
-			/* point to the next row */
-			offset = (offset + 512) & 0x3ffff;
-		}
-	}
+            /* copy one row */
+            for (h = 0; h < width; h++, src++)
+                * (src + diff) = pens[*src];
 
-	/* 8-bit refresh case */
-	else
-	{
-		/* loop over rows */
-		for (v = Machine->visible_area.min_y; v <= Machine->visible_area.max_y; v++)
-		{
-			/* handle the refresh */
-			UINT16 *src = &local_videoram[offset];
-			UINT8 *dst = &bitmap->line[v][xoffs];
+            /* point to the next row */
+            offset = (offset + 512) & 0x3ffff;
+        }
+    }
 
-			for (h = 0; h < width; h++)
-				*dst++ = pens[*src++];
+    /* 8-bit refresh case */
+    else {
+        /* loop over rows */
+        for (v = Machine->visible_area.min_y; v <= Machine->visible_area.max_y; v++) {
+            /* handle the refresh */
+            UINT16 *src = &local_videoram[offset];
+            UINT8 *dst = &bitmap->line[v][xoffs];
 
-			/* point to the next row */
-			offset = (offset + 512) & 0x3ffff;
-		}
-	}
+            for (h = 0; h < width; h++)
+                *dst++ = pens[*src++];
+
+            /* point to the next row */
+            offset = (offset + 512) & 0x3ffff;
+        }
+    }
 }
 
 
@@ -875,7 +849,7 @@ static void update_screen(struct osd_bitmap *bitmap)
 
 void wms_tunit_display_addr_changed(UINT32 offs, int rowbytes, int scanline)
 {
-	//logerror("Display address = %08X\n", offs);
+    //logerror("Display address = %08X\n", offs);
 }
 
 
@@ -888,9 +862,9 @@ void wms_tunit_display_addr_changed(UINT32 offs, int rowbytes, int scanline)
 
 void wms_tunit_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	// recompute the palette
-	palette_recalc();
+    // recompute the palette
+    palette_recalc();
 
-	// update the entire screen
-	update_screen(bitmap);
+    // update the entire screen
+    update_screen(bitmap);
 }

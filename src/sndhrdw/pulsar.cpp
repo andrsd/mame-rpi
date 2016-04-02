@@ -31,142 +31,125 @@
 
 
 /* sample file names */
-const char *pulsar_sample_names[] =
-{
-	"*pulsar",
-	"clang.wav",
-	"key.wav",
-	"alienhit.wav",
-	"phit.wav",
-	"ashoot.wav",
-	"pshoot.wav",
-	"bonus.wav",
-	"sizzle.wav",
-	"gate.wav",
-	"birth.wav",
-	"hbeat.wav",
-	"movmaze.wav",
-	0
+const char *pulsar_sample_names[] = {
+    "*pulsar",
+    "clang.wav",
+    "key.wav",
+    "alienhit.wav",
+    "phit.wav",
+    "ashoot.wav",
+    "pshoot.wav",
+    "bonus.wav",
+    "sizzle.wav",
+    "gate.wav",
+    "birth.wav",
+    "hbeat.wav",
+    "movmaze.wav",
+    0
 };
 
 /* sample sound IDs - must match sample file name table above */
-enum
-{
-	SND_CLANG = 0,
-	SND_KEY,
-	SND_ALIENHIT,
-	SND_PHIT,
-	SND_ASHOOT,
-	SND_PSHOOT,
-	SND_BONUS,
-	SND_SIZZLE,
-	SND_GATE,
-	SND_BIRTH,
-	SND_HBEAT,
-	SND_MOVMAZE
+enum {
+    SND_CLANG = 0,
+    SND_KEY,
+    SND_ALIENHIT,
+    SND_PHIT,
+    SND_ASHOOT,
+    SND_PSHOOT,
+    SND_BONUS,
+    SND_SIZZLE,
+    SND_GATE,
+    SND_BIRTH,
+    SND_HBEAT,
+    SND_MOVMAZE
 };
 
 
 static int port1State = 0;
 
-WRITE_HANDLER( pulsar_sh_port1_w )
+WRITE_HANDLER(pulsar_sh_port1_w)
 {
-	int bitsChanged;
-	int bitsGoneHigh;
-	int bitsGoneLow;
+    int bitsChanged;
+    int bitsGoneHigh;
+    int bitsGoneLow;
 
 
-	bitsChanged  = port1State ^ data;
-	bitsGoneHigh = bitsChanged & data;
-	bitsGoneLow  = bitsChanged & ~data;
+    bitsChanged  = port1State ^ data;
+    bitsGoneHigh = bitsChanged & data;
+    bitsGoneLow  = bitsChanged & ~data;
 
-	port1State = data;
+    port1State = data;
 
-	if ( bitsGoneLow & OUT_PORT_1_CLANG )
-	{
-		PLAY( SND_CLANG, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_1_CLANG) {
+        PLAY(SND_CLANG, 0);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_1_KEY )
-	{
-		PLAY( SND_KEY, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_1_KEY) {
+        PLAY(SND_KEY, 0);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_1_ALIENHIT )
-	{
-		PLAY( SND_ALIENHIT, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_1_ALIENHIT) {
+        PLAY(SND_ALIENHIT, 0);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_1_PHIT )
-	{
-		PLAY( SND_PHIT, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_1_PHIT) {
+        PLAY(SND_PHIT, 0);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_1_ASHOOT )
-	{
-		PLAY( SND_ASHOOT, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_1_ASHOOT) {
+        PLAY(SND_ASHOOT, 0);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_1_PSHOOT )
-	{
-		PLAY( SND_PSHOOT, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_1_PSHOOT) {
+        PLAY(SND_PSHOOT, 0);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_1_BONUS )
-	{
-		PLAY( SND_BONUS, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_1_BONUS) {
+        PLAY(SND_BONUS, 0);
+    }
 }
 
 
-WRITE_HANDLER( pulsar_sh_port2_w )
+WRITE_HANDLER(pulsar_sh_port2_w)
 {
-	static int port2State = 0;
-	int bitsChanged;
-	int bitsGoneHigh;
-	int bitsGoneLow;
+    static int port2State = 0;
+    int bitsChanged;
+    int bitsGoneHigh;
+    int bitsGoneLow;
 
 
-	bitsChanged  = port2State ^ data;
-	bitsGoneHigh = bitsChanged & data;
-	bitsGoneLow  = bitsChanged & ~data;
+    bitsChanged  = port2State ^ data;
+    bitsGoneHigh = bitsChanged & data;
+    bitsGoneLow  = bitsChanged & ~data;
 
-	port2State = data;
+    port2State = data;
 
-	if ( bitsGoneLow & OUT_PORT_2_SIZZLE )
-	{
-		PLAY( SND_SIZZLE, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_2_SIZZLE) {
+        PLAY(SND_SIZZLE, 0);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_2_GATE )
-	{
-		sample_start( SND_CLANG, SND_GATE, 0 );
-	}
-	if ( bitsGoneHigh & OUT_PORT_2_GATE )
-	{
-		STOP( SND_CLANG );
-	}
+    if (bitsGoneLow & OUT_PORT_2_GATE) {
+        sample_start(SND_CLANG, SND_GATE, 0);
+    }
+    if (bitsGoneHigh & OUT_PORT_2_GATE) {
+        STOP(SND_CLANG);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_2_BIRTH )
-	{
-		PLAY( SND_BIRTH, 0 );
-	}
+    if (bitsGoneLow & OUT_PORT_2_BIRTH) {
+        PLAY(SND_BIRTH, 0);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_2_HBEAT )
-	{
-		PLAY( SND_HBEAT, 1 );
-	}
-	if ( bitsGoneHigh & OUT_PORT_2_HBEAT )
-	{
-		STOP( SND_HBEAT );
-	}
+    if (bitsGoneLow & OUT_PORT_2_HBEAT) {
+        PLAY(SND_HBEAT, 1);
+    }
+    if (bitsGoneHigh & OUT_PORT_2_HBEAT) {
+        STOP(SND_HBEAT);
+    }
 
-	if ( bitsGoneLow & OUT_PORT_2_MOVMAZE )
-	{
-		PLAY( SND_MOVMAZE, 1 );
-	}
-	if ( bitsGoneHigh & OUT_PORT_2_MOVMAZE )
-	{
-		STOP( SND_MOVMAZE );
-	}
+    if (bitsGoneLow & OUT_PORT_2_MOVMAZE) {
+        PLAY(SND_MOVMAZE, 1);
+    }
+    if (bitsGoneHigh & OUT_PORT_2_MOVMAZE) {
+        STOP(SND_MOVMAZE);
+    }
 }

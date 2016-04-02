@@ -121,7 +121,7 @@ static UINT8 Bit9[POLY9_SIZE];
 /* implemented by using counters. */
 
 static UINT8 Div31[POLY5_SIZE] =
-    {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 
 static UINT8 P4[2];                     /* Position pointer for the 4-bit POLY array */
@@ -157,7 +157,7 @@ static UINT32 Samp_n_cnt;               /* Sample cnt. */
 /*                                                                           */
 /*****************************************************************************/
 
-WRITE_HANDLER( tia_w )
+WRITE_HANDLER(tia_w)
 {
     UINT16 new_val = 0;
     UINT8 chan;
@@ -165,8 +165,7 @@ WRITE_HANDLER( tia_w )
     tia_sh_update();
 
     /* determine which address was changed */
-    switch (offset)
-    {
+    switch (offset) {
     case AUDC0:
         AUDC[0] = data & 0x0f;
         chan = 0;
@@ -188,12 +187,12 @@ WRITE_HANDLER( tia_w )
         break;
 
     case AUDV0:
-		AUDV[0] = ((data & 0x0f) << AUDV_SHIFT) * tia_gain / TIA_DEFAULT_GAIN;
+        AUDV[0] = ((data & 0x0f) << AUDV_SHIFT) * tia_gain / TIA_DEFAULT_GAIN;
         chan = 0;
         break;
 
     case AUDV1:
-		AUDV[1] = ((data & 0x0f) << AUDV_SHIFT) * tia_gain / TIA_DEFAULT_GAIN;
+        AUDV[1] = ((data & 0x0f) << AUDV_SHIFT) * tia_gain / TIA_DEFAULT_GAIN;
         chan = 1;
         break;
 
@@ -203,38 +202,31 @@ WRITE_HANDLER( tia_w )
     }
 
     /* if the output value changed */
-    if (chan != 255)
-    {
+    if (chan != 255) {
         /* an AUDC value of 0 is a special case */
-        if (AUDC[chan] == SET_TO_1)
-        {
+        if (AUDC[chan] == SET_TO_1) {
             /* indicate the clock is zero so no processing will occur */
             new_val = 0;
 
             /* and set the output to the selected volume */
             Outvol[chan] = AUDV[chan];
-        }
-        else
-        {
+        } else {
             /* otherwise calculate the 'divide by N' value */
             new_val = AUDF[chan] + 1;
 
             /* if bits 2 & 3 are set, then multiply the 'div by n' count by 3 */
-            if ((AUDC[chan] & DIV3_MASK) == DIV3_MASK)
-            {
+            if ((AUDC[chan] & DIV3_MASK) == DIV3_MASK) {
                 new_val *= 3;
             }
         }
 
         /* only reset those channels that have changed */
-        if (new_val != Div_n_max[chan])
-        {
+        if (new_val != Div_n_max[chan]) {
             /* reset the divide by n counters */
             Div_n_max[chan] = new_val;
 
             /* if the channel is now volume only or was volume only */
-            if ((Div_n_cnt[chan] == 0) || (new_val == 0))
-            {
+            if ((Div_n_cnt[chan] == 0) || (new_val == 0)) {
                 /* reset the counter (otherwise let it complete the previous) */
                 Div_n_cnt[chan] = new_val;
             }
@@ -280,15 +272,11 @@ void tia_process(int param, INT16 *buffer, int length)
     div_n_cnt1 = Div_n_cnt[1];
 
     /* loop until the buffer is filled */
-    while (length > 0)
-    {
+    while (length > 0) {
         /* Process channel 0 */
-        if (div_n_cnt0 > 1)
-        {
+        if (div_n_cnt0 > 1) {
             div_n_cnt0--;
-        }
-        else if (div_n_cnt0 == 1)
-        {
+        } else if (div_n_cnt0 == 1) {
             div_n_cnt0 = Div_n_max[0];
 
             /* the P5 counter has multiple uses, so we inc it here */
@@ -299,19 +287,14 @@ void tia_process(int param, INT16 *buffer, int length)
             /* check clock modifier for clock tick */
             if ((audc0 & 0x02) == 0 ||
                 ((audc0 & 0x01) == 0 && Div31[p5_0]) ||
-                ((audc0 & 0x01) == 1 && Bit5[p5_0]))
-            {
-                if (audc0 & 0x04)       /* pure modified clock selected */
-                {
+                ((audc0 & 0x01) == 1 && Bit5[p5_0])) {
+                if (audc0 & 0x04) {     /* pure modified clock selected */
                     if (outvol_0)       /* if the output was set */
                         outvol_0 = 0;   /* turn it off */
                     else
                         outvol_0 = audv0;   /* else turn it on */
-                }
-                else if (audc0 & 0x08)  /* check for p5/p9 */
-                {
-                    if (audc0 == POLY9) /* check for poly9 */
-                    {
+                } else if (audc0 & 0x08) {   /* check for p5/p9 */
+                    if (audc0 == POLY9) {   /* check for poly9 */
                         /* inc the poly9 counter */
                         P9[0]++;
                         if (P9[0] == POLY9_SIZE)
@@ -321,18 +304,16 @@ void tia_process(int param, INT16 *buffer, int length)
                             outvol_0 = audv0;
                         else
                             outvol_0 = 0;
-                    }
-                    else
-                    /* must be poly5 */
+                    } else
+                        /* must be poly5 */
                     {
                         if (Bit5[p5_0])
                             outvol_0 = audv0;
                         else
                             outvol_0 = 0;
                     }
-                }
-                else
-                /* poly4 is the only remaining option */
+                } else
+                    /* poly4 is the only remaining option */
                 {
                     /* inc the poly4 counter */
                     P4[0]++;
@@ -349,12 +330,9 @@ void tia_process(int param, INT16 *buffer, int length)
 
 
         /* Process channel 1 */
-        if (div_n_cnt1 > 1)
-        {
+        if (div_n_cnt1 > 1) {
             div_n_cnt1--;
-        }
-        else if (div_n_cnt1 == 1)
-        {
+        } else if (div_n_cnt1 == 1) {
             div_n_cnt1 = Div_n_max[1];
 
             /* the P5 counter has multiple uses, so we inc it here */
@@ -365,19 +343,14 @@ void tia_process(int param, INT16 *buffer, int length)
             /* check clock modifier for clock tick */
             if ((audc1 & 0x02) == 0 ||
                 ((audc1 & 0x01) == 0 && Div31[p5_1]) ||
-                ((audc1 & 0x01) == 1 && Bit5[p5_1]))
-            {
-                if (audc1 & 0x04)       /* pure modified clock selected */
-                {
+                ((audc1 & 0x01) == 1 && Bit5[p5_1])) {
+                if (audc1 & 0x04) {     /* pure modified clock selected */
                     if (outvol_1)       /* if the output was set */
                         outvol_1 = 0;   /* turn it off */
                     else
                         outvol_1 = audv1;   /* else turn it on */
-                }
-                else if (audc1 & 0x08)  /* check for p5/p9 */
-                {
-                    if (audc1 == POLY9) /* check for poly9 */
-                    {
+                } else if (audc1 & 0x08) {   /* check for p5/p9 */
+                    if (audc1 == POLY9) {   /* check for poly9 */
                         /* inc the poly9 counter */
                         P9[1]++;
                         if (P9[1] == POLY9_SIZE)
@@ -387,8 +360,7 @@ void tia_process(int param, INT16 *buffer, int length)
                             outvol_1 = audv1;
                         else
                             outvol_1 = 0;
-                    }
-                    else
+                    } else
                         /* must be poly5 */
                     {
                         if (Bit5[p5_1])
@@ -396,8 +368,7 @@ void tia_process(int param, INT16 *buffer, int length)
                         else
                             outvol_1 = 0;
                     }
-                }
-                else
+                } else
                     /* poly4 is the only remaining option */
                 {
                     /* inc the poly4 counter */
@@ -418,8 +389,7 @@ void tia_process(int param, INT16 *buffer, int length)
         Samp_n_cnt -= 256;
 
         /* if the count down has reached zero */
-        if (Samp_n_cnt < 256)
-        {
+        if (Samp_n_cnt < 256) {
             /* adjust the sample counter */
             Samp_n_cnt += Samp_n_max;
 
@@ -446,8 +416,7 @@ static void poly_init(UINT8 *poly, int size, int left, int right, int add)
     int mask = (1 << size) - 1;
     int i, x = 0;
 
-    for (i = 0; i < mask; i++)
-    {
+    for (i = 0; i < mask; i++) {
         *poly++ = x & 1;
         /* calculate next bit */
         x = ((x << left) + (x >> right) + add) & mask;
@@ -471,23 +440,22 @@ static void poly_init(UINT8 *poly, int size, int left, int right, int add)
 
 void tia_sound_init(int clock, int sample_rate, int gain)
 {
-	int chan;
+    int chan;
 
-	/* set the gain factor (normally use TIA_DEFAULT_GAIN) */
+    /* set the gain factor (normally use TIA_DEFAULT_GAIN) */
     tia_gain = gain;
 
-	/* fill the polynomials */
+    /* fill the polynomials */
     poly_init(Bit4, 4, 3, 1, 0x00004);
     poly_init(Bit5, 5, 3, 2, 0x00008);
     poly_init(Bit9, 9, 2, 7, 0x00080);
 
     /* calculate the sample 'divide by N' value based on the playback freq. */
-    Samp_n_max = ((UINT32)clock << 8) / sample_rate;
+    Samp_n_max = ((UINT32) clock << 8) / sample_rate;
     Samp_n_cnt = 0;                     /* initialize all bits of the sample counter */
 
     /* initialize the local globals */
-    for (chan = CHAN1; chan <= CHAN2; chan++)
-    {
+    for (chan = CHAN1; chan <= CHAN2; chan++) {
         Outvol[chan] = 0;
         Div_n_cnt[chan] = 0;
         Div_n_max[chan] = 0;

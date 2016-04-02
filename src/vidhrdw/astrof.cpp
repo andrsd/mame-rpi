@@ -21,9 +21,9 @@ static const unsigned char *prom;
 
 
 /* Just save the colorprom pointer */
-void astrof_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void astrof_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	prom = color_prom;
+    prom = color_prom;
 }
 
 /***************************************************************************
@@ -46,30 +46,29 @@ void astrof_vh_convert_color_prom(unsigned char *palette, unsigned short *colort
 ***************************************************************************/
 static void modify_palette(void)
 {
-	int i, col_index;
+    int i, col_index;
 
-	col_index = (palette_bank ? 16 : 0);
+    col_index = (palette_bank ? 16 : 0);
 
-	for (i = 0;i < Machine->drv->total_colors; i++)
-	{
-		int bit0,bit1,r,g,b;
+    for (i = 0; i < Machine->drv->total_colors; i++) {
+        int bit0, bit1, r, g, b;
 
-		bit0 = ((prom[col_index] >> 0) & 0x01) | (red_on >> 3);
-		bit1 = ((prom[col_index] >> 1) & 0x01) | (red_on >> 3);
-		r = 0xc0 * bit0 + 0x3f * bit1;
+        bit0 = ((prom[col_index] >> 0) & 0x01) | (red_on >> 3);
+        bit1 = ((prom[col_index] >> 1) & 0x01) | (red_on >> 3);
+        r = 0xc0 * bit0 + 0x3f * bit1;
 
-		bit0 = ( prom[col_index] >> 2) & 0x01;
-		bit1 = ( prom[col_index] >> 3) & 0x01;
-		g = 0xc0 * bit0 + 0x3f * bit1;
+        bit0 = (prom[col_index] >> 2) & 0x01;
+        bit1 = (prom[col_index] >> 3) & 0x01;
+        g = 0xc0 * bit0 + 0x3f * bit1;
 
-		bit0 = ( prom[col_index] >> 4) & 0x01;
-		bit1 = ( prom[col_index] >> 5) & 0x01;
-		b = 0xc0 * bit0 + 0x3f * bit1;
+        bit0 = (prom[col_index] >> 4) & 0x01;
+        bit1 = (prom[col_index] >> 5) & 0x01;
+        b = 0xc0 * bit0 + 0x3f * bit1;
 
-		col_index++;
+        col_index++;
 
-		palette_change_color(i,r,g,b);
-	}
+        palette_change_color(i, r, g, b);
+    }
 }
 
 
@@ -80,13 +79,12 @@ static void modify_palette(void)
 ***************************************************************************/
 int astrof_vh_start(void)
 {
-	if ((colorram = (unsigned char*)malloc(videoram_size)) == 0)
-	{
-		generic_bitmapped_vh_stop();
-		return 1;
-	}
+    if ((colorram = (unsigned char*) malloc(videoram_size)) == 0) {
+        generic_bitmapped_vh_stop();
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -97,73 +95,70 @@ int astrof_vh_start(void)
 ***************************************************************************/
 void astrof_vh_stop(void)
 {
-	if (colorram)  free(colorram);
+    if (colorram)  free(colorram);
 }
 
 
 
 static void common_videoram_w(int offset, int data, int color)
 {
-	/* DO NOT try to optimize this by comparing if the value actually changed.
-	   The games write the same data with a different color. For example, the
-	   fuel meter in Astro Fighter doesn't work with that 'optimization' */
+    /* DO NOT try to optimize this by comparing if the value actually changed.
+       The games write the same data with a different color. For example, the
+       fuel meter in Astro Fighter doesn't work with that 'optimization' */
 
-	int i,x,y,fore,back;
-	int dx = 1;
+    int i, x, y, fore, back;
+    int dx = 1;
 
-	videoram[offset] = data;
-	colorram[offset] = color;
+    videoram[offset] = data;
+    colorram[offset] = color;
 
-	fore = Machine->pens[color | 1];
-	back = Machine->pens[color    ];
+    fore = Machine->pens[color | 1];
+    back = Machine->pens[color    ];
 
-	x = (offset >> 8) << 3;
-	y = 255 - (offset & 0xff);
+    x = (offset >> 8) << 3;
+    y = 255 - (offset & 0xff);
 
-	if (flip_screen)
-	{
-		x = 255 - x;
-		y = 255 - y;
-		dx = -1;
-	}
+    if (flip_screen) {
+        x = 255 - x;
+        y = 255 - y;
+        dx = -1;
+    }
 
-	for (i = 0; i < 8; i++)
-	{
-		plot_pixel(Machine->scrbitmap, x, y, (data & 1) ? fore : back);
+    for (i = 0; i < 8; i++) {
+        plot_pixel(Machine->scrbitmap, x, y, (data & 1) ? fore : back);
 
-		x += dx;
-		data >>= 1;
-	}
+        x += dx;
+        data >>= 1;
+    }
 }
 
-WRITE_HANDLER( astrof_videoram_w )
+WRITE_HANDLER(astrof_videoram_w)
 {
-	// Astro Fighter's palette is set in astrof_video_control2_w, D0 is unused
-	common_videoram_w(offset, data, *astrof_color & 0x0e);
+    // Astro Fighter's palette is set in astrof_video_control2_w, D0 is unused
+    common_videoram_w(offset, data, *astrof_color & 0x0e);
 }
 
-WRITE_HANDLER( tomahawk_videoram_w )
+WRITE_HANDLER(tomahawk_videoram_w)
 {
-	// Tomahawk's palette is set per byte
-	common_videoram_w(offset, data, (*astrof_color & 0x0e) | ((*astrof_color & 0x01) << 4));
+    // Tomahawk's palette is set per byte
+    common_videoram_w(offset, data, (*astrof_color & 0x0e) | ((*astrof_color & 0x01) << 4));
 }
 
 
-WRITE_HANDLER( astrof_video_control1_w )
+WRITE_HANDLER(astrof_video_control1_w)
 {
-	// Video control register 1
-	//
-	// Bit 0     = Flip screen
-	// Bit 1     = Shown in schematics as what appears to be a screen clear
-	//             bit, but it's always zero in Astro Fighter
-	// Bit 2     = Not hooked up in the schematics, but at one point the game
-	//			   sets it to 1.
-	// Bit 3-7   = Not hooked up
+    // Video control register 1
+    //
+    // Bit 0     = Flip screen
+    // Bit 1     = Shown in schematics as what appears to be a screen clear
+    //             bit, but it's always zero in Astro Fighter
+    // Bit 2     = Not hooked up in the schematics, but at one point the game
+    //			   sets it to 1.
+    // Bit 3-7   = Not hooked up
 
-	if (input_port_2_r(0) & 0x02) /* Cocktail mode */
-	{
-		flip_screen_w(offset, data & 0x01);
-	}
+    if (input_port_2_r(0) & 0x02) {      /* Cocktail mode */
+        flip_screen_w(offset, data & 0x01);
+    }
 }
 
 
@@ -176,55 +171,51 @@ WRITE_HANDLER( astrof_video_control1_w )
 // 			   in the color PROM
 // Bit 4-7   = Not hooked up
 
-WRITE_HANDLER( astrof_video_control2_w )
+WRITE_HANDLER(astrof_video_control2_w)
 {
-	if (palette_bank != (data & 0x04))
-	{
-		palette_bank = (data & 0x04);
-		do_modify_palette = 1;
-	}
+    if (palette_bank != (data & 0x04)) {
+        palette_bank = (data & 0x04);
+        do_modify_palette = 1;
+    }
 
-	if (red_on != (data & 0x08))
-	{
-		red_on = data & 0x08;
-		do_modify_palette = 1;
-	}
+    if (red_on != (data & 0x08)) {
+        red_on = data & 0x08;
+        do_modify_palette = 1;
+    }
 
-	/* Defer changing the colors to avoid flicker */
+    /* Defer changing the colors to avoid flicker */
 }
 
-WRITE_HANDLER( tomahawk_video_control2_w )
+WRITE_HANDLER(tomahawk_video_control2_w)
 {
-	if (palette_bank == -1)
-	{
-		palette_bank = 0;
-		do_modify_palette = 1;
-	}
+    if (palette_bank == -1) {
+        palette_bank = 0;
+        do_modify_palette = 1;
+    }
 
-	if (red_on != (data & 0x08))
-	{
-		red_on = data & 0x08;
-		do_modify_palette = 1;
-	}
+    if (red_on != (data & 0x08)) {
+        red_on = data & 0x08;
+        do_modify_palette = 1;
+    }
 
-	/* Defer changing the colors to avoid flicker */
+    /* Defer changing the colors to avoid flicker */
 }
 
 
-READ_HANDLER( tomahawk_protection_r )
+READ_HANDLER(tomahawk_protection_r)
 {
-	/* flip the byte */
+    /* flip the byte */
 
-	int res = ((*tomahawk_protection & 0x01) << 7) |
-			  ((*tomahawk_protection & 0x02) << 5) |
-			  ((*tomahawk_protection & 0x04) << 3) |
-			  ((*tomahawk_protection & 0x08) << 1) |
-			  ((*tomahawk_protection & 0x10) >> 1) |
-			  ((*tomahawk_protection & 0x20) >> 3) |
-			  ((*tomahawk_protection & 0x40) >> 5) |
-			  ((*tomahawk_protection & 0x80) >> 7);
+    int res = ((*tomahawk_protection & 0x01) << 7) |
+              ((*tomahawk_protection & 0x02) << 5) |
+              ((*tomahawk_protection & 0x04) << 3) |
+              ((*tomahawk_protection & 0x08) << 1) |
+              ((*tomahawk_protection & 0x10) >> 1) |
+              ((*tomahawk_protection & 0x20) >> 3) |
+              ((*tomahawk_protection & 0x40) >> 5) |
+              ((*tomahawk_protection & 0x80) >> 7);
 
-	return res;
+    return res;
 }
 /***************************************************************************
 
@@ -233,23 +224,20 @@ READ_HANDLER( tomahawk_protection_r )
   the main emulation engine.
 
 ***************************************************************************/
-void astrof_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void astrof_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	if (do_modify_palette)
-	{
-		modify_palette();
+    if (do_modify_palette) {
+        modify_palette();
 
-		do_modify_palette = 0;
-	}
+        do_modify_palette = 0;
+    }
 
-	if (palette_recalc() || full_refresh)
-	{
-		int offs;
+    if (palette_recalc() || full_refresh) {
+        int offs;
 
-		/* redraw bitmap */
-		for (offs = 0; offs < videoram_size; offs++)
-		{
-			common_videoram_w(offs, videoram[offs], colorram[offs]);
-		}
-	}
+        /* redraw bitmap */
+        for (offs = 0; offs < videoram_size; offs++) {
+            common_videoram_w(offs, videoram[offs], colorram[offs]);
+        }
+    }
 }

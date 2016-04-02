@@ -113,115 +113,111 @@ CAVE_TILEMAP(2)
 /* 3 Layers (layer 3 is made of 8x8 tiles!) */
 int ddonpach_vh_start(void)
 {
-	tilemap_0 = tilemap_create(	get_tile_info_0,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_0 = tilemap_create(get_tile_info_0,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	tilemap_1 = tilemap_create(	get_tile_info_1,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_1 = tilemap_create(get_tile_info_1,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	/* 8x8 tiles here! */
-	tilemap_2 = tilemap_create(	get_tile_info_2,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								8,8,
-								DIM_NX*2,DIM_NY*2 );
+    /* 8x8 tiles here! */
+    tilemap_2 = tilemap_create(get_tile_info_2,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               8, 8,
+                               DIM_NX * 2, DIM_NY * 2);
 
 
-	sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA );
+    sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA);
 
-	if (tilemap_0 && tilemap_1 && tilemap_2 && sprite_list)
-	{
-		tilemap_set_scroll_rows(tilemap_0,1);
-		tilemap_set_scroll_cols(tilemap_0,1);
-		tilemap_0->transparent_pen = 0;
+    if (tilemap_0 && tilemap_1 && tilemap_2 && sprite_list) {
+        tilemap_set_scroll_rows(tilemap_0, 1);
+        tilemap_set_scroll_cols(tilemap_0, 1);
+        tilemap_0->transparent_pen = 0;
 
-		tilemap_set_scroll_rows(tilemap_1,1);
-		tilemap_set_scroll_cols(tilemap_1,1);
-		tilemap_1->transparent_pen = 0;
+        tilemap_set_scroll_rows(tilemap_1, 1);
+        tilemap_set_scroll_cols(tilemap_1, 1);
+        tilemap_1->transparent_pen = 0;
 
-		tilemap_set_scroll_rows(tilemap_2,1);
-		tilemap_set_scroll_cols(tilemap_2,1);
-		tilemap_2->transparent_pen = 0;
+        tilemap_set_scroll_rows(tilemap_2, 1);
+        tilemap_set_scroll_cols(tilemap_2, 1);
+        tilemap_2->transparent_pen = 0;
 
-		tilemap_set_scrolldx( tilemap_0, -0x6c, -0x57 );
-		tilemap_set_scrolldx( tilemap_1, -0x6d, -0x56 );
+        tilemap_set_scrolldx(tilemap_0, -0x6c, -0x57);
+        tilemap_set_scrolldx(tilemap_1, -0x6d, -0x56);
 //		tilemap_set_scrolldx( tilemap_2, -0x6e, -0x55 );
-		tilemap_set_scrolldx( tilemap_2, -0x6e -7, -0x55 +7-1 );
+        tilemap_set_scrolldx(tilemap_2, -0x6e - 7, -0x55 + 7 - 1);
 
-		tilemap_set_scrolldy( tilemap_0, -0x11, -0x100 );
-		tilemap_set_scrolldy( tilemap_1, -0x11, -0x100 );
-		tilemap_set_scrolldy( tilemap_2, -0x11, -0x100 );
+        tilemap_set_scrolldy(tilemap_0, -0x11, -0x100);
+        tilemap_set_scrolldy(tilemap_1, -0x11, -0x100);
+        tilemap_set_scrolldy(tilemap_2, -0x11, -0x100);
 
-		sprite_list->max_priority = 3;
-		sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
+        sprite_list->max_priority = 3;
+        sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
 
-		return 0;
-	}
-	else return 1;
+        return 0;
+    } else return 1;
 }
 
 /* 3 Layers (like esprade but with different scroll delta's) */
 int guwange_vh_start(void)
 {
-	tilemap_0 = tilemap_create(	get_tile_info_0,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_0 = tilemap_create(get_tile_info_0,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	tilemap_1 = tilemap_create(	get_tile_info_1,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_1 = tilemap_create(get_tile_info_1,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	tilemap_2 = tilemap_create(	get_tile_info_2,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_2 = tilemap_create(get_tile_info_2,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
 
-	sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA );
+    sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA);
 
-	if (tilemap_0 && tilemap_1 && tilemap_2 && sprite_list)
-	{
-		tilemap_set_scroll_rows(tilemap_0,1);
-		tilemap_set_scroll_cols(tilemap_0,1);
-		tilemap_0->transparent_pen = 0;
+    if (tilemap_0 && tilemap_1 && tilemap_2 && sprite_list) {
+        tilemap_set_scroll_rows(tilemap_0, 1);
+        tilemap_set_scroll_cols(tilemap_0, 1);
+        tilemap_0->transparent_pen = 0;
 
-		tilemap_set_scroll_rows(tilemap_1,1);
-		tilemap_set_scroll_cols(tilemap_1,1);
-		tilemap_1->transparent_pen = 0;
+        tilemap_set_scroll_rows(tilemap_1, 1);
+        tilemap_set_scroll_cols(tilemap_1, 1);
+        tilemap_1->transparent_pen = 0;
 
-		tilemap_set_scroll_rows(tilemap_2,1);
-		tilemap_set_scroll_cols(tilemap_2,1);
-		tilemap_2->transparent_pen = 0;
+        tilemap_set_scroll_rows(tilemap_2, 1);
+        tilemap_set_scroll_cols(tilemap_2, 1);
+        tilemap_2->transparent_pen = 0;
 
 //		tilemap_set_scrolldx( tilemap_0, -0x6c, -0x57 );
 //		tilemap_set_scrolldx( tilemap_1, -0x6d, -0x56 );
 //		tilemap_set_scrolldx( tilemap_2, -0x6e, -0x55 );
-tilemap_set_scrolldx( tilemap_0, -0x6c +2, -0x57 -2 );
-tilemap_set_scrolldx( tilemap_1, -0x6d +2, -0x56 -2 );
-tilemap_set_scrolldx( tilemap_2, -0x6e +2, -0x55 -2 );
+        tilemap_set_scrolldx(tilemap_0, -0x6c + 2, -0x57 - 2);
+        tilemap_set_scrolldx(tilemap_1, -0x6d + 2, -0x56 - 2);
+        tilemap_set_scrolldx(tilemap_2, -0x6e + 2, -0x55 - 2);
 
-		tilemap_set_scrolldy( tilemap_0, -0x11, -0x100 );
-		tilemap_set_scrolldy( tilemap_1, -0x11, -0x100 );
-		tilemap_set_scrolldy( tilemap_2, -0x11, -0x100 );
+        tilemap_set_scrolldy(tilemap_0, -0x11, -0x100);
+        tilemap_set_scrolldy(tilemap_1, -0x11, -0x100);
+        tilemap_set_scrolldy(tilemap_2, -0x11, -0x100);
 //tilemap_set_scrolldy( tilemap_2, -0x11 +8, -0x100 -8 );
 
-		sprite_list->max_priority = 3;
-		sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
+        sprite_list->max_priority = 3;
+        sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
 
-		return 0;
-	}
-	else return 1;
+        return 0;
+    } else return 1;
 }
 
 
@@ -229,55 +225,53 @@ tilemap_set_scrolldx( tilemap_2, -0x6e +2, -0x55 -2 );
 /* 3 Layers */
 int esprade_vh_start(void)
 {
-	tilemap_0 = tilemap_create(	get_tile_info_0,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_0 = tilemap_create(get_tile_info_0,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	tilemap_1 = tilemap_create(	get_tile_info_1,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_1 = tilemap_create(get_tile_info_1,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	tilemap_2 = tilemap_create(	get_tile_info_2,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_2 = tilemap_create(get_tile_info_2,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
 
-	sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA );
+    sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA);
 
-	if (tilemap_0 && tilemap_1 && tilemap_2 && sprite_list)
-	{
-		tilemap_set_scroll_rows(tilemap_0,1);
-		tilemap_set_scroll_cols(tilemap_0,1);
-		tilemap_0->transparent_pen = 0;
+    if (tilemap_0 && tilemap_1 && tilemap_2 && sprite_list) {
+        tilemap_set_scroll_rows(tilemap_0, 1);
+        tilemap_set_scroll_cols(tilemap_0, 1);
+        tilemap_0->transparent_pen = 0;
 
-		tilemap_set_scroll_rows(tilemap_1,1);
-		tilemap_set_scroll_cols(tilemap_1,1);
-		tilemap_1->transparent_pen = 0;
+        tilemap_set_scroll_rows(tilemap_1, 1);
+        tilemap_set_scroll_cols(tilemap_1, 1);
+        tilemap_1->transparent_pen = 0;
 
-		tilemap_set_scroll_rows(tilemap_2,1);
-		tilemap_set_scroll_cols(tilemap_2,1);
-		tilemap_2->transparent_pen = 0;
+        tilemap_set_scroll_rows(tilemap_2, 1);
+        tilemap_set_scroll_cols(tilemap_2, 1);
+        tilemap_2->transparent_pen = 0;
 
-		tilemap_set_scrolldx( tilemap_0, -0x6c, -0x57 );
-		tilemap_set_scrolldx( tilemap_1, -0x6d, -0x56 );
-		tilemap_set_scrolldx( tilemap_2, -0x6e, -0x55 );
+        tilemap_set_scrolldx(tilemap_0, -0x6c, -0x57);
+        tilemap_set_scrolldx(tilemap_1, -0x6d, -0x56);
+        tilemap_set_scrolldx(tilemap_2, -0x6e, -0x55);
 
-		tilemap_set_scrolldy( tilemap_0, -0x11, -0x100 );
-		tilemap_set_scrolldy( tilemap_1, -0x11, -0x100 );
-		tilemap_set_scrolldy( tilemap_2, -0x11, -0x100 );
+        tilemap_set_scrolldy(tilemap_0, -0x11, -0x100);
+        tilemap_set_scrolldy(tilemap_1, -0x11, -0x100);
+        tilemap_set_scrolldy(tilemap_2, -0x11, -0x100);
 
-		sprite_list->max_priority = 3;
-		sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
+        sprite_list->max_priority = 3;
+        sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
 
-		return 0;
-	}
-	else return 1;
+        return 0;
+    } else return 1;
 }
 
 
@@ -285,53 +279,51 @@ int esprade_vh_start(void)
 /* 2 Layers */
 int dfeveron_vh_start(void)
 {
-	tilemap_0 = tilemap_create(	get_tile_info_0,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_0 = tilemap_create(get_tile_info_0,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	tilemap_1 = tilemap_create(	get_tile_info_1,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_1 = tilemap_create(get_tile_info_1,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	tilemap_2 = 0;
+    tilemap_2 = 0;
 
-	sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA );
+    sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA);
 
-	if (tilemap_0 && tilemap_1 && sprite_list)
-	{
-		tilemap_set_scroll_rows(tilemap_0,1);
-		tilemap_set_scroll_cols(tilemap_0,1);
-		tilemap_0->transparent_pen = 0;
+    if (tilemap_0 && tilemap_1 && sprite_list) {
+        tilemap_set_scroll_rows(tilemap_0, 1);
+        tilemap_set_scroll_cols(tilemap_0, 1);
+        tilemap_0->transparent_pen = 0;
 
-		tilemap_set_scroll_rows(tilemap_1,1);
-		tilemap_set_scroll_cols(tilemap_1,1);
-		tilemap_1->transparent_pen = 0;
+        tilemap_set_scroll_rows(tilemap_1, 1);
+        tilemap_set_scroll_cols(tilemap_1, 1);
+        tilemap_1->transparent_pen = 0;
 
-/*
-	Scroll registers (on dfeveron logo screen):
-		8195	a1f7 (both)	=	200-6b	200-9	(flip off)
-		01ac	2108 (both)	=	200-54	100+8	(flip on)
-	Video registers:
-		0183	0001		=	200-7d	001		(flip off)
-		81bf	80f0		=	200-41	100-10	(flip on)
-*/
+        /*
+        	Scroll registers (on dfeveron logo screen):
+        		8195	a1f7 (both)	=	200-6b	200-9	(flip off)
+        		01ac	2108 (both)	=	200-54	100+8	(flip on)
+        	Video registers:
+        		0183	0001		=	200-7d	001		(flip off)
+        		81bf	80f0		=	200-41	100-10	(flip on)
+        */
 
-		tilemap_set_scrolldx( tilemap_0, -0x6c, -0x54 );
-		tilemap_set_scrolldx( tilemap_1, -0x6d, -0x53 );
+        tilemap_set_scrolldx(tilemap_0, -0x6c, -0x54);
+        tilemap_set_scrolldx(tilemap_1, -0x6d, -0x53);
 
-		tilemap_set_scrolldy( tilemap_0, -0x11, -0x100 );
-		tilemap_set_scrolldy( tilemap_1, -0x11, -0x100 );
+        tilemap_set_scrolldy(tilemap_0, -0x11, -0x100);
+        tilemap_set_scrolldy(tilemap_1, -0x11, -0x100);
 
-		sprite_list->max_priority = 3;
-		sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
+        sprite_list->max_priority = 3;
+        sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
 
-		return 0;
-	}
-	else return 1;
+        return 0;
+    } else return 1;
 }
 
 
@@ -339,34 +331,32 @@ int dfeveron_vh_start(void)
 /* 1 Layer */
 int uopoko_vh_start(void)
 {
-	tilemap_0 = tilemap_create(	get_tile_info_0,
-								tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,
-								DIM_NX,DIM_NY );
+    tilemap_0 = tilemap_create(get_tile_info_0,
+                               tilemap_scan_rows,
+                               TILEMAP_TRANSPARENT,
+                               16, 16,
+                               DIM_NX, DIM_NY);
 
-	tilemap_1 = 0;
+    tilemap_1 = 0;
 
-	tilemap_2 = 0;
+    tilemap_2 = 0;
 
-	sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA );
+    sprite_list = sprite_list_create(spriteram_size / 0x10 / 2, SPRITE_LIST_BACK_TO_FRONT | SPRITE_LIST_RAW_DATA);
 
-	if (tilemap_0 && sprite_list)
-	{
-		tilemap_set_scroll_rows(tilemap_0,1);
-		tilemap_set_scroll_cols(tilemap_0,1);
-		tilemap_0->transparent_pen = 0;
+    if (tilemap_0 && sprite_list) {
+        tilemap_set_scroll_rows(tilemap_0, 1);
+        tilemap_set_scroll_cols(tilemap_0, 1);
+        tilemap_0->transparent_pen = 0;
 
-		tilemap_set_scrolldx( tilemap_0, -0x6d, -0x54 );
+        tilemap_set_scrolldx(tilemap_0, -0x6d, -0x54);
 
-		tilemap_set_scrolldy( tilemap_0, -0x11, -0x100 );
+        tilemap_set_scrolldy(tilemap_0, -0x11, -0x100);
 
-		sprite_list->max_priority = 3;
-		sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
+        sprite_list->max_priority = 3;
+        sprite_list->sprite_type = SPRITE_TYPE_ZOOM;
 
-		return 0;
-	}
-	else return 1;
+        return 0;
+    } else return 1;
 }
 
 
@@ -380,34 +370,34 @@ int uopoko_vh_start(void)
 /* Function needed for games with 4 bit sprites, rather than 8 bit */
 
 
-void dfeveron_vh_init_palette(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void dfeveron_vh_init_palette(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	int color, pen;
+    int color, pen;
 
-	/* Fill the 0-3fff range, used by sprites ($40 color codes * $100 pens)
-	   Here sprites have 16 pens, but the sprite drawing routine always
-	   multiplies the color code by $100 (for consistency).
-	   That's why we need this function.	*/
+    /* Fill the 0-3fff range, used by sprites ($40 color codes * $100 pens)
+       Here sprites have 16 pens, but the sprite drawing routine always
+       multiplies the color code by $100 (for consistency).
+       That's why we need this function.	*/
 
-	for( color = 0; color < 0x40; color++ )
-		for( pen = 0; pen < 16; pen++ )
-			colortable[color * 256 + pen] = color * 16 + pen;
+    for (color = 0; color < 0x40; color++)
+        for (pen = 0; pen < 16; pen++)
+            colortable[color * 256 + pen] = color * 16 + pen;
 }
 
 
 
-void ddonpach_vh_init_palette(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void ddonpach_vh_init_palette(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	int color, pen;
+    int color, pen;
 
-	/* Fill the 8000-83ff range ($40 color codes * $10 pens) for
-	   layers 1 & 2 which are 4 bits deep rather than 8 bits deep
-	   like layer 3, but use the first 16 color of every 256 for
-	   any given color code. */
+    /* Fill the 8000-83ff range ($40 color codes * $10 pens) for
+       layers 1 & 2 which are 4 bits deep rather than 8 bits deep
+       like layer 3, but use the first 16 color of every 256 for
+       any given color code. */
 
-	for( color = 0; color < 0x40; color++ )
-		for( pen = 0; pen < 16; pen++ )
-			colortable[color * 16 + pen + 0x8000] = 0x4000 + color * 256 + pen;
+    for (color = 0; color < 0x40; color++)
+        for (pen = 0; pen < 16; pen++)
+            colortable[color * 16 + pen + 0x8000] = 0x4000 + color * 256 + pen;
 }
 
 
@@ -452,86 +442,91 @@ Offset:		Format:					Value:
 
 static void get_sprite_info(void)
 {
-	const int region				=	REGION_GFX4;
+    const int region				=	REGION_GFX4;
 
-	const unsigned short *base_pal	=	Machine->remapped_colortable + 0;
-	const unsigned char  *base_gfx	=	memory_region(region);
-	const unsigned char  *gfx_max	=	base_gfx + memory_region_length(region);
+    const unsigned short *base_pal	=	Machine->remapped_colortable + 0;
+    const unsigned char  *base_gfx	=	memory_region(region);
+    const unsigned char  *gfx_max	=	base_gfx + memory_region_length(region);
 
-	int sprite_bank					=	READ_WORD(&cave_videoregs[8]) & 1;
+    int sprite_bank					=	READ_WORD(&cave_videoregs[8]) & 1;
 
-	unsigned char *source			=	spriteram + (spriteram_size / 2) * sprite_bank;
-	struct sprite *sprite			=	sprite_list->sprite;
-	const struct sprite *finish		=	sprite + spriteram_size / 0x10 / 2;
+    unsigned char *source			=	spriteram + (spriteram_size / 2) * sprite_bank;
+    struct sprite *sprite			=	sprite_list->sprite;
+    const struct sprite *finish		=	sprite + spriteram_size / 0x10 / 2;
 
-	int	glob_flipx	=	READ_WORD(&cave_videoregs[0]) & 0x8000;
-	int	glob_flipy	=	READ_WORD(&cave_videoregs[2]) & 0x8000;
+    int	glob_flipx	=	READ_WORD(&cave_videoregs[0]) & 0x8000;
+    int	glob_flipy	=	READ_WORD(&cave_videoregs[2]) & 0x8000;
 
-	int max_x		=	Machine->drv->screen_width;
-	int max_y		=	Machine->drv->screen_height;
+    int max_x		=	Machine->drv->screen_width;
+    int max_y		=	Machine->drv->screen_height;
 
-	for (; sprite < finish; sprite++,source+=0x10 )
-	{
-		int x,y,attr,code,zoomx,zoomy,size,flipx,flipy;
-		if ( cave_spritetype == 0)	// most of the games
-		{
-			x			=		READ_WORD(&source[ 0x00 ]);
-			y			=		READ_WORD(&source[ 0x02 ]);
-			attr		=		READ_WORD(&source[ 0x04 ]);
-			code		=		READ_WORD(&source[ 0x06 ]);
-			zoomx		=		READ_WORD(&source[ 0x08 ]);
-			zoomy		=		READ_WORD(&source[ 0x0a ]);
-			size		=		READ_WORD(&source[ 0x0c ]);
-		}
-		else						// ddonpach
-		{
-			attr		=		READ_WORD(&source[ 0x00 ]);
-			code		=		READ_WORD(&source[ 0x02 ]);
-			x			=		READ_WORD(&source[ 0x04 ]) << 6;
-			y			=		READ_WORD(&source[ 0x06 ]) << 6;
-			size		=		READ_WORD(&source[ 0x08 ]);
-			zoomx		=		0x100;
-			zoomy		=		0x100;
-		}
+    for (; sprite < finish; sprite++, source += 0x10) {
+        int x, y, attr, code, zoomx, zoomy, size, flipx, flipy;
+        if (cave_spritetype == 0) {	// most of the games
+            x			=		READ_WORD(&source[ 0x00 ]);
+            y			=		READ_WORD(&source[ 0x02 ]);
+            attr		=		READ_WORD(&source[ 0x04 ]);
+            code		=		READ_WORD(&source[ 0x06 ]);
+            zoomx		=		READ_WORD(&source[ 0x08 ]);
+            zoomy		=		READ_WORD(&source[ 0x0a ]);
+            size		=		READ_WORD(&source[ 0x0c ]);
+        } else {					// ddonpach
+            attr		=		READ_WORD(&source[ 0x00 ]);
+            code		=		READ_WORD(&source[ 0x02 ]);
+            x			=		READ_WORD(&source[ 0x04 ]) << 6;
+            y			=		READ_WORD(&source[ 0x06 ]) << 6;
+            size		=		READ_WORD(&source[ 0x08 ]);
+            zoomx		=		0x100;
+            zoomy		=		0x100;
+        }
 
-		code		+=		(attr & 3) << 16;
+        code		+=	(attr & 3) << 16;
 
-		flipx		=		attr & 0x0008;
-		flipy		=		attr & 0x0004;
+        flipx		=		attr & 0x0008;
+        flipy		=		attr & 0x0004;
 
-		if (x & 0x8000)	x -= 0x10000;
-		if (y & 0x8000)	y -= 0x10000;
+        if (x & 0x8000)	x -= 0x10000;
+        if (y & 0x8000)	y -= 0x10000;
 
-		x /= 0x40;		y /= 0x40;
+        x /= 0x40;
+        y /= 0x40;
 
-		sprite->priority		=	(attr & 0x0030) >> 4;
-		sprite->flags			=	SPRITE_VISIBLE;
+        sprite->priority		=	(attr & 0x0030) >> 4;
+        sprite->flags			=	SPRITE_VISIBLE;
 
-		sprite->tile_width		=	( (size >> 8) & 0x1f ) * 16;
-		sprite->tile_height		=	( (size >> 0) & 0x1f ) * 16;
+        sprite->tile_width		=	((size >> 8) & 0x1f) * 16;
+        sprite->tile_height		=	((size >> 0) & 0x1f) * 16;
 
-		sprite->total_width		=	(sprite->tile_width  * zoomx) / 0x100;
-		sprite->total_height	=	(sprite->tile_height * zoomy) / 0x100;
+        sprite->total_width		=	(sprite->tile_width  * zoomx) / 0x100;
+        sprite->total_height	=	(sprite->tile_height * zoomy) / 0x100;
 
-		sprite->pen_data		=	base_gfx + (16*16) * code;
-		sprite->line_offset		=	sprite->tile_width;
+        sprite->pen_data		=	base_gfx + (16 * 16) * code;
+        sprite->line_offset		=	sprite->tile_width;
 
-		sprite->pal_data		=	base_pal + (attr & 0x3f00);	// first 0x4000 colors
+        sprite->pal_data		=	base_pal + (attr & 0x3f00);	// first 0x4000 colors
 
-		/* Bound checking */
-		if ((sprite->pen_data + sprite->tile_width * sprite->tile_height - 1) >= gfx_max )
-			{sprite->flags = 0;	continue;}
+        /* Bound checking */
+        if ((sprite->pen_data + sprite->tile_width * sprite->tile_height - 1) >= gfx_max) {
+            sprite->flags = 0;
+            continue;
+        }
 
-		if (glob_flipx)	{ x = max_x - x - sprite->total_width;	flipx = !flipx; }
-		if (glob_flipy)	{ y = max_y - y - sprite->total_height;	flipy = !flipy; }
+        if (glob_flipx)	{
+            x = max_x - x - sprite->total_width;
+            flipx = !flipx;
+        }
+        if (glob_flipy)	{
+            y = max_y - y - sprite->total_height;
+            flipy = !flipy;
+        }
 
-		sprite->x				=	x;
-		sprite->y				=	y;
+        sprite->x				=	x;
+        sprite->y				=	y;
 
-		if (flipx)	sprite->flags |= SPRITE_FLIPX;
-		if (flipy)	sprite->flags |= SPRITE_FLIPY;
+        if (flipx)	sprite->flags |= SPRITE_FLIPX;
+        if (flipy)	sprite->flags |= SPRITE_FLIPY;
 
-	}
+    }
 }
 
 
@@ -542,63 +537,60 @@ static void get_sprite_info(void)
 
 ***************************************************************************/
 
-void cave_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void cave_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int pri;
-	int layers_ctrl = -1;
+    int pri;
+    int layers_ctrl = -1;
 
-	int	glob_flipx	=	READ_WORD(&cave_videoregs[0]) & 0x8000;
-	int	glob_flipy	=	READ_WORD(&cave_videoregs[2]) & 0x8000;
+    int	glob_flipx	=	READ_WORD(&cave_videoregs[0]) & 0x8000;
+    int	glob_flipy	=	READ_WORD(&cave_videoregs[2]) & 0x8000;
 
-	tilemap_set_flip(ALL_TILEMAPS, (glob_flipx ? TILEMAP_FLIPX : 0) | (glob_flipy ? TILEMAP_FLIPY : 0) );
+    tilemap_set_flip(ALL_TILEMAPS, (glob_flipx ? TILEMAP_FLIPX : 0) | (glob_flipy ? TILEMAP_FLIPY : 0));
 
-	tilemap_set_enable( tilemap_0, READ_WORD(&cave_vctrl_0[4]) & 1 );
-	tilemap_set_scrollx(tilemap_0, 0, READ_WORD(&cave_vctrl_0[0]) );
-	tilemap_set_scrolly(tilemap_0, 0, READ_WORD(&cave_vctrl_0[2]) );
+    tilemap_set_enable(tilemap_0, READ_WORD(&cave_vctrl_0[4]) & 1);
+    tilemap_set_scrollx(tilemap_0, 0, READ_WORD(&cave_vctrl_0[0]));
+    tilemap_set_scrolly(tilemap_0, 0, READ_WORD(&cave_vctrl_0[2]));
 
-	if (tilemap_1)
-	{
-		tilemap_set_enable( tilemap_1, READ_WORD(&cave_vctrl_1[4]) & 1 );
-		tilemap_set_scrollx(tilemap_1, 0, READ_WORD(&cave_vctrl_1[0]) );
-		tilemap_set_scrolly(tilemap_1, 0, READ_WORD(&cave_vctrl_1[2]) );
-	}
+    if (tilemap_1) {
+        tilemap_set_enable(tilemap_1, READ_WORD(&cave_vctrl_1[4]) & 1);
+        tilemap_set_scrollx(tilemap_1, 0, READ_WORD(&cave_vctrl_1[0]));
+        tilemap_set_scrolly(tilemap_1, 0, READ_WORD(&cave_vctrl_1[2]));
+    }
 
-	if (tilemap_2)
-	{
-		tilemap_set_enable( tilemap_2, READ_WORD(&cave_vctrl_2[4]) & 1 );
-		tilemap_set_scrollx(tilemap_2, 0, READ_WORD(&cave_vctrl_2[0]) );
-		tilemap_set_scrolly(tilemap_2, 0, READ_WORD(&cave_vctrl_2[2]) );
-	}
+    if (tilemap_2) {
+        tilemap_set_enable(tilemap_2, READ_WORD(&cave_vctrl_2[4]) & 1);
+        tilemap_set_scrollx(tilemap_2, 0, READ_WORD(&cave_vctrl_2[0]));
+        tilemap_set_scrolly(tilemap_2, 0, READ_WORD(&cave_vctrl_2[2]));
+    }
 
-	tilemap_update(ALL_TILEMAPS);
+    tilemap_update(ALL_TILEMAPS);
 
-	palette_init_used_colors();
+    palette_init_used_colors();
 
-	get_sprite_info();
+    get_sprite_info();
 
-	sprite_update();
+    sprite_update();
 
-	if (palette_recalc())	tilemap_mark_all_pixels_dirty(ALL_TILEMAPS);
+    if (palette_recalc())	tilemap_mark_all_pixels_dirty(ALL_TILEMAPS);
 
-	tilemap_render(ALL_TILEMAPS);
+    tilemap_render(ALL_TILEMAPS);
 
-	/* Clear the background if at least one of layer 0's tile priorities
-	   is lacking */
+    /* Clear the background if at least one of layer 0's tile priorities
+       is lacking */
 
-	if ((layers_ctrl & 0xf) != 0xf)	osd_clearbitmap(Machine->scrbitmap);
+    if ((layers_ctrl & 0xf) != 0xf)	osd_clearbitmap(Machine->scrbitmap);
 
-	/* Pen 0 of layer 0's tiles (any priority) goes below anything else */
+    /* Pen 0 of layer 0's tiles (any priority) goes below anything else */
 
-	for ( pri = 0; pri < 4; pri++ )
-		if ((layers_ctrl&(1<<(pri+0)))&&tilemap_0)	tilemap_draw(bitmap, tilemap_0, TILEMAP_IGNORE_TRANSPARENCY | pri);
+    for (pri = 0; pri < 4; pri++)
+        if ((layers_ctrl & (1 << (pri + 0))) && tilemap_0)	tilemap_draw(bitmap, tilemap_0, TILEMAP_IGNORE_TRANSPARENCY | pri);
 
-	/* Draw the rest with transparency */
+    /* Draw the rest with transparency */
 
-	for ( pri = 0; pri < 4; pri++ )
-	{
-		if ((layers_ctrl&(1<<(pri+12))))			sprite_draw(sprite_list, pri);
-		if ((layers_ctrl&(1<<(pri+0)))&&tilemap_0)	tilemap_draw(bitmap, tilemap_0, pri);
-		if ((layers_ctrl&(1<<(pri+4)))&&tilemap_1)	tilemap_draw(bitmap, tilemap_1, pri);
-		if ((layers_ctrl&(1<<(pri+8)))&&tilemap_2)	tilemap_draw(bitmap, tilemap_2, pri);
-	}
+    for (pri = 0; pri < 4; pri++) {
+        if ((layers_ctrl & (1 << (pri + 12))))			sprite_draw(sprite_list, pri);
+        if ((layers_ctrl & (1 << (pri + 0))) && tilemap_0)	tilemap_draw(bitmap, tilemap_0, pri);
+        if ((layers_ctrl & (1 << (pri + 4))) && tilemap_1)	tilemap_draw(bitmap, tilemap_1, pri);
+        if ((layers_ctrl & (1 << (pri + 8))) && tilemap_2)	tilemap_draw(bitmap, tilemap_2, pri);
+    }
 }

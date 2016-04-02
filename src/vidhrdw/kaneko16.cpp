@@ -102,30 +102,30 @@ int kaneko16_spritetype;
 
 ***************************************************************************/
 
-WRITE_HANDLER( kaneko16_paletteram_w )
+WRITE_HANDLER(kaneko16_paletteram_w)
 {
-	/*	byte 0    	byte 1		*/
-	/*	xGGG GGRR   RRRB BBBB	*/
-	/*	x432 1043 	2104 3210	*/
+    /*	byte 0    	byte 1		*/
+    /*	xGGG GGRR   RRRB BBBB	*/
+    /*	x432 1043 	2104 3210	*/
 
-	int newword, r,g,b;
+    int newword, r, g, b;
 
-	COMBINE_WORD_MEM(&paletteram[offset], data);
+    COMBINE_WORD_MEM(&paletteram[offset], data);
 
-	newword = READ_WORD (&paletteram[offset]);
-	r = (newword >>  5) & 0x1f;
-	g = (newword >> 10) & 0x1f;
-	b = (newword >>  0) & 0x1f;
+    newword = READ_WORD(&paletteram[offset]);
+    r = (newword >>  5) & 0x1f;
+    g = (newword >> 10) & 0x1f;
+    b = (newword >>  0) & 0x1f;
 
-	palette_change_color( offset/2,	 (r * 0xFF) / 0x1F,
-									 (g * 0xFF) / 0x1F,
-									 (b * 0xFF) / 0x1F	 );
+    palette_change_color(offset / 2, (r * 0xFF) / 0x1F,
+                         (g * 0xFF) / 0x1F,
+                         (b * 0xFF) / 0x1F);
 }
 
-WRITE_HANDLER( gtmr_paletteram_w )
+WRITE_HANDLER(gtmr_paletteram_w)
 {
-	if (offset < 0x10000)	kaneko16_paletteram_w(offset, data);
-	else					COMBINE_WORD_MEM(&paletteram[offset], data);
+    if (offset < 0x10000)	kaneko16_paletteram_w(offset, data);
+    else					COMBINE_WORD_MEM(&paletteram[offset], data);
 }
 
 
@@ -155,24 +155,25 @@ Race start:
 
 */
 
-READ_HANDLER( kaneko16_screen_regs_r )
+READ_HANDLER(kaneko16_screen_regs_r)
 {
-	return READ_WORD(&kaneko16_screen_regs[offset]);
+    return READ_WORD(&kaneko16_screen_regs[offset]);
 }
 
-WRITE_HANDLER( kaneko16_screen_regs_w )
+WRITE_HANDLER(kaneko16_screen_regs_w)
 {
-	int new_data;
+    int new_data;
 
-	COMBINE_WORD_MEM(&kaneko16_screen_regs[offset],data);
-	new_data  = READ_WORD(&kaneko16_screen_regs[offset]);
+    COMBINE_WORD_MEM(&kaneko16_screen_regs[offset], data);
+    new_data  = READ_WORD(&kaneko16_screen_regs[offset]);
 
-	switch (offset)
-	{
-		case 0x00:	flipsprites = new_data & 3;	break;
-	}
+    switch (offset) {
+    case 0x00:
+        flipsprites = new_data & 3;
+        break;
+    }
 
-	//logerror("CPU #0 PC %06X : Warning, screen reg %04X <- %04X\n",cpu_get_pc(),offset,data);
+    //logerror("CPU #0 PC %06X : Warning, screen reg %04X <- %04X\n",cpu_get_pc(),offset,data);
 }
 
 
@@ -194,35 +195,35 @@ WRITE_HANDLER( kaneko16_screen_regs_w )
 
 */
 
-WRITE_HANDLER( kaneko16_layers1_regs_w )
+WRITE_HANDLER(kaneko16_layers1_regs_w)
 {
-	COMBINE_WORD_MEM(&kaneko16_layers1_regs[offset],data);
+    COMBINE_WORD_MEM(&kaneko16_layers1_regs[offset], data);
 }
 
-WRITE_HANDLER( kaneko16_layers2_regs_w )
+WRITE_HANDLER(kaneko16_layers2_regs_w)
 {
-	COMBINE_WORD_MEM(&kaneko16_layers2_regs[offset],data);
+    COMBINE_WORD_MEM(&kaneko16_layers2_regs[offset], data);
 }
 
 
 /* Select the high color background image (out of 32 in the ROMs) */
-READ_HANDLER( kaneko16_bg15_select_r )
+READ_HANDLER(kaneko16_bg15_select_r)
 {
-	return READ_WORD(&kaneko16_bg15_select[0]);
+    return READ_WORD(&kaneko16_bg15_select[0]);
 }
-WRITE_HANDLER( kaneko16_bg15_select_w )
+WRITE_HANDLER(kaneko16_bg15_select_w)
 {
-	COMBINE_WORD_MEM(&kaneko16_bg15_select[0],data);
+    COMBINE_WORD_MEM(&kaneko16_bg15_select[0], data);
 }
 
 /* ? */
-READ_HANDLER( kaneko16_bg15_reg_r )
+READ_HANDLER(kaneko16_bg15_reg_r)
 {
-	return READ_WORD(&kaneko16_bg15_reg[0]);
+    return READ_WORD(&kaneko16_bg15_reg[0]);
 }
-WRITE_HANDLER( kaneko16_bg15_reg_w )
+WRITE_HANDLER(kaneko16_bg15_reg_w)
 {
-	COMBINE_WORD_MEM(&kaneko16_bg15_reg[0],data);
+    COMBINE_WORD_MEM(&kaneko16_bg15_reg[0], data);
 }
 
 
@@ -254,22 +255,22 @@ Offset:
 
 static void get_bg_tile_info(int tile_index)
 {
-	int code_hi = READ_WORD(&kaneko16_bgram[4*tile_index + 0]);
-	int code_lo = READ_WORD(&kaneko16_bgram[4*tile_index + 2]);
-	SET_TILE_INFO(BG_GFX, code_lo,(code_hi >> 2) & 0x3f);
-	tile_info.flags 	=	TILE_FLIPXY( code_hi & 3 );
+    int code_hi = READ_WORD(&kaneko16_bgram[4 * tile_index + 0]);
+    int code_lo = READ_WORD(&kaneko16_bgram[4 * tile_index + 2]);
+    SET_TILE_INFO(BG_GFX, code_lo, (code_hi >> 2) & 0x3f);
+    tile_info.flags 	=	TILE_FLIPXY(code_hi & 3);
 }
 
-WRITE_HANDLER( kaneko16_bgram_w )
+WRITE_HANDLER(kaneko16_bgram_w)
 {
-int old_data, new_data;
+    int old_data, new_data;
 
-	old_data  = READ_WORD(&kaneko16_bgram[offset]);
-	COMBINE_WORD_MEM(&kaneko16_bgram[offset],data);
-	new_data  = READ_WORD(&kaneko16_bgram[offset]);
+    old_data  = READ_WORD(&kaneko16_bgram[offset]);
+    COMBINE_WORD_MEM(&kaneko16_bgram[offset], data);
+    new_data  = READ_WORD(&kaneko16_bgram[offset]);
 
-	if (old_data != new_data)
-		tilemap_mark_tile_dirty(bg_tilemap,offset/4);
+    if (old_data != new_data)
+        tilemap_mark_tile_dirty(bg_tilemap, offset / 4);
 }
 
 
@@ -284,38 +285,36 @@ int old_data, new_data;
 
 static void get_fg_tile_info(int tile_index)
 {
-	int code_hi = READ_WORD(&kaneko16_fgram[4*tile_index + 0]);
-	int code_lo = READ_WORD(&kaneko16_fgram[4*tile_index + 2]);
-	SET_TILE_INFO(FG_GFX, code_lo,(code_hi >> 2) & 0x3f);
-	tile_info.flags 	=	TILE_FLIPXY( code_hi & 3 );
-	tile_info.priority	=	(code_hi >> 8) & 3;
+    int code_hi = READ_WORD(&kaneko16_fgram[4 * tile_index + 0]);
+    int code_lo = READ_WORD(&kaneko16_fgram[4 * tile_index + 2]);
+    SET_TILE_INFO(FG_GFX, code_lo, (code_hi >> 2) & 0x3f);
+    tile_info.flags 	=	TILE_FLIPXY(code_hi & 3);
+    tile_info.priority	=	(code_hi >> 8) & 3;
 }
 
-WRITE_HANDLER( kaneko16_fgram_w )
+WRITE_HANDLER(kaneko16_fgram_w)
 {
-int old_data, new_data;
+    int old_data, new_data;
 
-	old_data  = READ_WORD(&kaneko16_fgram[offset]);
-	COMBINE_WORD_MEM(&kaneko16_fgram[offset],data);
-	new_data  = READ_WORD(&kaneko16_fgram[offset]);
+    old_data  = READ_WORD(&kaneko16_fgram[offset]);
+    COMBINE_WORD_MEM(&kaneko16_fgram[offset], data);
+    new_data  = READ_WORD(&kaneko16_fgram[offset]);
 
-	if (old_data != new_data)
-		tilemap_mark_tile_dirty(fg_tilemap,offset/4);
+    if (old_data != new_data)
+        tilemap_mark_tile_dirty(fg_tilemap, offset / 4);
 }
 
 
 
-WRITE_HANDLER( kaneko16_layers1_w )
+WRITE_HANDLER(kaneko16_layers1_w)
 {
-	if (offset < 0x1000)	kaneko16_fgram_w(offset,data);
-	else
-	{
-		if (offset < 0x2000)	kaneko16_bgram_w((offset-0x1000),data);
-		else
-		{
-			COMBINE_WORD_MEM(&kaneko16_fgram[offset],data);
-		}
-	}
+    if (offset < 0x1000)	kaneko16_fgram_w(offset, data);
+    else {
+        if (offset < 0x2000)	kaneko16_bgram_w((offset - 0x1000), data);
+        else {
+            COMBINE_WORD_MEM(&kaneko16_fgram[offset], data);
+        }
+    }
 }
 
 
@@ -327,55 +326,61 @@ WRITE_HANDLER( kaneko16_layers1_w )
 
 int kaneko16_vh_start(void)
 {
-	bg_tilemap = tilemap_create(get_bg_tile_info,tilemap_scan_rows,
-								TILEMAP_TRANSPARENT, /* to handle the optional hi-color bg */
-								16,16,BG_NX,BG_NY);
+    bg_tilemap = tilemap_create(get_bg_tile_info, tilemap_scan_rows,
+                                TILEMAP_TRANSPARENT, /* to handle the optional hi-color bg */
+                                16, 16, BG_NX, BG_NY);
 
-	fg_tilemap = tilemap_create(get_fg_tile_info,tilemap_scan_rows,
-								TILEMAP_TRANSPARENT,
-								16,16,FG_NX,FG_NY);
+    fg_tilemap = tilemap_create(get_fg_tile_info, tilemap_scan_rows,
+                                TILEMAP_TRANSPARENT,
+                                16, 16, FG_NX, FG_NY);
 
-	if (!bg_tilemap || !fg_tilemap)
-		return 1;
+    if (!bg_tilemap || !fg_tilemap)
+        return 1;
 
-	{
-/*
-gtmr background:
-		flipscreen off: write (x)-$33
-		[x=fetch point (e.g. scroll *left* with incresing x)]
+    {
+        /*
+        gtmr background:
+        		flipscreen off: write (x)-$33
+        		[x=fetch point (e.g. scroll *left* with incresing x)]
 
-		flipscreen on:  write (x+320)+$33
-		[x=fetch point (e.g. scroll *right* with incresing x)]
+        		flipscreen on:  write (x+320)+$33
+        		[x=fetch point (e.g. scroll *right* with incresing x)]
 
-		W = 320+$33+$33 = $1a6 = 422
+        		W = 320+$33+$33 = $1a6 = 422
 
-berlwall background:
-6940 off	1a5 << 6
-5680 on		15a << 6
-*/
-		int xdim = Machine->drv->screen_width;
-		int ydim = Machine->drv->screen_height;
-		int dx, dy;
+        berlwall background:
+        6940 off	1a5 << 6
+        5680 on		15a << 6
+        */
+        int xdim = Machine->drv->screen_width;
+        int ydim = Machine->drv->screen_height;
+        int dx, dy;
 
 //		dx   = (422 - xdim) / 2;
-		switch (xdim)
-		{
-			case 320:	dx = 0x33;	dy = 0;		break;
-			case 256:	dx = 0x5b;	dy = -8;	break;
+        switch (xdim) {
+        case 320:
+            dx = 0x33;
+            dy = 0;
+            break;
+        case 256:
+            dx = 0x5b;
+            dy = -8;
+            break;
 
-			default:	dx = dy = 0;
-		}
+        default:
+            dx = dy = 0;
+        }
 
-		tilemap_set_scrolldx( bg_tilemap, -dx,		xdim + dx -1        );
-		tilemap_set_scrolldx( fg_tilemap, -(dx+2),	xdim + (dx + 2) - 1 );
+        tilemap_set_scrolldx(bg_tilemap, -dx,		xdim + dx - 1);
+        tilemap_set_scrolldx(fg_tilemap, - (dx + 2),	xdim + (dx + 2) - 1);
 
-		tilemap_set_scrolldy( bg_tilemap, -dy,		ydim + dy -1 );
-		tilemap_set_scrolldy( fg_tilemap, -dy,		ydim + dy -1);
+        tilemap_set_scrolldy(bg_tilemap, -dy,		ydim + dy - 1);
+        tilemap_set_scrolldy(fg_tilemap, -dy,		ydim + dy - 1);
 
-		bg_tilemap->transparent_pen = 0;
-		fg_tilemap->transparent_pen = 0;
-		return 0;
-	}
+        bg_tilemap->transparent_pen = 0;
+        fg_tilemap->transparent_pen = 0;
+        return 0;
+    }
 }
 
 
@@ -383,65 +388,63 @@ berlwall background:
 
 /* Berlwall has an additional hi-color background */
 
-void berlwall_init_palette(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void berlwall_init_palette(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	int i;
+    int i;
 
-	palette += 2048 * 3;	/* first 2048 colors are dynamic */
+    palette += 2048 * 3;	/* first 2048 colors are dynamic */
 
-	/* initialize 555 RGB lookup */
-	for (i = 0; i < 32768; i++)
-	{
-		int r,g,b;
+    /* initialize 555 RGB lookup */
+    for (i = 0; i < 32768; i++) {
+        int r, g, b;
 
-		r = (i >>  5) & 0x1f;
-		g = (i >> 10) & 0x1f;
-		b = (i >>  0) & 0x1f;
+        r = (i >>  5) & 0x1f;
+        g = (i >> 10) & 0x1f;
+        b = (i >>  0) & 0x1f;
 
-		(*palette++) = (r << 3) | (r >> 2);
-		(*palette++) = (g << 3) | (g >> 2);
-		(*palette++) = (b << 3) | (b >> 2);
-	}
+        (*palette++) = (r << 3) | (r >> 2);
+        (*palette++) = (g << 3) | (g >> 2);
+        (*palette++) = (b << 3) | (b >> 2);
+    }
 }
 
 int berlwall_vh_start(void)
 {
-	int sx, x,y;
-	unsigned char *RAM	=	memory_region(REGION_GFX3);
+    int sx, x, y;
+    unsigned char *RAM	=	memory_region(REGION_GFX3);
 
-	/* Render the hi-color static backgrounds held in the ROMs */
+    /* Render the hi-color static backgrounds held in the ROMs */
 
-	if ((kaneko16_bg15_bitmap = bitmap_alloc_depth(256 * 32, 256 * 1, 16)) == 0)
-		return 1;
+    if ((kaneko16_bg15_bitmap = bitmap_alloc_depth(256 * 32, 256 * 1, 16)) == 0)
+        return 1;
 
-/*
-	8aba is used as background color
-	8aba/2 = 455d = 10001 01010 11101 = $11 $0a $1d
-*/
+    /*
+    	8aba is used as background color
+    	8aba/2 = 455d = 10001 01010 11101 = $11 $0a $1d
+    */
 
-	for (sx = 0 ; sx < 32 ; sx++)	// horizontal screens
-	 for (x = 0 ; x < 256 ; x++)	// horizontal pixels
-	  for (y = 0 ; y < 256 ; y++)	// vertical pixels
-	  {
-			int addr  = sx * (256 * 256) + x + y * 256;
+    for (sx = 0 ; sx < 32 ; sx++)	// horizontal screens
+        for (x = 0 ; x < 256 ; x++)	// horizontal pixels
+            for (y = 0 ; y < 256 ; y++) {	// vertical pixels
+                int addr  = sx * (256 * 256) + x + y * 256;
 
-			int color = ( RAM[addr * 2 + 0] * 256 + RAM[addr * 2 + 1] ) >> 1;
+                int color = (RAM[addr * 2 + 0] * 256 + RAM[addr * 2 + 1]) >> 1;
 //				color ^= (0x8aba/2);
 
-			plot_pixel( kaneko16_bg15_bitmap,
-						sx * 256 + x, y,
-						Machine->pens[2048 + color] );
-	  }
+                plot_pixel(kaneko16_bg15_bitmap,
+                           sx * 256 + x, y,
+                           Machine->pens[2048 + color]);
+            }
 
-	return kaneko16_vh_start();
+    return kaneko16_vh_start();
 }
 
 void berlwall_vh_stop(void)
 {
-	if (kaneko16_bg15_bitmap)
-		bitmap_free(kaneko16_bg15_bitmap);
+    if (kaneko16_bg15_bitmap)
+        bitmap_free(kaneko16_bg15_bitmap);
 
-	kaneko16_bg15_bitmap = 0;	// multisession safety
+    kaneko16_bg15_bitmap = 0;	// multisession safety
 }
 
 
@@ -500,58 +503,68 @@ Note:
 
 void kaneko16_mark_sprites_colors(void)
 {
-	int offs,inc;
+    int offs, inc;
 
-	int xmin = Machine->visible_area.min_x - (16 - 1);
-	int xmax = Machine->visible_area.max_x;
-	int ymin = Machine->visible_area.min_y - (16 - 1);
-	int ymax = Machine->visible_area.max_y;
+    int xmin = Machine->visible_area.min_x - (16 - 1);
+    int xmax = Machine->visible_area.max_x;
+    int ymin = Machine->visible_area.min_y - (16 - 1);
+    int ymax = Machine->visible_area.max_y;
 
-	int nmax				=	Machine->gfx[0]->total_elements;
-	int color_granularity	=	Machine->gfx[0]->color_granularity;
-	int color_codes_start	=	Machine->drv->gfxdecodeinfo[0].color_codes_start;
-	int total_color_codes	=	Machine->drv->gfxdecodeinfo[0].total_color_codes;
+    int nmax				=	Machine->gfx[0]->total_elements;
+    int color_granularity	=	Machine->gfx[0]->color_granularity;
+    int color_codes_start	=	Machine->drv->gfxdecodeinfo[0].color_codes_start;
+    int total_color_codes	=	Machine->drv->gfxdecodeinfo[0].total_color_codes;
 
-	int sx = 0;
-	int sy = 0;
-	int scode = 0;
-	int scolor = 0;
+    int sx = 0;
+    int sy = 0;
+    int scode = 0;
+    int scolor = 0;
 
-	switch (kaneko16_spritetype)
-	{
-		case 2:		offs = 8; inc = 16;	break;
-		default:	offs = 0; inc = 8;	break;
-	}
+    switch (kaneko16_spritetype) {
+    case 2:
+        offs = 8;
+        inc = 16;
+        break;
+    default:
+        offs = 0;
+        inc = 8;
+        break;
+    }
 
-	for ( ;  offs < spriteram_size ; offs += inc)
-	{
-		int	attr	=	READ_WORD(&spriteram[offs + 0]);
-		int	code	=	READ_WORD(&spriteram[offs + 2]) % nmax;
-		int	x		=	READ_WORD(&spriteram[offs + 4]);
-		int	y		=	READ_WORD(&spriteram[offs + 6]);
+    for (;  offs < spriteram_size ; offs += inc) {
+        int	attr	=	READ_WORD(&spriteram[offs + 0]);
+        int	code	=	READ_WORD(&spriteram[offs + 2]) % nmax;
+        int	x		=	READ_WORD(&spriteram[offs + 4]);
+        int	y		=	READ_WORD(&spriteram[offs + 6]);
 
-		/* Map the attribute word to that of the type 1 sprite hardware */
-		MAP_TO_TYPE1(attr)
+        /* Map the attribute word to that of the type 1 sprite hardware */
+        MAP_TO_TYPE1(attr)
 
-		if (x & 0x8000)	x -= 0x10000;
-		if (y & 0x8000)	y -= 0x10000;
+        if (x & 0x8000)	x -= 0x10000;
+        if (y & 0x8000)	y -= 0x10000;
 
-		x /= 0x40;		y /= 0x40;
+        x /= 0x40;
+        y /= 0x40;
 
-		if (attr & 0x8000)		scode++;
-		else					scode = code;
+        if (attr & 0x8000)		scode++;
+        else					scode = code;
 
-		if (!(attr & 0x4000))	scolor = attr % total_color_codes;
+        if (!(attr & 0x4000))	scolor = attr % total_color_codes;
 
-		if (attr & 0x2000)		{ sx += x;	sy += y; }
-		else					{ sx  = x;	sy  = y; }
+        if (attr & 0x2000)		{
+            sx += x;
+            sy += y;
+        } else					{
+            sx  = x;
+            sy  = y;
+        }
 
-		/* Visibility check. No need to account for sprites flipping */
-		if ((sx < xmin) || (sx > xmax))	continue;
-		if ((sy < ymin) || (sy > ymax))	continue;
+        /* Visibility check. No need to account for sprites flipping */
+        if ((sx < xmin) || (sx > xmax))	continue;
+        if ((sy < ymin) || (sy > ymax))	continue;
 
-		memset(&palette_used_colors[color_granularity * scolor + color_codes_start + 1],PALETTE_COLOR_USED,color_granularity - 1);
-	}
+        memset(&palette_used_colors[color_granularity * scolor + color_codes_start + 1], PALETTE_COLOR_USED, color_granularity - 1);
+    }
 
 }
 
@@ -561,69 +574,91 @@ void kaneko16_mark_sprites_colors(void)
 
 void kaneko16_draw_sprites(struct osd_bitmap *bitmap, int priority)
 {
-	int offs,inc;
+    int offs, inc;
 
-	int max_x	=	Machine->drv->screen_width  - 16;
-	int max_y	=	Machine->drv->screen_height - 16;
+    int max_x	=	Machine->drv->screen_width  - 16;
+    int max_y	=	Machine->drv->screen_height - 16;
 
-	int sx = 0;
-	int sy = 0;
-	int scode = 0;
-	int sattr = 0;
-	int sflipx = 0;
-	int sflipy = 0;
+    int sx = 0;
+    int sy = 0;
+    int scode = 0;
+    int sattr = 0;
+    int sflipx = 0;
+    int sflipy = 0;
 
-	priority = ( priority & 3 ) << 6;
+    priority = (priority & 3) << 6;
 
-	switch (kaneko16_spritetype)
-	{
-		case 2:		offs = 8; inc = 16;	break;
-		default:	offs = 0; inc = 8;	break;
-	}
+    switch (kaneko16_spritetype) {
+    case 2:
+        offs = 8;
+        inc = 16;
+        break;
+    default:
+        offs = 0;
+        inc = 8;
+        break;
+    }
 
-	for ( ;  offs < spriteram_size ; offs += inc)
-	{
-		int	attr	=	READ_WORD(&spriteram[offs + 0]);
-		int	code	=	READ_WORD(&spriteram[offs + 2]);
-		int	x		=	READ_WORD(&spriteram[offs + 4]);
-		int	y		=	READ_WORD(&spriteram[offs + 6]);
+    for (;  offs < spriteram_size ; offs += inc) {
+        int	attr	=	READ_WORD(&spriteram[offs + 0]);
+        int	code	=	READ_WORD(&spriteram[offs + 2]);
+        int	x		=	READ_WORD(&spriteram[offs + 4]);
+        int	y		=	READ_WORD(&spriteram[offs + 6]);
 
-		/* Map the attribute word to that of the type 1 sprite hardware */
-		MAP_TO_TYPE1(attr)
+        /* Map the attribute word to that of the type 1 sprite hardware */
+        MAP_TO_TYPE1(attr)
 
-		if (x & 0x8000)	x -= 0x10000;
-		if (y & 0x8000)	y -= 0x10000;
+        if (x & 0x8000)	x -= 0x10000;
+        if (y & 0x8000)	y -= 0x10000;
 
-		x /= 0x40;		y /= 0x40;
+        x /= 0x40;
+        y /= 0x40;
 
-		if (attr & 0x8000)		scode++;
-		else					scode = code;
+        if (attr & 0x8000)		scode++;
+        else					scode = code;
 
-		if (!(attr & 0x4000))
-		{
-			sattr  = attr;
-			sflipx = attr & 0x200;	sflipy = attr & 0x100;
-		}
+        if (!(attr & 0x4000)) {
+            sattr  = attr;
+            sflipx = attr & 0x200;
+            sflipy = attr & 0x100;
+        }
 
-		if (attr & 0x2000)		{ sx += x;	sy += y; }
-		else					{ sx  = x;	sy  = y; }
+        if (attr & 0x2000)		{
+            sx += x;
+            sy += y;
+        } else					{
+            sx  = x;
+            sy  = y;
+        }
 
-		if ((sattr & 0xc0) != priority)	continue;
+        if ((sattr & 0xc0) != priority)	continue;
 
-		if (flipsprites & 2) { sx = max_x - sx;		sflipx = !sflipx; }
-		if (flipsprites & 1) { sy = max_y - sy;		sflipy = !sflipy; }
+        if (flipsprites & 2) {
+            sx = max_x - sx;
+            sflipx = !sflipx;
+        }
+        if (flipsprites & 1) {
+            sy = max_y - sy;
+            sflipy = !sflipy;
+        }
 
-		drawgfx(bitmap,Machine->gfx[1],
-				scode,
-				sattr,
-				sflipx, sflipy,
-				sx,sy,
-				&Machine->visible_area,TRANSPARENCY_PEN,0);
+        drawgfx(bitmap, Machine->gfx[1],
+                scode,
+                sattr,
+                sflipx, sflipy,
+                sx, sy,
+                &Machine->visible_area, TRANSPARENCY_PEN, 0);
 
-		/* let's get back to normal to support multi sprites */
-		if (flipsprites & 2) { sx = max_x - sx;		sflipx = !sflipx; }
-		if (flipsprites & 1) { sy = max_y - sy;		sflipy = !sflipy; }
-	}
+        /* let's get back to normal to support multi sprites */
+        if (flipsprites & 2) {
+            sx = max_x - sx;
+            sflipx = !sflipx;
+        }
+        if (flipsprites & 1) {
+            sy = max_y - sy;
+            sflipy = !sflipy;
+        }
+    }
 
 }
 
@@ -638,81 +673,80 @@ void kaneko16_draw_sprites(struct osd_bitmap *bitmap, int priority)
 
 ***************************************************************************/
 
-void kaneko16_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void kaneko16_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int flag;
-	int layers_ctrl = -1;
-	int layers_flip = READ_WORD(&kaneko16_layers1_regs[0x08]);
+    int flag;
+    int layers_ctrl = -1;
+    int layers_flip = READ_WORD(&kaneko16_layers1_regs[0x08]);
 
-	tilemap_set_flip(fg_tilemap,((layers_flip & 0x0001) ? TILEMAP_FLIPY : 0) |
-								((layers_flip & 0x0002) ? TILEMAP_FLIPX : 0) );
+    tilemap_set_flip(fg_tilemap, ((layers_flip & 0x0001) ? TILEMAP_FLIPY : 0) |
+                     ((layers_flip & 0x0002) ? TILEMAP_FLIPX : 0));
 
-	tilemap_set_flip(bg_tilemap,((layers_flip & 0x0100) ? TILEMAP_FLIPY : 0) |
-								((layers_flip & 0x0200) ? TILEMAP_FLIPX : 0) );
+    tilemap_set_flip(bg_tilemap, ((layers_flip & 0x0100) ? TILEMAP_FLIPY : 0) |
+                     ((layers_flip & 0x0200) ? TILEMAP_FLIPX : 0));
 
-	tilemap_set_scrollx(fg_tilemap, 0, READ_WORD(&kaneko16_layers1_regs[0x00]) >> 6 );
-	tilemap_set_scrolly(fg_tilemap, 0, READ_WORD(&kaneko16_layers1_regs[0x02]) >> 6 );
+    tilemap_set_scrollx(fg_tilemap, 0, READ_WORD(&kaneko16_layers1_regs[0x00]) >> 6);
+    tilemap_set_scrolly(fg_tilemap, 0, READ_WORD(&kaneko16_layers1_regs[0x02]) >> 6);
 
-	tilemap_set_scrollx(bg_tilemap, 0, READ_WORD(&kaneko16_layers1_regs[0x04]) >> 6 );
-	tilemap_set_scrolly(bg_tilemap, 0, READ_WORD(&kaneko16_layers1_regs[0x06]) >> 6 );
+    tilemap_set_scrollx(bg_tilemap, 0, READ_WORD(&kaneko16_layers1_regs[0x04]) >> 6);
+    tilemap_set_scrolly(bg_tilemap, 0, READ_WORD(&kaneko16_layers1_regs[0x06]) >> 6);
 
-	tilemap_update(ALL_TILEMAPS);
+    tilemap_update(ALL_TILEMAPS);
 
-	palette_init_used_colors();
+    palette_init_used_colors();
 
-	kaneko16_mark_sprites_colors();
+    kaneko16_mark_sprites_colors();
 
-	if (palette_recalc())	tilemap_mark_all_pixels_dirty(ALL_TILEMAPS);
+    if (palette_recalc())	tilemap_mark_all_pixels_dirty(ALL_TILEMAPS);
 
-	tilemap_render(ALL_TILEMAPS);
+    tilemap_render(ALL_TILEMAPS);
 
-	flag = TILEMAP_IGNORE_TRANSPARENCY;
-	if (kaneko16_bg15_bitmap)
-	{
-/*
-	firstscreen	?				(hw: b8,00/06/7/8/9(c8). 202872 = 0880)
-	press start	?				(hw: 80-d0,0a. 202872 = 0880)
-	teaching	?				(hw: e0,1f. 202872 = 0880 )
-	hiscores	!rom5,scr1($9)	(hw: b0,1f. 202872 = )
-	lev1-1		rom6,scr2($12)	(hw: cc,0e. 202872 = 0880)
-	lev2-1		?				(hw: a7,01. 202872 = 0880)
-	lev2-2		rom6,scr1($11)	(hw: b0,0f. 202872 = 0880)
-	lev2-4		rom6,scr0($10)	(hw: b2,10. 202872 = 0880)
-	lev2-6?		rom5,scr7($f)	(hw: c0,11. 202872 = 0880)
-	lev4-2		rom5,scr6($e)	(hw: d3,12. 202872 = 0880)
-	redcross	?				(hw: d0,0a. 202872 = )
-*/
-		int select	=	READ_WORD(&kaneko16_bg15_select[0]);
+    flag = TILEMAP_IGNORE_TRANSPARENCY;
+    if (kaneko16_bg15_bitmap) {
+        /*
+        	firstscreen	?				(hw: b8,00/06/7/8/9(c8). 202872 = 0880)
+        	press start	?				(hw: 80-d0,0a. 202872 = 0880)
+        	teaching	?				(hw: e0,1f. 202872 = 0880 )
+        	hiscores	!rom5,scr1($9)	(hw: b0,1f. 202872 = )
+        	lev1-1		rom6,scr2($12)	(hw: cc,0e. 202872 = 0880)
+        	lev2-1		?				(hw: a7,01. 202872 = 0880)
+        	lev2-2		rom6,scr1($11)	(hw: b0,0f. 202872 = 0880)
+        	lev2-4		rom6,scr0($10)	(hw: b2,10. 202872 = 0880)
+        	lev2-6?		rom5,scr7($f)	(hw: c0,11. 202872 = 0880)
+        	lev4-2		rom5,scr6($e)	(hw: d3,12. 202872 = 0880)
+        	redcross	?				(hw: d0,0a. 202872 = )
+        */
+        int select	=	READ_WORD(&kaneko16_bg15_select[0]);
 //		int reg		=	READ_WORD(&kaneko16_bg15_reg[0]);
-		int flip	=	select & 0x20;
-		int sx, sy;
+        int flip	=	select & 0x20;
+        int sx, sy;
 
-		if (flip)	select ^= 0x1f;
+        if (flip)	select ^= 0x1f;
 
-		sx		=	(select & 0x1f) * 256;
-		sy		=	0;
+        sx		=	(select & 0x1f) * 256;
+        sy		=	0;
 
-		copybitmap(
-			bitmap, kaneko16_bg15_bitmap,
-			flip, flip,
-			-sx, -sy,
-			&Machine->visible_area, TRANSPARENCY_NONE,0 );
+        copybitmap(
+            bitmap, kaneko16_bg15_bitmap,
+            flip, flip,
+            -sx, -sy,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
 
-		flag = 0;
-	}
+        flag = 0;
+    }
 
-	if (layers_ctrl & 0x01)	tilemap_draw(bitmap, bg_tilemap, flag);
-	else					osd_clearbitmap(Machine->scrbitmap);
+    if (layers_ctrl & 0x01)	tilemap_draw(bitmap, bg_tilemap, flag);
+    else					osd_clearbitmap(Machine->scrbitmap);
 
-	if (layers_ctrl & 0x02)	tilemap_draw(bitmap, fg_tilemap, 0);
-	if (layers_ctrl & 0x08)	kaneko16_draw_sprites(bitmap,0);
+    if (layers_ctrl & 0x02)	tilemap_draw(bitmap, fg_tilemap, 0);
+    if (layers_ctrl & 0x08)	kaneko16_draw_sprites(bitmap, 0);
 
-	if (layers_ctrl & 0x04)	tilemap_draw(bitmap, fg_tilemap, 1);
-	if (layers_ctrl & 0x08)	kaneko16_draw_sprites(bitmap,1);
+    if (layers_ctrl & 0x04)	tilemap_draw(bitmap, fg_tilemap, 1);
+    if (layers_ctrl & 0x08)	kaneko16_draw_sprites(bitmap, 1);
 
-	if (layers_ctrl & 0x10)	tilemap_draw(bitmap, fg_tilemap, 2);
-	if (layers_ctrl & 0x08)	kaneko16_draw_sprites(bitmap,2);
+    if (layers_ctrl & 0x10)	tilemap_draw(bitmap, fg_tilemap, 2);
+    if (layers_ctrl & 0x08)	kaneko16_draw_sprites(bitmap, 2);
 
-	if (layers_ctrl & 0x20)	tilemap_draw(bitmap, fg_tilemap, 3);
-	if (layers_ctrl & 0x08)	kaneko16_draw_sprites(bitmap,3);
+    if (layers_ctrl & 0x20)	tilemap_draw(bitmap, fg_tilemap, 3);
+    if (layers_ctrl & 0x08)	kaneko16_draw_sprites(bitmap, 3);
 }

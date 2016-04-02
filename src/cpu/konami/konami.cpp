@@ -49,21 +49,20 @@
 #endif
 
 /* Konami Registers */
-typedef struct
-{
-	PAIR	pc; 		/* Program counter */
+typedef struct {
+    PAIR	pc; 		/* Program counter */
     PAIR    ppc;        /* Previous program counter */
     PAIR    d;          /* Accumulator a and b */
     PAIR    dp;         /* Direct Page register (page in MSB) */
-	PAIR	u, s;		/* Stack pointers */
-	PAIR	x, y;		/* Index registers */
+    PAIR	u, s;		/* Stack pointers */
+    PAIR	x, y;		/* Index registers */
     UINT8   cc;
-	UINT8	ireg;		/* first opcode */
+    UINT8	ireg;		/* first opcode */
     UINT8   irq_state[2];
     int     extra_cycles; /* cycles used up by interrupts */
-    int     (*irq_callback)(int irqline);
+    int (*irq_callback)(int irqline);
     UINT8   int_state;  /* SYNC and CWAI flags */
-	UINT8	nmi_state;
+    UINT8	nmi_state;
 } konami_Regs;
 
 /* flag bits in the cc register */
@@ -168,9 +167,9 @@ static PAIR ea;         /* effective address */
 	}
 
 /* public globals */
-int konami_ICount=50000;
+int konami_ICount = 50000;
 int konami_Flags;	/* flags for speed optimization (obsolete!!) */
-void (*konami_cpu_setlines_callback)( int lines ) = 0; /* callback called when A16-A23 are set */
+void (*konami_cpu_setlines_callback)(int lines) = 0;      /* callback called when A16-A23 are set */
 
 /* these are re-defined in konami.h TO RAM, ROM or functions in memory.c */
 #define RM(Addr)			KONAMI_RDMEM(Addr)
@@ -214,43 +213,43 @@ void (*konami_cpu_setlines_callback)( int lines ) = 0; /* callback called when A
 #define SET_V8(a,b,r)	CC|=(((a^b^r^(r>>1))&0x80)>>6)
 #define SET_V16(a,b,r)	CC|=(((a^b^r^(r>>1))&0x8000)>>14)
 
-static UINT8 flags8i[256]=	 /* increment */
+static UINT8 flags8i[256] =	 /* increment */
 {
-CC_Z,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-CC_N|CC_V,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N
+    CC_Z, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    CC_N | CC_V, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N
 };
-static UINT8 flags8d[256]= /* decrement */
+static UINT8 flags8d[256] = /* decrement */
 {
-CC_Z,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,CC_V,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N
+    CC_Z, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, CC_V,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N,
+    CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N, CC_N
 };
 #define SET_FLAGS8I(a)		{CC|=flags8i[(a)&0xff];}
 #define SET_FLAGS8D(a)		{CC|=flags8d[(a)&0xff];}
@@ -333,37 +332,36 @@ CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N
 }
 
 /* opcode timings */
-static UINT8 cycles1[] =
-{
-	/*	 0	1  2  3  4	5  6  7  8	9  A  B  C	D  E  F */
-  /*0*/  1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 5, 5, 5, 5,
-  /*1*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-  /*2*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-  /*3*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 7, 6,
-  /*4*/  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 3, 3, 4, 4,
-  /*5*/  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 1, 1, 1,
-  /*6*/  3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5,
-  /*7*/  3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5,
-  /*8*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5,
-  /*9*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6,
-  /*A*/  2, 2, 2, 4, 4, 4, 4, 4, 2, 2, 2, 2, 3, 3, 2, 1,
-  /*B*/  3, 2, 2,11,22,11, 2, 4, 3, 3, 3, 3, 3, 3, 3, 3,
-  /*C*/  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 3, 2,
-  /*D*/  2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  /*E*/  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  /*F*/  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+static UINT8 cycles1[] = {
+    /*	 0	1  2  3  4	5  6  7  8	9  A  B  C	D  E  F */
+    /*0*/  1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 5, 5, 5, 5,
+    /*1*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    /*2*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    /*3*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 7, 6,
+    /*4*/  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 3, 3, 4, 4,
+    /*5*/  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 1, 1, 1,
+    /*6*/  3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5,
+    /*7*/  3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5,
+    /*8*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5,
+    /*9*/  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6,
+    /*A*/  2, 2, 2, 4, 4, 4, 4, 4, 2, 2, 2, 2, 3, 3, 2, 1,
+    /*B*/  3, 2, 2, 11, 22, 11, 2, 4, 3, 3, 3, 3, 3, 3, 3, 3,
+    /*C*/  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 3, 2,
+    /*D*/  2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    /*E*/  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    /*F*/  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
-INLINE UINT32 RM16( UINT32 Addr )
+INLINE UINT32 RM16(UINT32 Addr)
 {
-	UINT32 result = RM(Addr) << 8;
-	return result | RM((Addr+1)&0xffff);
+    UINT32 result = RM(Addr) << 8;
+    return result | RM((Addr + 1) & 0xffff);
 }
 
-INLINE void WM16( UINT32 Addr, PAIR *p )
+INLINE void WM16(UINT32 Addr, PAIR *p)
 {
-	WM( Addr, p->b.h );
-	WM( (Addr+1)&0xffff, p->b.l );
+    WM(Addr, p->b.h);
+    WM((Addr + 1) & 0xffff, p->b.l);
 }
 
 /****************************************************************************
@@ -371,9 +369,9 @@ INLINE void WM16( UINT32 Addr, PAIR *p )
  ****************************************************************************/
 unsigned konami_get_context(void *dst)
 {
-	if( dst )
-		*(konami_Regs*)dst = konami;
-	return sizeof(konami_Regs);
+    if (dst)
+        * (konami_Regs*) dst = konami;
+    return sizeof(konami_Regs);
 }
 
 /****************************************************************************
@@ -381,8 +379,8 @@ unsigned konami_get_context(void *dst)
  ****************************************************************************/
 void konami_set_context(void *src)
 {
-	if( src )
-		konami = *(konami_Regs*)src;
+    if (src)
+        konami = * (konami_Regs*) src;
     change_pc(PC);    /* TS 971002 */
 
     CHECK_IRQ_LINES;
@@ -393,7 +391,7 @@ void konami_set_context(void *src)
  ****************************************************************************/
 unsigned konami_get_pc(void)
 {
-	return PC;
+    return PC;
 }
 
 
@@ -402,8 +400,8 @@ unsigned konami_get_pc(void)
  ****************************************************************************/
 void konami_set_pc(unsigned val)
 {
-	PC = val;
-	change_pc(PC);
+    PC = val;
+    change_pc(PC);
 }
 
 
@@ -412,7 +410,7 @@ void konami_set_pc(unsigned val)
  ****************************************************************************/
 unsigned konami_get_sp(void)
 {
-	return S;
+    return S;
 }
 
 
@@ -421,7 +419,7 @@ unsigned konami_get_sp(void)
  ****************************************************************************/
 void konami_set_sp(unsigned val)
 {
-	S = val;
+    S = val;
 }
 
 
@@ -430,30 +428,41 @@ void konami_set_sp(unsigned val)
 /****************************************************************************/
 unsigned konami_get_reg(int regnum)
 {
-	switch( regnum )
-	{
-		case KONAMI_PC: return PC;
-		case KONAMI_S: return S;
-		case KONAMI_CC: return CC;
-		case KONAMI_U: return U;
-		case KONAMI_A: return A;
-		case KONAMI_B: return B;
-		case KONAMI_X: return X;
-		case KONAMI_Y: return Y;
-		case KONAMI_DP: return DP;
-		case KONAMI_NMI_STATE: return konami.nmi_state;
-		case KONAMI_IRQ_STATE: return konami.irq_state[KONAMI_IRQ_LINE];
-		case KONAMI_FIRQ_STATE: return konami.irq_state[KONAMI_FIRQ_LINE];
-		case REG_PREVIOUSPC: return PPC;
-		default:
-			if( regnum <= REG_SP_CONTENTS )
-			{
-				unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
-				if( offset < 0xffff )
-					return ( RM( offset ) << 8 ) | RM( offset + 1 );
-			}
-	}
-	return 0;
+    switch (regnum) {
+    case KONAMI_PC:
+        return PC;
+    case KONAMI_S:
+        return S;
+    case KONAMI_CC:
+        return CC;
+    case KONAMI_U:
+        return U;
+    case KONAMI_A:
+        return A;
+    case KONAMI_B:
+        return B;
+    case KONAMI_X:
+        return X;
+    case KONAMI_Y:
+        return Y;
+    case KONAMI_DP:
+        return DP;
+    case KONAMI_NMI_STATE:
+        return konami.nmi_state;
+    case KONAMI_IRQ_STATE:
+        return konami.irq_state[KONAMI_IRQ_LINE];
+    case KONAMI_FIRQ_STATE:
+        return konami.irq_state[KONAMI_FIRQ_LINE];
+    case REG_PREVIOUSPC:
+        return PPC;
+    default:
+        if (regnum <= REG_SP_CONTENTS) {
+            unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
+            if (offset < 0xffff)
+                return (RM(offset) << 8) | RM(offset + 1);
+        }
+    }
+    return 0;
 }
 
 
@@ -462,30 +471,53 @@ unsigned konami_get_reg(int regnum)
 /****************************************************************************/
 void konami_set_reg(int regnum, unsigned val)
 {
-	switch( regnum )
-	{
-		case KONAMI_PC: PC = val; change_pc(PC); break;
-		case KONAMI_S: S = val; break;
-		case KONAMI_CC: CC = val; CHECK_IRQ_LINES; break;
-		case KONAMI_U: U = val; break;
-		case KONAMI_A: A = val; break;
-		case KONAMI_B: B = val; break;
-		case KONAMI_X: X = val; break;
-		case KONAMI_Y: Y = val; break;
-		case KONAMI_DP: DP = val; break;
-		case KONAMI_NMI_STATE: konami.nmi_state = val; break;
-		case KONAMI_IRQ_STATE: konami.irq_state[KONAMI_IRQ_LINE] = val; break;
-		case KONAMI_FIRQ_STATE: konami.irq_state[KONAMI_FIRQ_LINE] = val; break;
-		default:
-			if( regnum <= REG_SP_CONTENTS )
-			{
-				unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
-				if( offset < 0xffff )
-				{
-					WM( offset, (val >> 8) & 0xff );
-					WM( offset+1, val & 0xff );
-				}
-			}
+    switch (regnum) {
+    case KONAMI_PC:
+        PC = val;
+        change_pc(PC);
+        break;
+    case KONAMI_S:
+        S = val;
+        break;
+    case KONAMI_CC:
+        CC = val;
+        CHECK_IRQ_LINES;
+        break;
+    case KONAMI_U:
+        U = val;
+        break;
+    case KONAMI_A:
+        A = val;
+        break;
+    case KONAMI_B:
+        B = val;
+        break;
+    case KONAMI_X:
+        X = val;
+        break;
+    case KONAMI_Y:
+        Y = val;
+        break;
+    case KONAMI_DP:
+        DP = val;
+        break;
+    case KONAMI_NMI_STATE:
+        konami.nmi_state = val;
+        break;
+    case KONAMI_IRQ_STATE:
+        konami.irq_state[KONAMI_IRQ_LINE] = val;
+        break;
+    case KONAMI_FIRQ_STATE:
+        konami.irq_state[KONAMI_FIRQ_LINE] = val;
+        break;
+    default:
+        if (regnum <= REG_SP_CONTENTS) {
+            unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
+            if (offset < 0xffff) {
+                WM(offset, (val >> 8) & 0xff);
+                WM(offset + 1, val & 0xff);
+            }
+        }
     }
 }
 
@@ -495,24 +527,24 @@ void konami_set_reg(int regnum, unsigned val)
 /****************************************************************************/
 void konami_reset(void *param)
 {
-	konami.int_state = 0;
-	konami.nmi_state = CLEAR_LINE;
-	konami.irq_state[0] = CLEAR_LINE;
-	konami.irq_state[0] = CLEAR_LINE;
+    konami.int_state = 0;
+    konami.nmi_state = CLEAR_LINE;
+    konami.irq_state[0] = CLEAR_LINE;
+    konami.irq_state[0] = CLEAR_LINE;
 
-	DPD = 0;			/* Reset direct page register */
+    DPD = 0;			/* Reset direct page register */
 
     CC |= CC_II;        /* IRQ disabled */
     CC |= CC_IF;        /* FIRQ disabled */
 
-	PCD = RM16(0xfffe);
+    PCD = RM16(0xfffe);
     change_pc(PC);    /* TS 971002 */
 }
 
 void konami_exit(void)
 {
-	/* just make sure we deinit this, so the next game set its own */
-	konami_cpu_setlines_callback = 0;
+    /* just make sure we deinit this, so the next game set its own */
+    konami_cpu_setlines_callback = 0;
 }
 
 /* Generate interrupts */
@@ -521,37 +553,34 @@ void konami_exit(void)
  ****************************************************************************/
 void konami_set_nmi_line(int state)
 {
-	if (konami.nmi_state == state) return;
-	konami.nmi_state = state;
-	LOG(("KONAMI#%d set_nmi_line %d\n", cpu_getactivecpu(), state));
-	if( state == CLEAR_LINE ) return;
+    if (konami.nmi_state == state) return;
+    konami.nmi_state = state;
+    LOG(("KONAMI#%d set_nmi_line %d\n", cpu_getactivecpu(), state));
+    if (state == CLEAR_LINE) return;
 
-	/* if the stack was not yet initialized */
-    if( !(konami.int_state & KONAMI_LDS) ) return;
+    /* if the stack was not yet initialized */
+    if (!(konami.int_state & KONAMI_LDS)) return;
 
     konami.int_state &= ~KONAMI_SYNC;
-	/* state already saved by CWAI? */
-	if( konami.int_state & KONAMI_CWAI )
-	{
-		konami.int_state &= ~KONAMI_CWAI;
-		konami.extra_cycles += 7;	/* subtract +7 cycles next time */
+    /* state already saved by CWAI? */
+    if (konami.int_state & KONAMI_CWAI) {
+        konami.int_state &= ~KONAMI_CWAI;
+        konami.extra_cycles += 7;	/* subtract +7 cycles next time */
+    } else {
+        CC |= CC_E; 				/* save entire state */
+        PUSHWORD(pPC);
+        PUSHWORD(pU);
+        PUSHWORD(pY);
+        PUSHWORD(pX);
+        PUSHBYTE(DP);
+        PUSHBYTE(B);
+        PUSHBYTE(A);
+        PUSHBYTE(CC);
+        konami.extra_cycles += 19;	/* subtract +19 cycles next time */
     }
-	else
-	{
-		CC |= CC_E; 				/* save entire state */
-		PUSHWORD(pPC);
-		PUSHWORD(pU);
-		PUSHWORD(pY);
-		PUSHWORD(pX);
-		PUSHBYTE(DP);
-		PUSHBYTE(B);
-		PUSHBYTE(A);
-		PUSHBYTE(CC);
-		konami.extra_cycles += 19;	/* subtract +19 cycles next time */
-	}
-	CC |= CC_IF | CC_II;			/* inhibit FIRQ and IRQ */
-	PCD = RM16(0xfffc);
-	change_pc(PC);					/* TS 971002 */
+    CC |= CC_IF | CC_II;			/* inhibit FIRQ and IRQ */
+    PCD = RM16(0xfffc);
+    change_pc(PC);					/* TS 971002 */
 }
 
 /****************************************************************************
@@ -560,9 +589,9 @@ void konami_set_nmi_line(int state)
 void konami_set_irq_line(int irqline, int state)
 {
     LOG(("KONAMI#%d set_irq_line %d, %d\n", cpu_getactivecpu(), irqline, state));
-	konami.irq_state[irqline] = state;
-	if (state == CLEAR_LINE) return;
-	CHECK_IRQ_LINES;
+    konami.irq_state[irqline] = state;
+    if (state == CLEAR_LINE) return;
+    CHECK_IRQ_LINES;
 }
 
 /****************************************************************************
@@ -570,7 +599,7 @@ void konami_set_irq_line(int irqline, int state)
  ****************************************************************************/
 void konami_set_irq_callback(int (*callback)(int irqline))
 {
-	konami.irq_callback = callback;
+    konami.irq_callback = callback;
 }
 
 /****************************************************************************
@@ -578,18 +607,18 @@ void konami_set_irq_callback(int (*callback)(int irqline))
  ****************************************************************************/
 static void state_save(void *file, const char *module)
 {
-	int cpu = cpu_getactivecpu();
-	state_save_UINT16(file, module, cpu, "PC", &PC, 1);
-	state_save_UINT16(file, module, cpu, "U", &U, 1);
-	state_save_UINT16(file, module, cpu, "S", &S, 1);
-	state_save_UINT16(file, module, cpu, "X", &X, 1);
-	state_save_UINT16(file, module, cpu, "Y", &Y, 1);
-	state_save_UINT8(file, module, cpu, "DP", &DP, 1);
-	state_save_UINT8(file, module, cpu, "CC", &CC, 1);
-	state_save_UINT8(file, module, cpu, "INT", &konami.int_state, 1);
-	state_save_UINT8(file, module, cpu, "NMI", &konami.nmi_state, 1);
-	state_save_UINT8(file, module, cpu, "IRQ", &konami.irq_state[0], 1);
-	state_save_UINT8(file, module, cpu, "FIRQ", &konami.irq_state[1], 1);
+    int cpu = cpu_getactivecpu();
+    state_save_UINT16(file, module, cpu, "PC", &PC, 1);
+    state_save_UINT16(file, module, cpu, "U", &U, 1);
+    state_save_UINT16(file, module, cpu, "S", &S, 1);
+    state_save_UINT16(file, module, cpu, "X", &X, 1);
+    state_save_UINT16(file, module, cpu, "Y", &Y, 1);
+    state_save_UINT8(file, module, cpu, "DP", &DP, 1);
+    state_save_UINT8(file, module, cpu, "CC", &CC, 1);
+    state_save_UINT8(file, module, cpu, "INT", &konami.int_state, 1);
+    state_save_UINT8(file, module, cpu, "NMI", &konami.nmi_state, 1);
+    state_save_UINT8(file, module, cpu, "IRQ", &konami.irq_state[0], 1);
+    state_save_UINT8(file, module, cpu, "FIRQ", &konami.irq_state[1], 1);
 }
 
 /****************************************************************************
@@ -597,43 +626,53 @@ static void state_save(void *file, const char *module)
  ****************************************************************************/
 static void state_load(void *file, const char *module)
 {
-	int cpu = cpu_getactivecpu();
-	state_load_UINT16(file, module, cpu, "PC", &PC, 1);
-	state_load_UINT16(file, module, cpu, "U", &U, 1);
-	state_load_UINT16(file, module, cpu, "S", &S, 1);
-	state_load_UINT16(file, module, cpu, "X", &X, 1);
-	state_load_UINT16(file, module, cpu, "Y", &Y, 1);
-	state_load_UINT8(file, module, cpu, "DP", &DP, 1);
-	state_load_UINT8(file, module, cpu, "CC", &CC, 1);
-	state_load_UINT8(file, module, cpu, "INT", &konami.int_state, 1);
-	state_load_UINT8(file, module, cpu, "NMI", &konami.nmi_state, 1);
-	state_load_UINT8(file, module, cpu, "IRQ", &konami.irq_state[0], 1);
-	state_load_UINT8(file, module, cpu, "FIRQ", &konami.irq_state[1], 1);
+    int cpu = cpu_getactivecpu();
+    state_load_UINT16(file, module, cpu, "PC", &PC, 1);
+    state_load_UINT16(file, module, cpu, "U", &U, 1);
+    state_load_UINT16(file, module, cpu, "S", &S, 1);
+    state_load_UINT16(file, module, cpu, "X", &X, 1);
+    state_load_UINT16(file, module, cpu, "Y", &Y, 1);
+    state_load_UINT8(file, module, cpu, "DP", &DP, 1);
+    state_load_UINT8(file, module, cpu, "CC", &CC, 1);
+    state_load_UINT8(file, module, cpu, "INT", &konami.int_state, 1);
+    state_load_UINT8(file, module, cpu, "NMI", &konami.nmi_state, 1);
+    state_load_UINT8(file, module, cpu, "IRQ", &konami.irq_state[0], 1);
+    state_load_UINT8(file, module, cpu, "FIRQ", &konami.irq_state[1], 1);
 }
 
-void konami_state_save(void *file) { state_save(file, "konami"); }
-void konami_state_load(void *file) { state_load(file, "konami"); }
+void konami_state_save(void *file)
+{
+    state_save(file, "konami");
+}
+void konami_state_load(void *file)
+{
+    state_load(file, "konami");
+}
 
 /****************************************************************************
  * Return a formatted string for a register
  ****************************************************************************/
 const char *konami_info(void *context, int regnum)
 {
-	switch( regnum )
-	{
-		case CPU_INFO_NAME: return "KONAMI";
-		case CPU_INFO_FAMILY: return "KONAMI 5000x";
-		case CPU_INFO_VERSION: return "1.0";
-		case CPU_INFO_FILE: return __FILE__;
-		case CPU_INFO_CREDITS: return "Copyright (C) The MAME Team 1999";
-	}
-	return "";
+    switch (regnum) {
+    case CPU_INFO_NAME:
+        return "KONAMI";
+    case CPU_INFO_FAMILY:
+        return "KONAMI 5000x";
+    case CPU_INFO_VERSION:
+        return "1.0";
+    case CPU_INFO_FILE:
+        return __FILE__;
+    case CPU_INFO_CREDITS:
+        return "Copyright (C) The MAME Team 1999";
+    }
+    return "";
 }
 
 unsigned konami_dasm(char *buffer, unsigned pc)
 {
-	sprintf( buffer, "$%02X", cpu_readop(pc) );
-	return 1;
+    sprintf(buffer, "$%02X", cpu_readop(pc));
+    return 1;
 }
 
 /* includes the static function prototypes and the master opcode table */
@@ -645,32 +684,28 @@ unsigned konami_dasm(char *buffer, unsigned pc)
 /* execute instructions on this CPU until icount expires */
 int konami_execute(int cycles)
 {
-	konami_ICount = cycles - konami.extra_cycles;
-	konami.extra_cycles = 0;
+    konami_ICount = cycles - konami.extra_cycles;
+    konami.extra_cycles = 0;
 
-	if( konami.int_state & (KONAMI_CWAI | KONAMI_SYNC) )
-	{
-		konami_ICount = 0;
-	}
-	else
-	{
-		do
-		{
-			pPPC = pPC;
+    if (konami.int_state & (KONAMI_CWAI | KONAMI_SYNC)) {
+        konami_ICount = 0;
+    } else {
+        do {
+            pPPC = pPC;
 
-			konami.ireg = ROP(PCD);
-			PC++;
+            konami.ireg = ROP(PCD);
+            PC++;
 
             (*konami_main[konami.ireg])();
 
             konami_ICount -= cycles1[konami.ireg];
 
-        } while( konami_ICount > 0 );
+        } while (konami_ICount > 0);
 
         konami_ICount -= konami.extra_cycles;
-		konami.extra_cycles = 0;
+        konami.extra_cycles = 0;
     }
 
-	return cycles - konami_ICount;
+    return cycles - konami_ICount;
 }
 

@@ -43,12 +43,12 @@
 #include "machine/74123.h"
 
 struct TTL74123 {
-	const struct TTL74123_interface *intf;
-	int trigger;			/* pin 2/10 */
-	int trigger_comp;		/* pin 1/9 */
-	int reset_comp;			/* pin 3/11 */
-	int output;				/* pin 13/5 */
-	void *timer;
+    const struct TTL74123_interface *intf;
+    int trigger;			/* pin 2/10 */
+    int trigger_comp;		/* pin 1/9 */
+    int reset_comp;			/* pin 3/11 */
+    int output;				/* pin 13/5 */
+    void *timer;
 };
 
 static struct TTL74123 chip[MAX_TTL74123];
@@ -56,44 +56,43 @@ static struct TTL74123 chip[MAX_TTL74123];
 
 static void set_output(int which, int data)
 {
-	chip[which].output = data;
-	chip[which].intf->output_changed_cb();
+    chip[which].output = data;
+    chip[which].intf->output_changed_cb();
 }
 
 
 void TTL74123_config(int which, const struct TTL74123_interface *intf)
 {
-	if (which >= MAX_TTL74123) return;
+    if (which >= MAX_TTL74123) return;
 
-	chip[which].intf = intf;
+    chip[which].intf = intf;
 
-	/* all inputs are open first */
+    /* all inputs are open first */
     chip[which].trigger = 1;
-	chip[which].trigger_comp = 1;
-	chip[which].reset_comp = 1;
-	set_output(which, 1);
+    chip[which].trigger_comp = 1;
+    chip[which].reset_comp = 1;
+    set_output(which, 1);
 }
 
 
 void TTL74123_unconfig(void)
 {
-	int i;
+    int i;
 
-	for (i = 0; i < MAX_TTL74123; i++)
-	{
-		if (chip[i].timer)  timer_remove(chip[i].timer);
-	}
+    for (i = 0; i < MAX_TTL74123; i++) {
+        if (chip[i].timer)  timer_remove(chip[i].timer);
+    }
 
-	memset(&chip, 0, sizeof(chip));
+    memset(&chip, 0, sizeof(chip));
 }
 
 
 static void clear_callback(int which)
 {
-	struct TTL74123 *c = chip + which;
+    struct TTL74123 *c = chip + which;
 
     c->timer = 0;
-	set_output(which, 0);
+    set_output(which, 0);
 }
 
 
@@ -122,53 +121,53 @@ static void clear_callback(int which)
 
 void TTL74123_trigger_w(int which, int data)
 {
-	struct TTL74123 *c = chip + which;
+    struct TTL74123 *c = chip + which;
 
-	/* trigger_comp=lo and rising edge on trigger (while reset_comp is hi) */
-	if (data)
-		CHECK_TRIGGER(!c->trigger_comp && !c->trigger && c->reset_comp)
-	else
-		RESET
+    /* trigger_comp=lo and rising edge on trigger (while reset_comp is hi) */
+    if (data)
+        CHECK_TRIGGER(!c->trigger_comp && !c->trigger && c->reset_comp)
+        else
+            RESET
 
-	c->trigger = data;
+            c->trigger = data;
 }
 
 
 void TTL74123_trigger_comp_w(int which, int data)
 {
-	struct TTL74123 *c = chip + which;
+    struct TTL74123 *c = chip + which;
 
-	/* trigger=hi and falling edge on trigger_comp (while reset_comp is hi) */
-	if (!data)
-		CHECK_TRIGGER(c->trigger && c->trigger_comp && c->reset_comp)
-	else
-		RESET
+    /* trigger=hi and falling edge on trigger_comp (while reset_comp is hi) */
+    if (!data)
+        CHECK_TRIGGER(c->trigger && c->trigger_comp && c->reset_comp)
+        else
+            RESET
 
-	c->trigger_comp = data;
+            c->trigger_comp = data;
 }
 
 
 void TTL74123_reset_comp_w(int which, int data)
 {
-	struct TTL74123 *c = chip + which;
+    struct TTL74123 *c = chip + which;
 
-	/* trigger=hi, trigger_comp=lo and rising edge on reset_comp */
-	if (data)
-    	CHECK_TRIGGER(c->trigger && !c->trigger_comp && !c->reset_comp)
-	else
-		RESET
+    /* trigger=hi, trigger_comp=lo and rising edge on reset_comp */
+    if (data)
+        CHECK_TRIGGER(c->trigger && !c->trigger_comp && !c->reset_comp)
+        else
+            RESET
 
-	c->reset_comp = data;
+            c->reset_comp = data;
 }
 
 
 int TTL74123_output_r(int which)
 {
-	return chip[which].output;
+    return chip[which].output;
 }
 
 
 int TTL74123_output_comp_r(int which)
 {
-	return !chip[which].output;
+    return !chip[which].output;
 }

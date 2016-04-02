@@ -12,7 +12,7 @@
 #include "cpu/z80/z80.h"
 
 // this prototype will move to the driver
-WRITE_HANDLER( stfight_bank_w );
+WRITE_HANDLER(stfight_bank_w);
 
 
 /*
@@ -36,94 +36,93 @@ Encryption PAL 16R4 on CPU board
 
 void init_empcity(void)
 {
-	unsigned char *rom = memory_region(REGION_CPU1);
-	int diff = memory_region_length(REGION_CPU1) / 2;
-	int A;
+    unsigned char *rom = memory_region(REGION_CPU1);
+    int diff = memory_region_length(REGION_CPU1) / 2;
+    int A;
 
 
-	memory_set_opcode_base(0,rom+diff);
+    memory_set_opcode_base(0, rom + diff);
 
-	for (A = 0;A < 0x8000;A++)
-	{
-		unsigned char src = rom[A];
+    for (A = 0; A < 0x8000; A++) {
+        unsigned char src = rom[A];
 
-		// decode opcode
-		rom[A+diff] =
-				( src & 0xA6 ) |
-				( ( ( ( src << 2 ) ^ src ) << 3 ) & 0x40 ) |
-				( ~( ( src ^ ( A >> 1 ) ) >> 2 ) & 0x10 ) |
-				( ~( ( ( src << 1 ) ^ A ) << 2 ) & 0x08 ) |
-				( ( ( src ^ ( src >> 3 ) ) >> 1 ) & 0x01 );
+        // decode opcode
+        rom[A + diff] =
+            (src & 0xA6) |
+            ((((src << 2) ^ src) << 3) & 0x40) |
+            (~((src ^ (A >> 1)) >> 2) & 0x10) |
+            (~(((src << 1) ^ A) << 2) & 0x08) |
+            (((src ^ (src >> 3)) >> 1) & 0x01);
 
-		// decode operand
-		rom[A] =
-				( src & 0xA6 ) |
-				( ~( ( src ^ ( src << 1 ) ) << 5 ) & 0x40 ) |
-				( ( ( src ^ ( A << 3 ) ) << 1 ) & 0x10 ) |
-				( ( ( src ^ A ) >> 1 ) & 0x08 ) |
-				( ~( ( src >> 6 ) ^ A ) & 0x01 );
-	}
+        // decode operand
+        rom[A] =
+            (src & 0xA6) |
+            (~((src ^ (src << 1)) << 5) & 0x40) |
+            (((src ^ (A << 3)) << 1) & 0x10) |
+            (((src ^ A) >> 1) & 0x08) |
+            (~((src >> 6) ^ A) & 0x01);
+    }
 }
 
 void init_stfight(void)
 {
-	unsigned char *rom = memory_region(REGION_CPU1);
-	int diff = memory_region_length(REGION_CPU1) / 2;
+    unsigned char *rom = memory_region(REGION_CPU1);
+    int diff = memory_region_length(REGION_CPU1) / 2;
 
 
-	init_empcity();
+    init_empcity();
 
-	/* patch out a tight loop during startup - is the code waiting */
-	/* for NMI to wake it up? */
-	rom[0xb1 + diff] = 0x00;
-	rom[0xb2 + diff] = 0x00;
-	rom[0xb3 + diff] = 0x00;
-	rom[0xb4 + diff] = 0x00;
-	rom[0xb5 + diff] = 0x00;
+    /* patch out a tight loop during startup - is the code waiting */
+    /* for NMI to wake it up? */
+    rom[0xb1 + diff] = 0x00;
+    rom[0xb2 + diff] = 0x00;
+    rom[0xb3 + diff] = 0x00;
+    rom[0xb4 + diff] = 0x00;
+    rom[0xb5 + diff] = 0x00;
 }
 
-void stfight_init_machine( void )
+void stfight_init_machine(void)
 {
     // initialise rom bank
-    stfight_bank_w( 0, 0 );
+    stfight_bank_w(0, 0);
 }
 
 // It's entirely possible that this bank is never switched out
 // - in fact I don't even know how/where it's switched in!
-WRITE_HANDLER( stfight_bank_w )
+WRITE_HANDLER(stfight_bank_w)
 {
-	unsigned char   *ROM2 = memory_region(REGION_CPU1) + 0x10000;
+    unsigned char   *ROM2 = memory_region(REGION_CPU1) + 0x10000;
 
-	cpu_setbank( 1, &ROM2[data<<14] );
+    cpu_setbank(1, &ROM2[data << 14]);
 }
 
-int stfight_vb_interrupt( void )
+int stfight_vb_interrupt(void)
 {
     // Do a RST10
-    interrupt_vector_w( 0, 0xd7 );
+    interrupt_vector_w(0, 0xd7);
 
-	return( interrupt() );
+    return (interrupt());
 }
 
 /*
  *      CPU 1 timed interrupt - 30Hz???
  */
 
-int stfight_interrupt_1( void )
+int stfight_interrupt_1(void)
 {
     // Do a RST08
-    interrupt_vector_w( 0, 0xcf );
+    interrupt_vector_w(0, 0xcf);
 
-	return( interrupt() );
+    return (interrupt());
 }
 
 /*
  *      CPU 2 timed interrupt - 120Hz
  */
 
-int stfight_interrupt_2( void )
+int stfight_interrupt_2(void)
 {
-	return( interrupt() );
+    return (interrupt());
 }
 
 /*
@@ -131,15 +130,15 @@ int stfight_interrupt_2( void )
  */
 
 // Perhaps define dipswitches as active low?
-READ_HANDLER( stfight_dsw_r )
+READ_HANDLER(stfight_dsw_r)
 {
-    return( ~readinputport( 3+offset ) );
+    return (~readinputport(3 + offset));
 }
 
 static int stfight_coin_mech_query_active = 0;
 static int stfight_coin_mech_query;
 
-READ_HANDLER( stfight_coin_r )
+READ_HANDLER(stfight_coin_r)
 {
     static int coin_mech_latch[2] = { 0x02, 0x01 };
 
@@ -147,10 +146,9 @@ READ_HANDLER( stfight_coin_r )
     int i;
 
     // Was the coin mech queried by software?
-    if( stfight_coin_mech_query_active )
-    {
+    if (stfight_coin_mech_query_active) {
         stfight_coin_mech_query_active = 0;
-        return( (~stfight_coin_mech_query) & 0x03 );
+        return ((~stfight_coin_mech_query) & 0x03);
     }
 
     /*
@@ -160,21 +158,20 @@ READ_HANDLER( stfight_coin_r )
      *        since it's read by the 30Hz interrupt ISR
      */
 
-    coin_mech_data = readinputport( 5 );
+    coin_mech_data = readinputport(5);
 
-    for( i=0; i<2; i++ )
-    {
+    for (i = 0; i < 2; i++) {
         /* Only valid on signal edge */
-        if( ( coin_mech_data & (1<<i) ) != coin_mech_latch[i] )
-            coin_mech_latch[i] = coin_mech_data & (1<<i);
+        if ((coin_mech_data & (1 << i)) != coin_mech_latch[i])
+            coin_mech_latch[i] = coin_mech_data & (1 << i);
         else
-            coin_mech_data |= coin_mech_data & (1<<i);
+            coin_mech_data |= coin_mech_data & (1 << i);
     }
 
-    return( coin_mech_data );
+    return (coin_mech_data);
 }
 
-WRITE_HANDLER( stfight_coin_w )
+WRITE_HANDLER(stfight_coin_w)
 {
     // interrogate coin mech
     stfight_coin_mech_query_active = 1;
@@ -185,8 +182,7 @@ WRITE_HANDLER( stfight_coin_w )
  *      Machine hardware for MSM5205 ADPCM sound control
  */
 
-static int sampleLimits[] =
-{
+static int sampleLimits[] = {
     0x0000,     // machine gun fire?
     0x1000,     // player getting shot
     0x2C00,     // player shooting
@@ -197,42 +193,39 @@ static int sampleLimits[] =
 static int adpcm_data_offs;
 static int adpcm_data_end;
 
-void stfight_adpcm_int( int data )
+void stfight_adpcm_int(int data)
 {
-	static int toggle;
-	unsigned char *SAMPLES = memory_region(REGION_SOUND1);
-	int adpcm_data = SAMPLES[adpcm_data_offs & 0x7fff];
+    static int toggle;
+    unsigned char *SAMPLES = memory_region(REGION_SOUND1);
+    int adpcm_data = SAMPLES[adpcm_data_offs & 0x7fff];
 
     // finished playing sample?
-    if( adpcm_data_offs == adpcm_data_end )
-    {
-        MSM5205_reset_w( 0, 1 );
+    if (adpcm_data_offs == adpcm_data_end) {
+        MSM5205_reset_w(0, 1);
         return;
     }
 
-	if( toggle == 0 )
-		MSM5205_data_w( 0, ( adpcm_data >> 4 ) & 0x0f );
-	else
-	{
-		MSM5205_data_w( 0, adpcm_data & 0x0f );
-		adpcm_data_offs++;
-	}
-
-	toggle ^= 1;
-}
-
-WRITE_HANDLER( stfight_adpcm_control_w )
-{
-    if( data < 0x08 )
-    {
-        adpcm_data_offs = sampleLimits[data];
-        adpcm_data_end = sampleLimits[data+1];
+    if (toggle == 0)
+        MSM5205_data_w(0, (adpcm_data >> 4) & 0x0f);
+    else {
+        MSM5205_data_w(0, adpcm_data & 0x0f);
+        adpcm_data_offs++;
     }
 
-    MSM5205_reset_w( 0, data & 0x08 ? 1 : 0 );
+    toggle ^= 1;
 }
 
-WRITE_HANDLER( stfight_e800_w )
+WRITE_HANDLER(stfight_adpcm_control_w)
+{
+    if (data < 0x08) {
+        adpcm_data_offs = sampleLimits[data];
+        adpcm_data_end = sampleLimits[data + 1];
+    }
+
+    MSM5205_reset_w(0, data & 0x08 ? 1 : 0);
+}
+
+WRITE_HANDLER(stfight_e800_w)
 {
 }
 
@@ -242,18 +235,18 @@ WRITE_HANDLER( stfight_e800_w )
 
 static unsigned char fm_data;
 
-WRITE_HANDLER( stfight_fm_w )
+WRITE_HANDLER(stfight_fm_w)
 {
     // the sound cpu ignores any fm data without bit 7 set
     fm_data = 0x80 | data;
 }
 
-READ_HANDLER( stfight_fm_r )
+READ_HANDLER(stfight_fm_r)
 {
     int data = fm_data;
 
     // clear the latch?!?
     fm_data &= 0x7f;
 
-    return( data );
+    return (data);
 }

@@ -71,45 +71,41 @@ static void mo_render_callback(const UINT16 *data, const struct rectangle *clip,
 
 int rampart_vh_start(void)
 {
-	static struct atarigen_mo_desc mo_desc =
-	{
-		256,                 /* maximum number of MO's */
-		8,                   /* number of bytes per MO entry */
-		2,                   /* number of bytes between MO words */
-		0,                   /* ignore an entry if this word == 0xffff */
-		0, 0, 0xff,          /* link = (data[linkword] >> linkshift) & linkmask */
-		0                    /* render in reverse link order */
-	};
+    static struct atarigen_mo_desc mo_desc = {
+        256,                 /* maximum number of MO's */
+        8,                   /* number of bytes per MO entry */
+        2,                   /* number of bytes between MO words */
+        0,                   /* ignore an entry if this word == 0xffff */
+        0, 0, 0xff,          /* link = (data[linkword] >> linkshift) & linkmask */
+        0                    /* render in reverse link order */
+    };
 
-	static struct atarigen_pf_desc pf_desc =
-	{
-		8, 8,				/* width/height of each tile */
-		XCHARS, YCHARS,		/* number of tiles in each direction */
-		1					/* non-scrolling */
-	};
+    static struct atarigen_pf_desc pf_desc = {
+        8, 8,				/* width/height of each tile */
+        XCHARS, YCHARS,		/* number of tiles in each direction */
+        1					/* non-scrolling */
+    };
 
-	/* allocate color usage */
-	color_usage = (int*)malloc(sizeof(int) * 256);
-	if (!color_usage)
-		return 1;
-	color_usage[0] = XDIM * YDIM;
+    /* allocate color usage */
+    color_usage = (int*) malloc(sizeof(int) * 256);
+    if (!color_usage)
+        return 1;
+    color_usage[0] = XDIM * YDIM;
 
-	/* initialize the playfield */
-	if (atarigen_pf_init(&pf_desc))
-	{
-		free(color_usage);
-		return 1;
-	}
+    /* initialize the playfield */
+    if (atarigen_pf_init(&pf_desc)) {
+        free(color_usage);
+        return 1;
+    }
 
-	/* initialize the motion objects */
-	if (atarigen_mo_init(&mo_desc))
-	{
-		atarigen_pf_free();
-		free(color_usage);
-		return 1;
-	}
+    /* initialize the motion objects */
+    if (atarigen_mo_init(&mo_desc)) {
+        atarigen_pf_free();
+        free(color_usage);
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -122,13 +118,13 @@ int rampart_vh_start(void)
 
 void rampart_vh_stop(void)
 {
-	/* free data */
-	if (color_usage)
-		free(color_usage);
-	color_usage = 0;
+    /* free data */
+    if (color_usage)
+        free(color_usage);
+    color_usage = 0;
 
-	atarigen_pf_free();
-	atarigen_mo_free();
+    atarigen_pf_free();
+    atarigen_mo_free();
 }
 
 
@@ -139,30 +135,28 @@ void rampart_vh_stop(void)
  *
  *************************************/
 
-WRITE_HANDLER( rampart_playfieldram_w )
+WRITE_HANDLER(rampart_playfieldram_w)
 {
-	int oldword = READ_WORD(&atarigen_playfieldram[offset]);
-	int newword = COMBINE_WORD(oldword, data);
-	int x, y;
+    int oldword = READ_WORD(&atarigen_playfieldram[offset]);
+    int newword = COMBINE_WORD(oldword, data);
+    int x, y;
 
-	if (oldword != newword)
-	{
-		WRITE_WORD(&atarigen_playfieldram[offset], newword);
+    if (oldword != newword) {
+        WRITE_WORD(&atarigen_playfieldram[offset], newword);
 
-		/* track color usage */
-		x = offset % 512;
-		y = offset / 512;
-		if (x < XDIM && y < YDIM)
-		{
-			color_usage[(oldword >> 8) & 0xff]--;
-			color_usage[oldword & 0xff]--;
-			color_usage[(newword >> 8) & 0xff]++;
-			color_usage[newword & 0xff]++;
-		}
+        /* track color usage */
+        x = offset % 512;
+        y = offset / 512;
+        if (x < XDIM && y < YDIM) {
+            color_usage[(oldword >> 8) & 0xff]--;
+            color_usage[oldword & 0xff]--;
+            color_usage[(newword >> 8) & 0xff]++;
+            color_usage[newword & 0xff]++;
+        }
 
-		/* mark scanlines dirty */
-		atarigen_pf_dirty[y] = 1;
-	}
+        /* mark scanlines dirty */
+        atarigen_pf_dirty[y] = 1;
+    }
 }
 
 
@@ -175,8 +169,8 @@ WRITE_HANDLER( rampart_playfieldram_w )
 
 void rampart_scanline_update(int scanline)
 {
-	/* update the MOs from the SLIP table */
-	atarigen_mo_update_slip_512(atarigen_spriteram, 0, scanline, &atarigen_spriteram[0x3f40]);
+    /* update the MOs from the SLIP table */
+    atarigen_mo_update_slip_512(atarigen_spriteram, 0, scanline, &atarigen_spriteram[0x3f40]);
 }
 
 
@@ -187,42 +181,40 @@ void rampart_scanline_update(int scanline)
  *
  *************************************/
 
-void rampart_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void rampart_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	/* remap if necessary */
-	if (update_palette())
-		memset(atarigen_pf_dirty, 1, YDIM);
+    /* remap if necessary */
+    if (update_palette())
+        memset(atarigen_pf_dirty, 1, YDIM);
 
-	/* update the cached bitmap */
-	{
-		int x, y;
+    /* update the cached bitmap */
+    {
+        int x, y;
 
-		for (y = 0; y < YDIM; y++)
-			if (atarigen_pf_dirty[y])
-			{
-				int xx = 0;
-				const UINT8 *src = &atarigen_playfieldram[512 * y];
+        for (y = 0; y < YDIM; y++)
+            if (atarigen_pf_dirty[y]) {
+                int xx = 0;
+                const UINT8 *src = &atarigen_playfieldram[512 * y];
 
-				/* regenerate the line */
-				for (x = 0; x < XDIM/2; x++)
-				{
-					int bits = READ_WORD(src);
-					src += 2;
-					plot_pixel(atarigen_pf_bitmap, xx++, y, Machine->pens[bits >> 8]);
-					plot_pixel(atarigen_pf_bitmap, xx++, y, Machine->pens[bits & 0xff]);
-				}
-				atarigen_pf_dirty[y] = 0;
-			}
-	}
+                /* regenerate the line */
+                for (x = 0; x < XDIM / 2; x++) {
+                    int bits = READ_WORD(src);
+                    src += 2;
+                    plot_pixel(atarigen_pf_bitmap, xx++, y, Machine->pens[bits >> 8]);
+                    plot_pixel(atarigen_pf_bitmap, xx++, y, Machine->pens[bits & 0xff]);
+                }
+                atarigen_pf_dirty[y] = 0;
+            }
+    }
 
-	/* copy the cached bitmap */
-	copybitmap(bitmap, atarigen_pf_bitmap, 0, 0, 0, 0, NULL, TRANSPARENCY_NONE, 0);
+    /* copy the cached bitmap */
+    copybitmap(bitmap, atarigen_pf_bitmap, 0, 0, 0, 0, NULL, TRANSPARENCY_NONE, 0);
 
-	/* render the motion objects */
-	atarigen_mo_process(mo_render_callback, bitmap);
+    /* render the motion objects */
+    atarigen_mo_process(mo_render_callback, bitmap);
 
-	/* update onscreen messages */
-	atarigen_update_messages();
+    /* update onscreen messages */
+    atarigen_update_messages();
 }
 
 
@@ -235,35 +227,33 @@ void rampart_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
 
 static const UINT8 *update_palette(void)
 {
-	UINT16 mo_map[16];
-	int i, j;
+    UINT16 mo_map[16];
+    int i, j;
 
-	/* reset color tracking */
-	memset(mo_map, 0, sizeof(mo_map));
-	palette_init_used_colors();
+    /* reset color tracking */
+    memset(mo_map, 0, sizeof(mo_map));
+    palette_init_used_colors();
 
-	/* update color usage for the mo's */
-	atarigen_mo_process(mo_color_callback, mo_map);
+    /* update color usage for the mo's */
+    atarigen_mo_process(mo_color_callback, mo_map);
 
-	/* rebuild the playfield palette */
-	for (i = 0; i < 256; i++)
-		if (color_usage[i])
-			palette_used_colors[0x000 + i] = PALETTE_COLOR_USED;
+    /* rebuild the playfield palette */
+    for (i = 0; i < 256; i++)
+        if (color_usage[i])
+            palette_used_colors[0x000 + i] = PALETTE_COLOR_USED;
 
-	/* rebuild the motion object palette */
-	for (i = 0; i < 16; i++)
-	{
-		UINT16 used = mo_map[i];
-		if (used)
-		{
-			palette_used_colors[0x100 + i * 16 + 0] = PALETTE_COLOR_TRANSPARENT;
-			for (j = 1; j < 16; j++)
-				if (used & (1 << j))
-					palette_used_colors[0x100 + i * 16 + j] = PALETTE_COLOR_USED;
-		}
-	}
+    /* rebuild the motion object palette */
+    for (i = 0; i < 16; i++) {
+        UINT16 used = mo_map[i];
+        if (used) {
+            palette_used_colors[0x100 + i * 16 + 0] = PALETTE_COLOR_TRANSPARENT;
+            for (j = 1; j < 16; j++)
+                if (used & (1 << j))
+                    palette_used_colors[0x100 + i * 16 + j] = PALETTE_COLOR_USED;
+        }
+    }
 
-	return palette_recalc();
+    return palette_recalc();
 }
 
 
@@ -276,19 +266,19 @@ static const UINT8 *update_palette(void)
 
 static void mo_color_callback(const UINT16 *data, const struct rectangle *clip, void *param)
 {
-	const unsigned int *usage = Machine->gfx[0]->pen_usage;
-	UINT16 *colormap = (UINT16 *)param;
-	int code = data[1] & 0x7fff;
-	int color = data[2] & 0x000f;
-	int hsize = ((data[3] >> 4) & 7) + 1;
-	int vsize = (data[3] & 7) + 1;
-	int tiles = hsize * vsize;
-	UINT16 temp = 0;
-	int i;
+    const unsigned int *usage = Machine->gfx[0]->pen_usage;
+    UINT16 *colormap = (UINT16 *) param;
+    int code = data[1] & 0x7fff;
+    int color = data[2] & 0x000f;
+    int hsize = ((data[3] >> 4) & 7) + 1;
+    int vsize = (data[3] & 7) + 1;
+    int tiles = hsize * vsize;
+    UINT16 temp = 0;
+    int i;
 
-	for (i = 0; i < tiles; i++)
-		temp |= usage[code++];
-	colormap[color] |= temp;
+    for (i = 0; i < tiles; i++)
+        temp |= usage[code++];
+    colormap[color] |= temp;
 }
 
 
@@ -301,31 +291,31 @@ static void mo_color_callback(const UINT16 *data, const struct rectangle *clip, 
 
 static void mo_render_callback(const UINT16 *data, const struct rectangle *clip, void *param)
 {
-	const struct GfxElement *gfx = Machine->gfx[0];
-	struct osd_bitmap *bitmap = (struct osd_bitmap *)param;
-	struct rectangle pf_clip;
+    const struct GfxElement *gfx = Machine->gfx[0];
+    struct osd_bitmap *bitmap = (struct osd_bitmap *) param;
+    struct rectangle pf_clip;
 
-	/* extract data from the various words */
-	int hflip = data[1] & 0x8000;
-	int code = data[1] & 0x7fff;
-	int xpos = (data[2] >> 7) + 4;
-	int color = data[2] & 0x000f;
-	int ypos = 512 - (data[3] >> 7);
-	int hsize = ((data[3] >> 4) & 7) + 1;
-	int vsize = (data[3] & 7) + 1;
+    /* extract data from the various words */
+    int hflip = data[1] & 0x8000;
+    int code = data[1] & 0x7fff;
+    int xpos = (data[2] >> 7) + 4;
+    int color = data[2] & 0x000f;
+    int ypos = 512 - (data[3] >> 7);
+    int hsize = ((data[3] >> 4) & 7) + 1;
+    int vsize = (data[3] & 7) + 1;
 
-	/* adjust for height */
-	ypos -= vsize * 8;
+    /* adjust for height */
+    ypos -= vsize * 8;
 
-	/* adjust the final coordinates */
-	xpos &= 0x1ff;
-	ypos &= 0x1ff;
-	if (xpos >= XDIM) xpos -= 0x200;
-	if (ypos >= YDIM) ypos -= 0x200;
+    /* adjust the final coordinates */
+    xpos &= 0x1ff;
+    ypos &= 0x1ff;
+    if (xpos >= XDIM) xpos -= 0x200;
+    if (ypos >= YDIM) ypos -= 0x200;
 
-	/* determine the bounding box */
-	atarigen_mo_compute_clip_8x8(pf_clip, xpos, ypos, hsize, vsize, clip);
+    /* determine the bounding box */
+    atarigen_mo_compute_clip_8x8(pf_clip, xpos, ypos, hsize, vsize, clip);
 
-	/* draw the motion object */
-	atarigen_mo_draw_8x8(bitmap, gfx, code, color, hflip, 0, xpos, ypos, hsize, vsize, clip, TRANSPARENCY_PEN, 0);
+    /* draw the motion object */
+    atarigen_mo_draw_8x8(bitmap, gfx, code, color, hflip, 0, xpos, ypos, hsize, vsize, clip, TRANSPARENCY_PEN, 0);
 }

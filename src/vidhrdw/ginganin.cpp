@@ -84,8 +84,8 @@ unsigned char *ginganin_fgram, *ginganin_txtram, *ginganin_vregs;
 
 static void get_bg_tile_info(int tile_index)
 {
-	int code = memory_region(REGION_GFX5)[2*tile_index + 0] * 256 + memory_region(REGION_GFX5)[2*tile_index + 1];
-	SET_TILE_INFO(BG_GFX, code, code >> 12);
+    int code = memory_region(REGION_GFX5) [2 * tile_index + 0] * 256 + memory_region(REGION_GFX5) [2 * tile_index + 1];
+    SET_TILE_INFO(BG_GFX, code, code >> 12);
 }
 
 
@@ -100,20 +100,20 @@ static void get_bg_tile_info(int tile_index)
 
 static void get_fg_tile_info(int tile_index)
 {
-	int code = READ_WORD(&ginganin_fgram[2*tile_index]);
-	SET_TILE_INFO(FG_GFX, code, code >> 12);
+    int code = READ_WORD(&ginganin_fgram[2 * tile_index]);
+    SET_TILE_INFO(FG_GFX, code, code >> 12);
 }
 
-WRITE_HANDLER( ginganin_fgram_w )
+WRITE_HANDLER(ginganin_fgram_w)
 {
-	int old_data, new_data;
+    int old_data, new_data;
 
-	old_data  = READ_WORD(&ginganin_fgram[offset]);
-	COMBINE_WORD_MEM(&ginganin_fgram[offset],data);
-	new_data  = READ_WORD(&ginganin_fgram[offset]);
+    old_data  = READ_WORD(&ginganin_fgram[offset]);
+    COMBINE_WORD_MEM(&ginganin_fgram[offset], data);
+    new_data  = READ_WORD(&ginganin_fgram[offset]);
 
-	if (old_data != new_data)
-		tilemap_mark_tile_dirty(fg_tilemap,offset/2);
+    if (old_data != new_data)
+        tilemap_mark_tile_dirty(fg_tilemap, offset / 2);
 }
 
 
@@ -127,20 +127,20 @@ WRITE_HANDLER( ginganin_fgram_w )
 
 static void get_txt_tile_info(int tile_index)
 {
-	int code = READ_WORD(&ginganin_txtram[2*tile_index]);
-	SET_TILE_INFO(TXT_GFX, code, code >> 12);
+    int code = READ_WORD(&ginganin_txtram[2 * tile_index]);
+    SET_TILE_INFO(TXT_GFX, code, code >> 12);
 }
 
-WRITE_HANDLER( ginganin_txtram_w )
+WRITE_HANDLER(ginganin_txtram_w)
 {
-int old_data, new_data;
+    int old_data, new_data;
 
-	old_data  = READ_WORD(&ginganin_txtram[offset]);
-	COMBINE_WORD_MEM(&ginganin_txtram[offset],data);
-	new_data  = READ_WORD(&ginganin_txtram[offset]);
+    old_data  = READ_WORD(&ginganin_txtram[offset]);
+    COMBINE_WORD_MEM(&ginganin_txtram[offset], data);
+    new_data  = READ_WORD(&ginganin_txtram[offset]);
 
-	if (old_data != new_data)
-		tilemap_mark_tile_dirty(tx_tilemap,offset/2);
+    if (old_data != new_data)
+        tilemap_mark_tile_dirty(tx_tilemap, offset / 2);
 }
 
 
@@ -149,46 +149,66 @@ int old_data, new_data;
 
 int ginganin_vh_start(void)
 {
-	bg_tilemap = tilemap_create(get_bg_tile_info,tilemap_scan_cols,TILEMAP_OPAQUE,16,16,BG_NX,BG_NY);
-	fg_tilemap = tilemap_create(get_fg_tile_info,tilemap_scan_cols,TILEMAP_TRANSPARENT,16,16,FG_NX,FG_NY);
-	tx_tilemap = tilemap_create(get_txt_tile_info,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,TXT_NX,TXT_NY);
+    bg_tilemap = tilemap_create(get_bg_tile_info, tilemap_scan_cols, TILEMAP_OPAQUE, 16, 16, BG_NX, BG_NY);
+    fg_tilemap = tilemap_create(get_fg_tile_info, tilemap_scan_cols, TILEMAP_TRANSPARENT, 16, 16, FG_NX, FG_NY);
+    tx_tilemap = tilemap_create(get_txt_tile_info, tilemap_scan_rows, TILEMAP_TRANSPARENT, 8, 8, TXT_NX, TXT_NY);
 
-	if (!fg_tilemap || !bg_tilemap || !tx_tilemap)
-		return 1;
+    if (!fg_tilemap || !bg_tilemap || !tx_tilemap)
+        return 1;
 
-	fg_tilemap->transparent_pen = 15;
-	tx_tilemap->transparent_pen = 15;
+    fg_tilemap->transparent_pen = 15;
+    tx_tilemap->transparent_pen = 15;
 
-	return 0;
+    return 0;
 }
 
 
 
 
 
-WRITE_HANDLER( ginganin_vregs_w )
+WRITE_HANDLER(ginganin_vregs_w)
 {
-	int new_data;
+    int new_data;
 
-	COMBINE_WORD_MEM(&ginganin_vregs[offset],data);
-	new_data  = READ_WORD(&ginganin_vregs[offset]);
+    COMBINE_WORD_MEM(&ginganin_vregs[offset], data);
+    new_data  = READ_WORD(&ginganin_vregs[offset]);
 
-	switch (offset)
-	{
-		case 0x0 : { tilemap_set_scrolly(fg_tilemap, 0, new_data); } break;
-		case 0x2 : { tilemap_set_scrollx(fg_tilemap, 0, new_data); } break;
-		case 0x4 : { tilemap_set_scrolly(bg_tilemap, 0, new_data); } break;
-		case 0x6 : { tilemap_set_scrollx(bg_tilemap, 0, new_data); } break;
-		case 0x8 : { layers_ctrl = new_data; } break;
+    switch (offset) {
+    case 0x0 : {
+        tilemap_set_scrolly(fg_tilemap, 0, new_data);
+    }
+    break;
+    case 0x2 : {
+        tilemap_set_scrollx(fg_tilemap, 0, new_data);
+    }
+    break;
+    case 0x4 : {
+        tilemap_set_scrolly(bg_tilemap, 0, new_data);
+    }
+    break;
+    case 0x6 : {
+        tilemap_set_scrollx(bg_tilemap, 0, new_data);
+    }
+    break;
+    case 0x8 : {
+        layers_ctrl = new_data;
+    }
+    break;
 //		case 0xa : break;
-		case 0xc : { flipscreen = !(new_data & 1);	tilemap_set_flip(ALL_TILEMAPS,flipscreen ? (TILEMAP_FLIPY | TILEMAP_FLIPX) : 0); } break;
-		case 0xe : { soundlatch_w(0,new_data);
-					 cpu_cause_interrupt(1,M6809_INT_NMI);
-				   } break;
+    case 0xc : {
+        flipscreen = !(new_data & 1);
+        tilemap_set_flip(ALL_TILEMAPS, flipscreen ? (TILEMAP_FLIPY | TILEMAP_FLIPX) : 0);
+    }
+    break;
+    case 0xe : {
+        soundlatch_w(0, new_data);
+        cpu_cause_interrupt(1, M6809_INT_NMI);
+    }
+    break;
 
-		default  : //{logerror("CPU #0 PC %06X : Warning, videoreg %04X <- %04X\n",cpu_get_pc(),offset,data);}
-		    break;
-	}
+    default  : //{logerror("CPU #0 PC %06X : Warning, videoreg %04X <- %04X\n",cpu_get_pc(),offset,data);}
+        break;
+    }
 }
 
 
@@ -218,34 +238,34 @@ Offset:			Values:			Format:
 
 static void draw_sprites(struct osd_bitmap *bitmap)
 {
-int offs;
+    int offs;
 
-	for ( offs = 0 ; offs < spriteram_size ; offs += 8 )
-	{
-		int	y		=	READ_WORD(&spriteram[offs + 0]);
-		int	x		=	READ_WORD(&spriteram[offs + 2]);
-		int	code	=	READ_WORD(&spriteram[offs + 4]);
-		int	attr	=	READ_WORD(&spriteram[offs + 6]);
-		int	flipx	=	code & 0x4000;
-		int	flipy	=	code & 0x8000;
+    for (offs = 0 ; offs < spriteram_size ; offs += 8) {
+        int	y		=	READ_WORD(&spriteram[offs + 0]);
+        int	x		=	READ_WORD(&spriteram[offs + 2]);
+        int	code	=	READ_WORD(&spriteram[offs + 4]);
+        int	attr	=	READ_WORD(&spriteram[offs + 6]);
+        int	flipx	=	code & 0x4000;
+        int	flipy	=	code & 0x8000;
 
-		x = (x & 0xFF) - (x & 0x100);
-		y = (y & 0xFF) - (y & 0x100);
+        x = (x & 0xFF) - (x & 0x100);
+        y = (y & 0xFF) - (y & 0x100);
 
-		if (flipscreen)
-		{
-			x = 240 - x;		y = 240 - y;
-			flipx = !flipx;		flipy = !flipy;
-		}
+        if (flipscreen) {
+            x = 240 - x;
+            y = 240 - y;
+            flipx = !flipx;
+            flipy = !flipy;
+        }
 
-		drawgfx(bitmap,Machine->gfx[3],
-				code & 0x3fff,
-				attr >> 12,
-				flipx, flipy,
-				x,y,
-				&Machine->visible_area,TRANSPARENCY_PEN,15);
+        drawgfx(bitmap, Machine->gfx[3],
+                code & 0x3fff,
+                attr >> 12,
+                flipx, flipy,
+                x, y,
+                &Machine->visible_area, TRANSPARENCY_PEN, 15);
 
-	}
+    }
 }
 
 
@@ -254,72 +274,69 @@ int offs;
 
 
 
-void ginganin_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void ginganin_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-int i, offs;
-int layers_ctrl1;
+    int i, offs;
+    int layers_ctrl1;
 
-layers_ctrl1 = layers_ctrl;
+    layers_ctrl1 = layers_ctrl;
 
-	tilemap_update(ALL_TILEMAPS);
+    tilemap_update(ALL_TILEMAPS);
 
-	palette_init_used_colors();
+    palette_init_used_colors();
 
 
-/* Palette stuff: visible sprites */
-{
-int color, colmask[16];
+    /* Palette stuff: visible sprites */
+    {
+        int color, colmask[16];
 
-	int xmin = Machine->visible_area.min_x - 16 - 1;
-	int xmax = Machine->visible_area.max_x;
-	int ymin = Machine->visible_area.min_y - 16 - 1;
-	int ymax = Machine->visible_area.max_y;
+        int xmin = Machine->visible_area.min_x - 16 - 1;
+        int xmax = Machine->visible_area.max_x;
+        int ymin = Machine->visible_area.min_y - 16 - 1;
+        int ymax = Machine->visible_area.max_y;
 
-	int nmax				=	Machine->gfx[3]->total_elements;
-	unsigned int *pen_usage	=	Machine->gfx[3]->pen_usage;
-	int color_codes_start	=	Machine->drv->gfxdecodeinfo[3].color_codes_start;
+        int nmax				=	Machine->gfx[3]->total_elements;
+        unsigned int *pen_usage	=	Machine->gfx[3]->pen_usage;
+        int color_codes_start	=	Machine->drv->gfxdecodeinfo[3].color_codes_start;
 
-	for (color = 0 ; color < 16 ; color++) colmask[color] = 0;
+        for (color = 0 ; color < 16 ; color++) colmask[color] = 0;
 
-	for (offs = 0 ; offs < spriteram_size ; offs += 8)
-	{
-	int x,y,code;
+        for (offs = 0 ; offs < spriteram_size ; offs += 8) {
+            int x, y, code;
 
-		y	=	READ_WORD(&spriteram[offs + 0]);
-		y	=	(y & 0xff) - (y & 0x100);
-		if ((y < ymin) || (y > ymax))	continue;
+            y	=	READ_WORD(&spriteram[offs + 0]);
+            y	=	(y & 0xff) - (y & 0x100);
+            if ((y < ymin) || (y > ymax))	continue;
 
-		x	=	READ_WORD(&spriteram[offs + 2]);
-		x	=	(x & 0xff) - (x & 0x100);
-		if ((x < xmin) || (x > xmax))	continue;
+            x	=	READ_WORD(&spriteram[offs + 2]);
+            x	=	(x & 0xff) - (x & 0x100);
+            if ((x < xmin) || (x > xmax))	continue;
 
-		code	=	(READ_WORD(&spriteram[offs + 4]) & 0x3fff)% nmax;
-		color	=	READ_WORD(&spriteram[offs + 6]) >> 12;
+            code	=	(READ_WORD(&spriteram[offs + 4]) & 0x3fff) % nmax;
+            color	=	READ_WORD(&spriteram[offs + 6]) >> 12;
 
-		colmask[color] |= pen_usage[code];
-	}
+            colmask[color] |= pen_usage[code];
+        }
 
-	for (color = 0; color < 16; color++)
-	{
-		if (colmask[color])
-		{
-			for (i = 0; i < 16; i++)
-				if (colmask[color] & (1 << i))
-					palette_used_colors[16 * color + i + color_codes_start] = PALETTE_COLOR_USED;
-		}
-	}
+        for (color = 0; color < 16; color++) {
+            if (colmask[color]) {
+                for (i = 0; i < 16; i++)
+                    if (colmask[color] & (1 << i))
+                        palette_used_colors[16 * color + i + color_codes_start] = PALETTE_COLOR_USED;
+            }
+        }
 
-}
+    }
 
-	if (palette_recalc())	tilemap_mark_all_pixels_dirty(ALL_TILEMAPS);
+    if (palette_recalc())	tilemap_mark_all_pixels_dirty(ALL_TILEMAPS);
 
-	tilemap_render(ALL_TILEMAPS);
+    tilemap_render(ALL_TILEMAPS);
 
-	if (layers_ctrl1 & 1)	tilemap_draw(bitmap, bg_tilemap,  0);
-	else					osd_clearbitmap(Machine->scrbitmap);
+    if (layers_ctrl1 & 1)	tilemap_draw(bitmap, bg_tilemap,  0);
+    else					osd_clearbitmap(Machine->scrbitmap);
 
-	if (layers_ctrl1 & 2)	tilemap_draw(bitmap, fg_tilemap,  0);
-	if (layers_ctrl1 & 8)	draw_sprites(bitmap);
-	if (layers_ctrl1 & 4)	tilemap_draw(bitmap, tx_tilemap, 0);
+    if (layers_ctrl1 & 2)	tilemap_draw(bitmap, fg_tilemap,  0);
+    if (layers_ctrl1 & 8)	draw_sprites(bitmap);
+    if (layers_ctrl1 & 4)	tilemap_draw(bitmap, tx_tilemap, 0);
 
 }

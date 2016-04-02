@@ -37,92 +37,88 @@ static int palette_bank;
   bit 0 -- Unused
 
 ***************************************************************************/
-void vicdual_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void vicdual_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	int i;
-	/* for b&w games we'll use the Head On PROM */
-	static unsigned char bw_color_prom[] =
-	{
-		/* for b/w games, let's use the Head On PROM */
-		0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,
-		0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,0xE1,
-	};
+    int i;
+    /* for b&w games we'll use the Head On PROM */
+    static unsigned char bw_color_prom[] = {
+        /* for b/w games, let's use the Head On PROM */
+        0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1,
+        0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1, 0xE1,
+    };
 
 
-	if (color_prom == 0) color_prom = bw_color_prom;
+    if (color_prom == 0) color_prom = bw_color_prom;
 
-	for (i = 0;i < Machine->drv->total_colors / 2;i++)
-	{
-		int bit;
+    for (i = 0; i < Machine->drv->total_colors / 2; i++) {
+        int bit;
 
 
-		/* background red component */
-		bit = (*color_prom >> 3) & 0x01;
-		*(palette++) = 0xff * bit;
-		/* background green component */
-		bit = (*color_prom >> 1) & 0x01;
-		*(palette++) = 0xff * bit;
-		/* background blue component */
-		bit = (*color_prom >> 2) & 0x01;
-		*(palette++) = 0xff * bit;
+        /* background red component */
+        bit = (*color_prom >> 3) & 0x01;
+        * (palette++) = 0xff * bit;
+        /* background green component */
+        bit = (*color_prom >> 1) & 0x01;
+        * (palette++) = 0xff * bit;
+        /* background blue component */
+        bit = (*color_prom >> 2) & 0x01;
+        * (palette++) = 0xff * bit;
 
-		/* foreground red component */
-		bit = (*color_prom >> 7) & 0x01;
-		*(palette++) = 0xff * bit;
-		/* foreground green component */
-		bit = (*color_prom >> 5) & 0x01;
-		*(palette++) = 0xff * bit;
-		/* foreground blue component */
-		bit = (*color_prom >> 6) & 0x01;
-		*(palette++) = 0xff * bit;
+        /* foreground red component */
+        bit = (*color_prom >> 7) & 0x01;
+        * (palette++) = 0xff * bit;
+        /* foreground green component */
+        bit = (*color_prom >> 5) & 0x01;
+        * (palette++) = 0xff * bit;
+        /* foreground blue component */
+        bit = (*color_prom >> 6) & 0x01;
+        * (palette++) = 0xff * bit;
 
-		color_prom++;
-	}
+        color_prom++;
+    }
 
-	palette_bank = 0;
+    palette_bank = 0;
 
-	{
-		extern struct GameDriver driver_heiankyo;
-		extern struct GameDriver driver_invinco;
-		extern struct GameDriver driver_digger;
-		extern struct GameDriver driver_tranqgun;
+    {
+        extern struct GameDriver driver_heiankyo;
+        extern struct GameDriver driver_invinco;
+        extern struct GameDriver driver_digger;
+        extern struct GameDriver driver_tranqgun;
 
-		/* Heiankyo Alien doesn't write to port 0x40, it expects it to default to 3 */
-		if (Machine->gamedrv == &driver_heiankyo)
-			palette_bank = 3;
+        /* Heiankyo Alien doesn't write to port 0x40, it expects it to default to 3 */
+        if (Machine->gamedrv == &driver_heiankyo)
+            palette_bank = 3;
 
-		/* and many others expect it to default to 1 */
-		if (Machine->gamedrv == &driver_invinco ||
-				Machine->gamedrv == &driver_digger ||
-				Machine->gamedrv == &driver_tranqgun)
-			palette_bank = 1;
-	}
+        /* and many others expect it to default to 1 */
+        if (Machine->gamedrv == &driver_invinco ||
+            Machine->gamedrv == &driver_digger ||
+            Machine->gamedrv == &driver_tranqgun)
+            palette_bank = 1;
+    }
 }
 
 
 
-WRITE_HANDLER( vicdual_characterram_w )
+WRITE_HANDLER(vicdual_characterram_w)
 {
-	if (vicdual_characterram[offset] != data)
-	{
-		dirtycharacter[(offset / 8) & 0xff] = 1;
+    if (vicdual_characterram[offset] != data) {
+        dirtycharacter[(offset / 8) & 0xff] = 1;
 
-		vicdual_characterram[offset] = data;
-	}
+        vicdual_characterram[offset] = data;
+    }
 }
 
-READ_HANDLER( vicdual_characterram_r )
+READ_HANDLER(vicdual_characterram_r)
 {
-	return vicdual_characterram[offset];
+    return vicdual_characterram[offset];
 }
 
-WRITE_HANDLER( vicdual_palette_bank_w )
+WRITE_HANDLER(vicdual_palette_bank_w)
 {
-	if (palette_bank != (data & 3))
-	{
-		palette_bank = data & 3;
-		memset(dirtybuffer,1,videoram_size);
-	}
+    if (palette_bank != (data & 3)) {
+        palette_bank = data & 3;
+        memset(dirtybuffer, 1, videoram_size);
+    }
 }
 
 
@@ -134,56 +130,51 @@ WRITE_HANDLER( vicdual_palette_bank_w )
   the main emulation engine.
 
 ***************************************************************************/
-void vicdual_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void vicdual_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int offs;
+    int offs;
 
 
-	if (full_refresh)
-	{
-		memset(dirtybuffer,1,videoram_size);
-	}
+    if (full_refresh) {
+        memset(dirtybuffer, 1, videoram_size);
+    }
 
-	/* for every character in the Video RAM, check if it has been modified */
-	/* since last time and update it accordingly. */
-	for (offs = videoram_size - 1;offs >= 0;offs--)
-	{
-		int charcode;
+    /* for every character in the Video RAM, check if it has been modified */
+    /* since last time and update it accordingly. */
+    for (offs = videoram_size - 1; offs >= 0; offs--) {
+        int charcode;
 
 
-		charcode = videoram[offs];
+        charcode = videoram[offs];
 
-		if (dirtybuffer[offs] || dirtycharacter[charcode])
-		{
-			int sx,sy;
-
-
-			/* decode modified characters */
-			if (dirtycharacter[charcode] == 1)
-			{
-				decodechar(Machine->gfx[0],charcode,vicdual_characterram,Machine->drv->gfxdecodeinfo[0].gfxlayout);
-				dirtycharacter[charcode] = 2;
-			}
+        if (dirtybuffer[offs] || dirtycharacter[charcode]) {
+            int sx, sy;
 
 
-			dirtybuffer[offs] = 0;
-
-			sx = offs % 32;
-			sy = offs / 32;
-
-			drawgfx(bitmap,Machine->gfx[0],
-					charcode,
-					(charcode >> 5) + 8 * palette_bank,
-					0,0,
-					8*sx,8*sy,
-					&Machine->visible_area,TRANSPARENCY_NONE,0);
-
-		}
-	}
+            /* decode modified characters */
+            if (dirtycharacter[charcode] == 1) {
+                decodechar(Machine->gfx[0], charcode, vicdual_characterram, Machine->drv->gfxdecodeinfo[0].gfxlayout);
+                dirtycharacter[charcode] = 2;
+            }
 
 
-	for (offs = 0;offs < 256;offs++)
-	{
-		if (dirtycharacter[offs] == 2) dirtycharacter[offs] = 0;
-	}
+            dirtybuffer[offs] = 0;
+
+            sx = offs % 32;
+            sy = offs / 32;
+
+            drawgfx(bitmap, Machine->gfx[0],
+                    charcode,
+                    (charcode >> 5) + 8 * palette_bank,
+                    0, 0,
+                    8 * sx, 8 * sy,
+                    &Machine->visible_area, TRANSPARENCY_NONE, 0);
+
+        }
+    }
+
+
+    for (offs = 0; offs < 256; offs++) {
+        if (dirtycharacter[offs] == 2) dirtycharacter[offs] = 0;
+    }
 }

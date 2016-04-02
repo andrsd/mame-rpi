@@ -28,15 +28,14 @@ static UINT8 update_complete;
 static UINT8 video_control;
 
 /* microcode state */
-static struct
-{
-	UINT16	i;
-	UINT16	pc;
-	UINT8	r,g,b;
-	UINT8	x,xp,y,yp;
-	UINT8	cmd,cmdlo;
-	void *	timer;
-	timer_tm	endtime;
+static struct {
+    UINT16	i;
+    UINT16	pc;
+    UINT8	r, g, b;
+    UINT8	x, xp, y, yp;
+    UINT8	cmd, cmdlo;
+    void *	timer;
+    timer_tm	endtime;
 } micro;
 
 
@@ -72,42 +71,41 @@ static int command7(void);
 
 int victory_vh_start(void)
 {
-	/* allocate bitmapram */
-	rram = (UINT8*)malloc(0x4000);
-	gram = (UINT8*)malloc(0x4000);
-	bram = (UINT8*)malloc(0x4000);
+    /* allocate bitmapram */
+    rram = (UINT8*) malloc(0x4000);
+    gram = (UINT8*) malloc(0x4000);
+    bram = (UINT8*) malloc(0x4000);
 
-	/* allocate bitmaps */
-	bgbitmap = bitmap_alloc(32 * 8, 32 * 8);
-	fgbitmap = bitmap_alloc(32 * 8, 32 * 8);
+    /* allocate bitmaps */
+    bgbitmap = bitmap_alloc(32 * 8, 32 * 8);
+    fgbitmap = bitmap_alloc(32 * 8, 32 * 8);
 
-	/* allocate dirty maps */
-	bgdirty = (UINT8*)malloc(32 * 32);
-	chardirty = (UINT8*)malloc(256);
-	scandirty = (UINT8*)malloc(512);
+    /* allocate dirty maps */
+    bgdirty = (UINT8*) malloc(32 * 32);
+    chardirty = (UINT8*) malloc(256);
+    scandirty = (UINT8*) malloc(512);
 
-	/* fail if something went wrong */
-	if (!rram || !gram || !bram || !bgbitmap || !fgbitmap || !bgdirty || !chardirty || !scandirty)
-	{
-		victory_vh_stop();
-		return 1;
-	}
+    /* fail if something went wrong */
+    if (!rram || !gram || !bram || !bgbitmap || !fgbitmap || !bgdirty || !chardirty || !scandirty) {
+        victory_vh_stop();
+        return 1;
+    }
 
-	/* mark everything dirty */
-	memset(bgdirty, 1, 32 * 32);
-	memset(chardirty, 1, 256);
-	memset(scandirty, 1, 512);
+    /* mark everything dirty */
+    memset(bgdirty, 1, 32 * 32);
+    memset(chardirty, 1, 256);
+    memset(scandirty, 1, 512);
 
-	/* reset globals */
-	vblank_irq = 0;
-	fgcoll = fgcollx = fgcolly = 0;
-	bgcoll = bgcollx = bgcolly = 0;
-	scrollx = scrolly = 0;
-	update_complete = 0;
-	video_control = 0;
-	memset(&micro, 0, sizeof(micro));
+    /* reset globals */
+    vblank_irq = 0;
+    fgcoll = fgcollx = fgcolly = 0;
+    bgcoll = bgcollx = bgcolly = 0;
+    scrollx = scrolly = 0;
+    update_complete = 0;
+    video_control = 0;
+    memset(&micro, 0, sizeof(micro));
 
-	return 0;
+    return 0;
 }
 
 
@@ -120,35 +118,35 @@ int victory_vh_start(void)
 
 void victory_vh_stop(void)
 {
-	/* free dirty maps */
-	if (bgdirty)
-		free(bgdirty);
-	bgdirty = NULL;
-	if (chardirty)
-		free(chardirty);
-	chardirty = NULL;
-	if (scandirty)
-		free(scandirty);
-	scandirty = NULL;
+    /* free dirty maps */
+    if (bgdirty)
+        free(bgdirty);
+    bgdirty = NULL;
+    if (chardirty)
+        free(chardirty);
+    chardirty = NULL;
+    if (scandirty)
+        free(scandirty);
+    scandirty = NULL;
 
-	/* free bitmaps */
-	if (bgbitmap)
-		bitmap_free(bgbitmap);
-	bgbitmap = NULL;
-	if (fgbitmap)
-		bitmap_free(fgbitmap);
-	fgbitmap = NULL;
+    /* free bitmaps */
+    if (bgbitmap)
+        bitmap_free(bgbitmap);
+    bgbitmap = NULL;
+    if (fgbitmap)
+        bitmap_free(fgbitmap);
+    fgbitmap = NULL;
 
-	/* free bitmapram */
-	if (rram)
-		free(rram);
-	rram = NULL;
-	if (gram)
-		free(gram);
-	gram = NULL;
-	if (bram)
-		free(bram);
-	bram = NULL;
+    /* free bitmapram */
+    if (rram)
+        free(rram);
+    rram = NULL;
+    if (gram)
+        free(gram);
+    gram = NULL;
+    if (bram)
+        free(bram);
+    bram = NULL;
 }
 
 
@@ -161,19 +159,19 @@ void victory_vh_stop(void)
 
 void victory_update_irq(void)
 {
-	if (vblank_irq || fgcoll || (bgcoll && (video_control & 0x20)))
-		cpu_set_irq_line(0, 0, ASSERT_LINE);
-	else
-		cpu_set_irq_line(0, 0, CLEAR_LINE);
+    if (vblank_irq || fgcoll || (bgcoll && (video_control & 0x20)))
+        cpu_set_irq_line(0, 0, ASSERT_LINE);
+    else
+        cpu_set_irq_line(0, 0, CLEAR_LINE);
 }
 
 
 int victory_vblank_interrupt(void)
 {
-	vblank_irq = 1;
-	victory_update_irq();
-	//logerror("------------- VBLANK ----------------\n");
-	return ignore_interrupt();
+    vblank_irq = 1;
+    victory_update_irq();
+    //logerror("------------- VBLANK ----------------\n");
+    return ignore_interrupt();
 }
 
 
@@ -184,13 +182,12 @@ int victory_vblank_interrupt(void)
  *
  *************************************/
 
-WRITE_HANDLER( victory_videoram_w )
+WRITE_HANDLER(victory_videoram_w)
 {
-	if (videoram[offset] != data)
-	{
-		videoram[offset] = data;
-		bgdirty[offset] = 1;
-	}
+    if (videoram[offset] != data) {
+        videoram[offset] = data;
+        bgdirty[offset] = 1;
+    }
 }
 
 
@@ -201,13 +198,12 @@ WRITE_HANDLER( victory_videoram_w )
  *
  *************************************/
 
-WRITE_HANDLER( victory_charram_w )
+WRITE_HANDLER(victory_charram_w)
 {
-	if (victory_charram[offset] != data)
-	{
-		victory_charram[offset] = data;
-		chardirty[(offset / 8) % 256] = 1;
-	}
+    if (victory_charram[offset] != data) {
+        victory_charram[offset] = data;
+        chardirty[(offset / 8) % 256] = 1;
+    }
 }
 
 
@@ -218,19 +214,19 @@ WRITE_HANDLER( victory_charram_w )
  *
  *************************************/
 
-WRITE_HANDLER( victory_paletteram_w )
+WRITE_HANDLER(victory_paletteram_w)
 {
-	int red = ((offset & 0x80) >> 5) | ((data & 0xc0) >> 6);
-	int blue = (data & 0x38) >> 3;
-	int green = data & 0x07;
+    int red = ((offset & 0x80) >> 5) | ((data & 0xc0) >> 6);
+    int blue = (data & 0x38) >> 3;
+    int green = data & 0x07;
 
-	/* shift up to 8 bits */
-	red   = (red << 5)   | (red << 2)   | (red >> 1);
-	green = (green << 5) | (green << 2) | (green >> 1);
-	blue  = (blue << 5)  | (blue << 2)  | (blue >> 1);
+    /* shift up to 8 bits */
+    red   = (red << 5)   | (red << 2)   | (red >> 1);
+    green = (green << 5) | (green << 2) | (green >> 1);
+    blue  = (blue << 5)  | (blue << 2)  | (blue >> 1);
 
-	/* set the color */
-	palette_change_color(offset & 0x3f, red, green, blue);
+    /* set the color */
+    palette_change_color(offset & 0x3f, red, green, blue);
 }
 
 
@@ -241,62 +237,59 @@ WRITE_HANDLER( victory_paletteram_w )
  *
  *************************************/
 
-READ_HANDLER( victory_video_control_r )
+READ_HANDLER(victory_video_control_r)
 {
-	int result = 0;
+    int result = 0;
 
-	switch (offset)
-	{
-		case 0:		/* 5XFIQ */
-			result = fgcollx;
-			//if (LOG_COLLISION) logerror("%04X:5XFIQ read = %02X\n", cpu_getpreviouspc(), result);
-			return result;
+    switch (offset) {
+    case 0:		/* 5XFIQ */
+        result = fgcollx;
+        //if (LOG_COLLISION) logerror("%04X:5XFIQ read = %02X\n", cpu_getpreviouspc(), result);
+        return result;
 
-		case 1:		/* 5CLFIQ */
-			result = fgcolly;
-			if (fgcoll)
-			{
-				fgcoll = 0;
-				victory_update_irq();
-			}
-			//if (LOG_COLLISION) logerror("%04X:5CLFIQ read = %02X\n", cpu_getpreviouspc(), result);
-			return result;
+    case 1:		/* 5CLFIQ */
+        result = fgcolly;
+        if (fgcoll) {
+            fgcoll = 0;
+            victory_update_irq();
+        }
+        //if (LOG_COLLISION) logerror("%04X:5CLFIQ read = %02X\n", cpu_getpreviouspc(), result);
+        return result;
 
-		case 2:		/* 5BACKX */
-			result = bgcollx & 0xfc;
-			//if (LOG_COLLISION) logerror("%04X:5BACKX read = %02X\n", cpu_getpreviouspc(), result);
-			return result;
+    case 2:		/* 5BACKX */
+        result = bgcollx & 0xfc;
+        //if (LOG_COLLISION) logerror("%04X:5BACKX read = %02X\n", cpu_getpreviouspc(), result);
+        return result;
 
-		case 3:		/* 5BACKY */
-			result = bgcolly;
-			if (bgcoll)
-			{
-				bgcoll = 0;
-				victory_update_irq();
-			}
-			//if (LOG_COLLISION) logerror("%04X:5BACKY read = %02X\n", cpu_getpreviouspc(), result);
-			return result;
+    case 3:		/* 5BACKY */
+        result = bgcolly;
+        if (bgcoll) {
+            bgcoll = 0;
+            victory_update_irq();
+        }
+        //if (LOG_COLLISION) logerror("%04X:5BACKY read = %02X\n", cpu_getpreviouspc(), result);
+        return result;
 
-		case 4:		/* 5STAT */
-			// D7 = BUSY (9A1) -- microcode
-			// D6 = 5FCIRQ (3B1)
-			// D5 = 5VIRQ
-			// D4 = 5BCIRQ (3B1)
-			// D3 = SL256
-			if (micro.timer && timer_timeelapsed(micro.timer) < micro.endtime)
-				result |= 0x80;
-			result |= (~fgcoll & 1) << 6;
-			result |= (~vblank_irq & 1) << 5;
-			result |= (~bgcoll & 1) << 4;
-			result |= (cpu_getscanline() & 0x100) >> 5;
-			//if (LOG_COLLISION) logerror("%04X:5STAT read = %02X\n", cpu_getpreviouspc(), result);
-			return result;
+    case 4:		/* 5STAT */
+        // D7 = BUSY (9A1) -- microcode
+        // D6 = 5FCIRQ (3B1)
+        // D5 = 5VIRQ
+        // D4 = 5BCIRQ (3B1)
+        // D3 = SL256
+        if (micro.timer && timer_timeelapsed(micro.timer) < micro.endtime)
+            result |= 0x80;
+        result |= (~fgcoll & 1) << 6;
+        result |= (~vblank_irq & 1) << 5;
+        result |= (~bgcoll & 1) << 4;
+        result |= (cpu_getscanline() & 0x100) >> 5;
+        //if (LOG_COLLISION) logerror("%04X:5STAT read = %02X\n", cpu_getpreviouspc(), result);
+        return result;
 
-		default:
-			//logerror("%04X:victory_video_control_r(%02X)\n", cpu_getpreviouspc(), offset);
-			break;
-	}
-	return 0;
+    default:
+        //logerror("%04X:victory_video_control_r(%02X)\n", cpu_getpreviouspc(), offset);
+        break;
+    }
+    return 0;
 }
 
 
@@ -307,117 +300,109 @@ READ_HANDLER( victory_video_control_r )
  *
  *************************************/
 
-WRITE_HANDLER( victory_video_control_w )
+WRITE_HANDLER(victory_video_control_w)
 {
-	switch (offset)
-	{
-		case 0:		/* LOAD IL */
-			//if (LOG_MICROCODE) logerror("%04X:IL=%02X\n", cpu_getpreviouspc(), data);
-			micro.i = (micro.i & 0xff00) | (data & 0x00ff);
-			break;
+    switch (offset) {
+    case 0:		/* LOAD IL */
+        //if (LOG_MICROCODE) logerror("%04X:IL=%02X\n", cpu_getpreviouspc(), data);
+        micro.i = (micro.i & 0xff00) | (data & 0x00ff);
+        break;
 
-		case 1:		/* LOAD IH */
-			//if (LOG_MICROCODE) logerror("%04X:IH=%02X\n", cpu_getpreviouspc(), data);
-			micro.i = (micro.i & 0x00ff) | ((data << 8) & 0xff00);
-			if (micro.cmdlo == 5)
-			{
-				//if (LOG_MICROCODE) logerror("  Command 5 triggered by write to IH\n");
-				command5();
-			}
-			break;
+    case 1:		/* LOAD IH */
+        //if (LOG_MICROCODE) logerror("%04X:IH=%02X\n", cpu_getpreviouspc(), data);
+        micro.i = (micro.i & 0x00ff) | ((data << 8) & 0xff00);
+        if (micro.cmdlo == 5) {
+            //if (LOG_MICROCODE) logerror("  Command 5 triggered by write to IH\n");
+            command5();
+        }
+        break;
 
-		case 2:		/* LOAD CMD */
-			//if (LOG_MICROCODE) logerror("%04X:CMD=%02X\n", cpu_getpreviouspc(), data);
-			micro.cmd = data;
-			micro.cmdlo = data & 7;
-			/*if (micro.cmdlo == 0)
-				logerror("  Command 0 triggered\n");
-			else if (micro.cmdlo == 1)
-				logerror("  Command 1 triggered\n");
-			else*/ if (micro.cmdlo == 6)
-			{
-				//if (LOG_MICROCODE) logerror("  Command 6 triggered\n");
-				command6();
-			}
-			break;
+    case 2:		/* LOAD CMD */
+        //if (LOG_MICROCODE) logerror("%04X:CMD=%02X\n", cpu_getpreviouspc(), data);
+        micro.cmd = data;
+        micro.cmdlo = data & 7;
+        /*if (micro.cmdlo == 0)
+        	logerror("  Command 0 triggered\n");
+        else if (micro.cmdlo == 1)
+        	logerror("  Command 1 triggered\n");
+        else*/ if (micro.cmdlo == 6) {
+            //if (LOG_MICROCODE) logerror("  Command 6 triggered\n");
+            command6();
+        }
+        break;
 
-		case 3:		/* LOAD G */
-			//if (LOG_MICROCODE) logerror("%04X:G=%02X\n", cpu_getpreviouspc(), data);
-			micro.g = data;
-			break;
+    case 3:		/* LOAD G */
+        //if (LOG_MICROCODE) logerror("%04X:G=%02X\n", cpu_getpreviouspc(), data);
+        micro.g = data;
+        break;
 
-		case 4:		/* LOAD X */
-			//if (LOG_MICROCODE) logerror("%04X:X=%02X\n", cpu_getpreviouspc(), data);
-			micro.xp = data;
-			if (micro.cmdlo == 3)
-			{
-				//if (LOG_MICROCODE) logerror(" Command 3 triggered by write to X\n");
-				command3();
-			}
-			break;
+    case 4:		/* LOAD X */
+        //if (LOG_MICROCODE) logerror("%04X:X=%02X\n", cpu_getpreviouspc(), data);
+        micro.xp = data;
+        if (micro.cmdlo == 3) {
+            //if (LOG_MICROCODE) logerror(" Command 3 triggered by write to X\n");
+            command3();
+        }
+        break;
 
-		case 5:		/* LOAD Y */
-			//if (LOG_MICROCODE) logerror("%04X:Y=%02X\n", cpu_getpreviouspc(), data);
-			micro.yp = data;
-			if (micro.cmdlo == 4)
-			{
-				//if (LOG_MICROCODE) logerror("  Command 4 triggered by write to Y\n");
-				command4();
-			}
-			break;
+    case 5:		/* LOAD Y */
+        //if (LOG_MICROCODE) logerror("%04X:Y=%02X\n", cpu_getpreviouspc(), data);
+        micro.yp = data;
+        if (micro.cmdlo == 4) {
+            //if (LOG_MICROCODE) logerror("  Command 4 triggered by write to Y\n");
+            command4();
+        }
+        break;
 
-		case 6:		/* LOAD R */
-			//if (LOG_MICROCODE) logerror("%04X:R=%02X\n", cpu_getpreviouspc(), data);
-			micro.r = data;
-			break;
+    case 6:		/* LOAD R */
+        //if (LOG_MICROCODE) logerror("%04X:R=%02X\n", cpu_getpreviouspc(), data);
+        micro.r = data;
+        break;
 
-		case 7:		/* LOAD B */
-			//if (LOG_MICROCODE) logerror("%04X:B=%02X\n", cpu_getpreviouspc(), data);
-			micro.b = data;
-			if (micro.cmdlo == 2)
-			{
-				//if (LOG_MICROCODE) logerror("  Command 2 triggered by write to B\n");
-				command2();
-			}
-			else if (micro.cmdlo == 7)
-			{
-				//if (LOG_MICROCODE) logerror("  Command 7 triggered by write to B\n");
-				command7();
-			}
-			break;
+    case 7:		/* LOAD B */
+        //if (LOG_MICROCODE) logerror("%04X:B=%02X\n", cpu_getpreviouspc(), data);
+        micro.b = data;
+        if (micro.cmdlo == 2) {
+            //if (LOG_MICROCODE) logerror("  Command 2 triggered by write to B\n");
+            command2();
+        } else if (micro.cmdlo == 7) {
+            //if (LOG_MICROCODE) logerror("  Command 7 triggered by write to B\n");
+            command7();
+        }
+        break;
 
-		case 8:		/* SCROLLX */
-			//if (LOG_MICROCODE) logerror("%04X:SCROLLX write = %02X\n", cpu_getpreviouspc(), data);
-			scrollx = data;
-			break;
+    case 8:		/* SCROLLX */
+        //if (LOG_MICROCODE) logerror("%04X:SCROLLX write = %02X\n", cpu_getpreviouspc(), data);
+        scrollx = data;
+        break;
 
-		case 9:		/* SCROLLY */
-			//if (LOG_MICROCODE) logerror("%04X:SCROLLY write = %02X\n", cpu_getpreviouspc(), data);
-			scrolly = data;
-			break;
+    case 9:		/* SCROLLY */
+        //if (LOG_MICROCODE) logerror("%04X:SCROLLY write = %02X\n", cpu_getpreviouspc(), data);
+        scrolly = data;
+        break;
 
-		case 10:	/* CONTROL */
-			// D7 = HLMBK
-			// D6 = VLMBK
-			// D5 = BIRQEA
-			// D4 = SEL5060
-			// D3 = SINVERT
-			// D2 = BIR12
-			// D1 = SELOVER
-			//if (LOG_MICROCODE) logerror("%04X:CONTROL write = %02X\n", cpu_getpreviouspc(), data);
-			video_control = data;
-			break;
+    case 10:	/* CONTROL */
+        // D7 = HLMBK
+        // D6 = VLMBK
+        // D5 = BIRQEA
+        // D4 = SEL5060
+        // D3 = SINVERT
+        // D2 = BIR12
+        // D1 = SELOVER
+        //if (LOG_MICROCODE) logerror("%04X:CONTROL write = %02X\n", cpu_getpreviouspc(), data);
+        video_control = data;
+        break;
 
-		case 11:	/* CLRVIRQ */
-			//if (LOG_MICROCODE) logerror("%04X:CLRVIRQ write = %02X\n", cpu_getpreviouspc(), data);
-			vblank_irq = 0;
-			victory_update_irq();
-			break;
+    case 11:	/* CLRVIRQ */
+        //if (LOG_MICROCODE) logerror("%04X:CLRVIRQ write = %02X\n", cpu_getpreviouspc(), data);
+        vblank_irq = 0;
+        victory_update_irq();
+        break;
 
-		default:
-			//if (LOG_MICROCODE) logerror("%04X:victory_video_control_w(%02X) = %02X\n", cpu_getpreviouspc(), offset, data);
-			break;
-	}
+    default:
+        //if (LOG_MICROCODE) logerror("%04X:victory_video_control_w(%02X) = %02X\n", cpu_getpreviouspc(), offset, data);
+        break;
+    }
 }
 
 
@@ -617,18 +602,14 @@ Registers:
 
 INLINE void count_states(int states)
 {
-	if (!micro.timer)
-	{
-		micro.timer = timer_set(TIME_NEVER, 0, NULL);
-		micro.endtime = (timer_tm)states * MICRO_STATE_CLOCK_PERIOD;
-	}
-	else if (timer_timeelapsed(micro.timer) > micro.endtime)
-	{
-		timer_reset(micro.timer, TIME_NEVER);
-		micro.endtime = (timer_tm)states * MICRO_STATE_CLOCK_PERIOD;
-	}
-	else
-		micro.endtime += (timer_tm)states * MICRO_STATE_CLOCK_PERIOD;
+    if (!micro.timer) {
+        micro.timer = timer_set(TIME_NEVER, 0, NULL);
+        micro.endtime = (timer_tm) states * MICRO_STATE_CLOCK_PERIOD;
+    } else if (timer_timeelapsed(micro.timer) > micro.endtime) {
+        timer_reset(micro.timer, TIME_NEVER);
+        micro.endtime = (timer_tm) states * MICRO_STATE_CLOCK_PERIOD;
+    } else
+        micro.endtime += (timer_tm) states * MICRO_STATE_CLOCK_PERIOD;
 }
 
 
@@ -641,27 +622,27 @@ INLINE void count_states(int states)
 
 static int command2(void)
 {
-/*
-	Actual microcode:
-		  02	00					  0   0  ZERORAM, INCI, SWVRAM
+    /*
+    	Actual microcode:
+    		  02	00					  0   0  ZERORAM, INCI, SWVRAM
 
-	Basic gist of things:
-		WRITE
-		I++
-		goto state00
-*/
-	int addr = micro.i++ & 0x3fff;
+    	Basic gist of things:
+    		WRITE
+    		I++
+    		goto state00
+    */
+    int addr = micro.i++ & 0x3fff;
 
-	if (micro.cmd & 0x10)
-		gram[addr] = micro.g;
-	if (micro.cmd & 0x20)
-		bram[addr] = micro.b;
-	if (micro.cmd & 0x40)
-		rram[addr] = micro.r;
+    if (micro.cmd & 0x10)
+        gram[addr] = micro.g;
+    if (micro.cmd & 0x20)
+        bram[addr] = micro.b;
+    if (micro.cmd & 0x40)
+        rram[addr] = micro.r;
 
-	scandirty[addr >> 5] = 1;
-	count_states(3);
-	return 0;
+    scandirty[addr >> 5] = 1;
+    count_states(3);
+    return 0;
 }
 
 
@@ -674,106 +655,96 @@ static int command2(void)
 
 static int command3(void)
 {
-/*
-	Actual microcode:
-		  03	1C					  2   0  SLOADLH, SXFERY
-		  1C	HTC ? 19 : 1D		  0   1
-		  1D	1E					  1   2  INCX, SXFERX+INCX, INCL, SWVRAM
-		  1E	/LTC ? 1C : 1F		  1   3  INCI, SINCY, SWVRAM
-		  1F	1C					  1   0  ZERORAM, SXFERY, SADDX, INCH
+    /*
+    	Actual microcode:
+    		  03	1C					  2   0  SLOADLH, SXFERY
+    		  1C	HTC ? 19 : 1D		  0   1
+    		  1D	1E					  1   2  INCX, SXFERX+INCX, INCL, SWVRAM
+    		  1E	/LTC ? 1C : 1F		  1   3  INCI, SINCY, SWVRAM
+    		  1F	1C					  1   0  ZERORAM, SXFERY, SADDX, INCH
 
-	Basic gist of things:
-		H = R >> 5
-		L = (R & 0x1f) << 1
-		Y = Y'
-		state1C:
-			if (H & 8) goto state19
-			X = X'; L++
-			WRITE
-			I++; Y++
-			if ((L & 0x20) == 0) goto state1C
-			Y = Y'; X'++; H++
-			goto state1C
-*/
-	int ycount = 64 - (micro.r & 31) * 2;
-	int xcount = 8 - (micro.r >> 5);
-	int shift = micro.xp & 7;
-	int nshift = 8 - shift;
-	int x, y, sy;
+    	Basic gist of things:
+    		H = R >> 5
+    		L = (R & 0x1f) << 1
+    		Y = Y'
+    		state1C:
+    			if (H & 8) goto state19
+    			X = X'; L++
+    			WRITE
+    			I++; Y++
+    			if ((L & 0x20) == 0) goto state1C
+    			Y = Y'; X'++; H++
+    			goto state1C
+    */
+    int ycount = 64 - (micro.r & 31) * 2;
+    int xcount = 8 - (micro.r >> 5);
+    int shift = micro.xp & 7;
+    int nshift = 8 - shift;
+    int x, y, sy;
 
-	for (x = 0; x < xcount; x++, micro.xp += 8)
-	{
-		sy = micro.yp;
+    for (x = 0; x < xcount; x++, micro.xp += 8) {
+        sy = micro.yp;
 
-		for (y = 0; y < ycount; y++)
-		{
-			int srcoffs = micro.i++ & 0x3fff;
-			int dstoffs = (sy++ & 0xff) * 32 + micro.xp / 8;
-			UINT8 src;
+        for (y = 0; y < ycount; y++) {
+            int srcoffs = micro.i++ & 0x3fff;
+            int dstoffs = (sy++ & 0xff) * 32 + micro.xp / 8;
+            UINT8 src;
 
-			/* non-collision-detect case */
-			if (!(micro.cmd & 0x08) || fgcoll)
-			{
-				if (micro.cmd & 0x10)
-				{
-					src = gram[srcoffs];
-					gram[dstoffs + 0] ^= src >> shift;
-					gram[dstoffs + 1] ^= src << nshift;
-				}
-				if (micro.cmd & 0x20)
-				{
-					src = bram[srcoffs];
-					bram[dstoffs + 0] ^= src >> shift;
-					bram[dstoffs + 1] ^= src << nshift;
-				}
-				if (micro.cmd & 0x40)
-				{
-					src = rram[srcoffs];
-					rram[dstoffs + 0] ^= src >> shift;
-					rram[dstoffs + 1] ^= src << nshift;
-				}
-			}
+            /* non-collision-detect case */
+            if (!(micro.cmd & 0x08) || fgcoll) {
+                if (micro.cmd & 0x10) {
+                    src = gram[srcoffs];
+                    gram[dstoffs + 0] ^= src >> shift;
+                    gram[dstoffs + 1] ^= src << nshift;
+                }
+                if (micro.cmd & 0x20) {
+                    src = bram[srcoffs];
+                    bram[dstoffs + 0] ^= src >> shift;
+                    bram[dstoffs + 1] ^= src << nshift;
+                }
+                if (micro.cmd & 0x40) {
+                    src = rram[srcoffs];
+                    rram[dstoffs + 0] ^= src >> shift;
+                    rram[dstoffs + 1] ^= src << nshift;
+                }
+            }
 
-			/* collision-detect case */
-			else
-			{
-				if (micro.cmd & 0x10)
-				{
-					src = gram[srcoffs];
-					if ((gram[dstoffs + 0] & (src >> shift)) | (gram[dstoffs + 1] & (src << nshift)))
-						fgcoll = 1, fgcollx = micro.xp, fgcolly = sy - 1;
-					gram[dstoffs + 0] ^= src >> shift;
-					gram[dstoffs + 1] ^= src << nshift;
-				}
-				if (micro.cmd & 0x20)
-				{
-					src = bram[srcoffs];
-					if ((bram[dstoffs + 0] & (src >> shift)) | (bram[dstoffs + 1] & (src << nshift)))
-						fgcoll = 1, fgcollx = micro.xp, fgcolly = sy - 1;
-					bram[dstoffs + 0] ^= src >> shift;
-					bram[dstoffs + 1] ^= src << nshift;
-				}
-				if (micro.cmd & 0x40)
-				{
-					src = rram[srcoffs];
-					if ((rram[dstoffs + 0] & (src >> shift)) | (rram[dstoffs + 1] & (src << nshift)))
-						fgcoll = 1, fgcollx = micro.xp, fgcolly = sy - 1;
-					rram[dstoffs + 0] ^= src >> shift;
-					rram[dstoffs + 1] ^= src << nshift;
-				}
-				if (fgcoll) victory_update_irq();
-			}
-		}
-	}
+            /* collision-detect case */
+            else {
+                if (micro.cmd & 0x10) {
+                    src = gram[srcoffs];
+                    if ((gram[dstoffs + 0] & (src >> shift)) | (gram[dstoffs + 1] & (src << nshift)))
+                        fgcoll = 1, fgcollx = micro.xp, fgcolly = sy - 1;
+                    gram[dstoffs + 0] ^= src >> shift;
+                    gram[dstoffs + 1] ^= src << nshift;
+                }
+                if (micro.cmd & 0x20) {
+                    src = bram[srcoffs];
+                    if ((bram[dstoffs + 0] & (src >> shift)) | (bram[dstoffs + 1] & (src << nshift)))
+                        fgcoll = 1, fgcollx = micro.xp, fgcolly = sy - 1;
+                    bram[dstoffs + 0] ^= src >> shift;
+                    bram[dstoffs + 1] ^= src << nshift;
+                }
+                if (micro.cmd & 0x40) {
+                    src = rram[srcoffs];
+                    if ((rram[dstoffs + 0] & (src >> shift)) | (rram[dstoffs + 1] & (src << nshift)))
+                        fgcoll = 1, fgcollx = micro.xp, fgcolly = sy - 1;
+                    rram[dstoffs + 0] ^= src >> shift;
+                    rram[dstoffs + 1] ^= src << nshift;
+                }
+                if (fgcoll) victory_update_irq();
+            }
+        }
+    }
 
-	/* mark scanlines dirty */
-	sy = micro.yp;
-	for (y = 0; y < ycount; y++)
-		scandirty[sy++ & 0xff] = 1;
+    /* mark scanlines dirty */
+    sy = micro.yp;
+    for (y = 0; y < ycount; y++)
+        scandirty[sy++ & 0xff] = 1;
 
-	count_states(3 + (2 + 2 * ycount) * xcount);
+    count_states(3 + (2 + 2 * ycount) * xcount);
 
-	return micro.cmd & 0x80;
+    return micro.cmd & 0x80;
 }
 
 
@@ -786,57 +757,70 @@ static int command3(void)
 
 static int command4(void)
 {
-/*
-	Actual microcode:
-		  04	1A					  2   0  SLOADPC
-		  1A	1B					  2   0  INCPC, SWRITEBUSS1
-		  1B	01					  2   0  INCPC, SWRITEBUSS2
+    /*
+    	Actual microcode:
+    		  04	1A					  2   0  SLOADPC
+    		  1A	1B					  2   0  INCPC, SWRITEBUSS1
+    		  1B	01					  2   0  INCPC, SWRITEBUSS2
 
-	Basic gist of things:
-		PC = Y' << 1
-		CM = GREEN[PC]
-		I = (BLUE[PC] << 8) + RED[PC]
-		PC++
-		R = GREEN[PC]
-		X' = RED[PC]
-		Y' = BLUE[PC]
-		PC++
-		goto state01
-*/
-	int keep_going = 0;
+    	Basic gist of things:
+    		PC = Y' << 1
+    		CM = GREEN[PC]
+    		I = (BLUE[PC] << 8) + RED[PC]
+    		PC++
+    		R = GREEN[PC]
+    		X' = RED[PC]
+    		Y' = BLUE[PC]
+    		PC++
+    		goto state01
+    */
+    int keep_going = 0;
 
-	//if (LOG_MICROCODE) logerror("================= EXECUTE BEGIN\n");
+    //if (LOG_MICROCODE) logerror("================= EXECUTE BEGIN\n");
 
-	count_states(4);
+    count_states(4);
 
-	micro.pc = micro.yp << 1;
-	do
-	{
-		micro.cmd = gram[0x2000 + micro.pc];
-		micro.cmdlo = micro.cmd & 7;
-		micro.i = (bram[0x2000 + micro.pc] << 8) | rram[0x2000 + micro.pc];
-		micro.r = gram[0x2001 + micro.pc];
-		micro.xp = rram[0x2001 + micro.pc];
-		micro.yp = bram[0x2001 + micro.pc];
-		//if (LOG_MICROCODE) logerror("PC=%03X  CMD=%02X I=%04X R=%02X X=%02X Y=%02X\n", micro.pc, micro.cmd, micro.i, micro.r, micro.xp, micro.yp);
-		micro.pc = (micro.pc + 2) & 0x1ff;
+    micro.pc = micro.yp << 1;
+    do {
+        micro.cmd = gram[0x2000 + micro.pc];
+        micro.cmdlo = micro.cmd & 7;
+        micro.i = (bram[0x2000 + micro.pc] << 8) | rram[0x2000 + micro.pc];
+        micro.r = gram[0x2001 + micro.pc];
+        micro.xp = rram[0x2001 + micro.pc];
+        micro.yp = bram[0x2001 + micro.pc];
+        //if (LOG_MICROCODE) logerror("PC=%03X  CMD=%02X I=%04X R=%02X X=%02X Y=%02X\n", micro.pc, micro.cmd, micro.i, micro.r, micro.xp, micro.yp);
+        micro.pc = (micro.pc + 2) & 0x1ff;
 
-		switch (micro.cmdlo)
-		{
-			case 0:												break;
-			case 1:												break;
-			case 2:	keep_going = command2();					break;
-			case 3:	keep_going = command3();					break;
-			case 4:	micro.pc = micro.yp << 1; keep_going = 1;	break;
-			case 5:	keep_going = command5();					break;
-			case 6:	keep_going = command6();					break;
-			case 7:	keep_going = command7();					break;
-		}
-	} while (keep_going);
+        switch (micro.cmdlo) {
+        case 0:
+            break;
+        case 1:
+            break;
+        case 2:
+            keep_going = command2();
+            break;
+        case 3:
+            keep_going = command3();
+            break;
+        case 4:
+            micro.pc = micro.yp << 1;
+            keep_going = 1;
+            break;
+        case 5:
+            keep_going = command5();
+            break;
+        case 6:
+            keep_going = command6();
+            break;
+        case 7:
+            keep_going = command7();
+            break;
+        }
+    } while (keep_going);
 
-	//if (LOG_MICROCODE) logerror("================= EXECUTE END\n");
+    //if (LOG_MICROCODE) logerror("================= EXECUTE END\n");
 
-	return micro.cmd & 0x80;
+    return micro.cmd & 0x80;
 }
 
 
@@ -849,133 +833,122 @@ static int command4(void)
 
 static int command5(void)
 {
-/*
-	Actual microcode:
-		  05	0A					  1   0  SXFERY, ADD128+SACCCLEAR, SACCCLK
-		  0A	VFIN ? 19 : 0B		  1   0  SXFERX+INCX
-		  0B	0A					  1   2  INCI, SACCCLK, SWVRAM
+    /*
+    	Actual microcode:
+    		  05	0A					  1   0  SXFERY, ADD128+SACCCLEAR, SACCCLK
+    		  0A	VFIN ? 19 : 0B		  1   0  SXFERX+INCX
+    		  0B	0A					  1   2  INCI, SACCCLK, SWVRAM
 
-	Basic gist of things:
-		Y = Y'; ACC = 128
-		X = X'/CLOCK SR
-		while (!(IL & 0x100))
-		{
-			IL++; ACC += IH
-			adjust X,Y based on carry
-			WRITE(X,Y)  [SR1]
-		}
+    	Basic gist of things:
+    		Y = Y'; ACC = 128
+    		X = X'/CLOCK SR
+    		while (!(IL & 0x100))
+    		{
+    			IL++; ACC += IH
+    			adjust X,Y based on carry
+    			WRITE(X,Y)  [SR1]
+    		}
 
-	line draw: one of 8 cases based on VDATA
+    	line draw: one of 8 cases based on VDATA
 
-				no carry			carry
-				--------			-----
-		case 0: 1011 -> X++, Y		1101 -> X++, Y--
-		case 1:	0101 -> X, Y--		1101 -> X++, Y--
-		case 2: 0101 -> X, Y--		1100 -> X--, Y--
-		case 3:	1010 -> X--, Y		1100 -> X--, Y--
-		case 4: 1010 -> X--, Y		1110 -> X--, Y++
-		case 5: 0111 -> X, Y++		1110 -> X--, Y++
-		case 6: 0111 -> X, Y++		1111 -> X++, Y++
-		case 7: 1011 -> X++, Y		1111 -> X++, Y++
+    				no carry			carry
+    				--------			-----
+    		case 0: 1011 -> X++, Y		1101 -> X++, Y--
+    		case 1:	0101 -> X, Y--		1101 -> X++, Y--
+    		case 2: 0101 -> X, Y--		1100 -> X--, Y--
+    		case 3:	1010 -> X--, Y		1100 -> X--, Y--
+    		case 4: 1010 -> X--, Y		1110 -> X--, Y++
+    		case 5: 0111 -> X, Y++		1110 -> X--, Y++
+    		case 6: 0111 -> X, Y++		1111 -> X++, Y++
+    		case 7: 1011 -> X++, Y		1111 -> X++, Y++
 
-*/
-	static const INT8 inctable[8][4] =
-	{
-		{  1, 0, 1,-1 },
-		{  0,-1, 1,-1 },
-		{  0,-1,-1,-1 },
-		{ -1, 0,-1,-1 },
-		{ -1, 0,-1, 1 },
-		{  0, 1,-1, 1 },
-		{  0, 1, 1, 1 },
-		{  1, 0, 1, 1 }
-	};
+    */
+    static const INT8 inctable[8][4] = {
+        {  1, 0, 1, -1 },
+        {  0, -1, 1, -1 },
+        {  0, -1, -1, -1 },
+        { -1, 0, -1, -1 },
+        { -1, 0, -1, 1 },
+        {  0, 1, -1, 1 },
+        {  0, 1, 1, 1 },
+        {  1, 0, 1, 1 }
+    };
 
-	int xinc = inctable[(micro.cmd >> 4) & 7][0];
-	int yinc = inctable[(micro.cmd >> 4) & 7][1];
-	int xincc = inctable[(micro.cmd >> 4) & 7][2];
-	int yincc = inctable[(micro.cmd >> 4) & 7][3];
-	UINT8 x = micro.xp;
-	UINT8 y = micro.yp;
-	int acc = 0x80;
-	int i = micro.i >> 8;
-	int c;
+    int xinc = inctable[(micro.cmd >> 4) & 7][0];
+    int yinc = inctable[(micro.cmd >> 4) & 7][1];
+    int xincc = inctable[(micro.cmd >> 4) & 7][2];
+    int yincc = inctable[(micro.cmd >> 4) & 7][3];
+    UINT8 x = micro.xp;
+    UINT8 y = micro.yp;
+    int acc = 0x80;
+    int i = micro.i >> 8;
+    int c;
 
-	/* non-collision-detect case */
-	if (!(micro.cmd & 0x08) || fgcoll)
-	{
-		for (c = micro.i & 0xff; c < 0x100; c++)
-		{
-			int addr = y * 32 + x / 8;
-			int shift = x & 7;
-			int nshift = 8 - shift;
+    /* non-collision-detect case */
+    if (!(micro.cmd & 0x08) || fgcoll) {
+        for (c = micro.i & 0xff; c < 0x100; c++) {
+            int addr = y * 32 + x / 8;
+            int shift = x & 7;
+            int nshift = 8 - shift;
 
-			gram[addr + 0] ^= micro.g >> shift;
-			gram[addr + 1] ^= micro.g << nshift;
-			bram[addr + 0] ^= micro.b >> shift;
-			bram[addr + 1] ^= micro.b << nshift;
-			rram[addr + 0] ^= micro.r >> shift;
-			rram[addr + 1] ^= micro.r << nshift;
-			scandirty[y] = 1;
+            gram[addr + 0] ^= micro.g >> shift;
+            gram[addr + 1] ^= micro.g << nshift;
+            bram[addr + 0] ^= micro.b >> shift;
+            bram[addr + 1] ^= micro.b << nshift;
+            rram[addr + 0] ^= micro.r >> shift;
+            rram[addr + 1] ^= micro.r << nshift;
+            scandirty[y] = 1;
 
-			acc += i;
-			if (acc & 0x100)
-			{
-				x += xincc;
-				y += yincc;
-			}
-			else
-			{
-				x += xinc;
-				y += yinc;
-			}
-			acc &= 0xff;
-		}
-	}
+            acc += i;
+            if (acc & 0x100) {
+                x += xincc;
+                y += yincc;
+            } else {
+                x += xinc;
+                y += yinc;
+            }
+            acc &= 0xff;
+        }
+    }
 
-	/* collision-detect case */
-	else
-	{
-		for (c = micro.i & 0xff; c < 0x100; c++)
-		{
-			int addr = y * 32 + x / 8;
-			int shift = x & 7;
-			int nshift = 8 - shift;
+    /* collision-detect case */
+    else {
+        for (c = micro.i & 0xff; c < 0x100; c++) {
+            int addr = y * 32 + x / 8;
+            int shift = x & 7;
+            int nshift = 8 - shift;
 
-			if ((gram[addr + 0] & (micro.g >> shift)) | (gram[addr + 1] & (micro.g << nshift)) |
-				(bram[addr + 0] & (micro.b >> shift)) | (bram[addr + 1] & (micro.b << nshift)) |
-				(rram[addr + 0] & (micro.r >> shift)) | (rram[addr + 1] & (micro.r << nshift)))
-				fgcoll = 1, fgcollx = x, fgcolly = y;
+            if ((gram[addr + 0] & (micro.g >> shift)) | (gram[addr + 1] & (micro.g << nshift)) |
+                (bram[addr + 0] & (micro.b >> shift)) | (bram[addr + 1] & (micro.b << nshift)) |
+                (rram[addr + 0] & (micro.r >> shift)) | (rram[addr + 1] & (micro.r << nshift)))
+                fgcoll = 1, fgcollx = x, fgcolly = y;
 
-			gram[addr + 0] ^= micro.g >> shift;
-			gram[addr + 1] ^= micro.g << nshift;
-			bram[addr + 0] ^= micro.b >> shift;
-			bram[addr + 1] ^= micro.b << nshift;
-			rram[addr + 0] ^= micro.r >> shift;
-			rram[addr + 1] ^= micro.r << nshift;
-			scandirty[y] = 1;
+            gram[addr + 0] ^= micro.g >> shift;
+            gram[addr + 1] ^= micro.g << nshift;
+            bram[addr + 0] ^= micro.b >> shift;
+            bram[addr + 1] ^= micro.b << nshift;
+            rram[addr + 0] ^= micro.r >> shift;
+            rram[addr + 1] ^= micro.r << nshift;
+            scandirty[y] = 1;
 
-			acc += i;
-			if (acc & 0x100)
-			{
-				x += xincc;
-				y += yincc;
-			}
-			else
-			{
-				x += xinc;
-				y += yinc;
-			}
-			acc &= 0xff;
-		}
-		if (fgcoll) victory_update_irq();
-	}
+            acc += i;
+            if (acc & 0x100) {
+                x += xincc;
+                y += yincc;
+            } else {
+                x += xinc;
+                y += yinc;
+            }
+            acc &= 0xff;
+        }
+        if (fgcoll) victory_update_irq();
+    }
 
-	micro.xp = x;
+    micro.xp = x;
 
-	count_states(3 + 2 * (0x100 - (micro.i & 0xff)));
+    count_states(3 + 2 * (0x100 - (micro.i & 0xff)));
 
-	return micro.cmd & 0x80;
+    return micro.cmd & 0x80;
 }
 
 
@@ -988,45 +961,44 @@ static int command5(void)
 
 static int command6(void)
 {
-/*
-	Actual microcode:
-		  06	0C					  0   0  SLOADLH, SLOADPC
-		  0C	0D					  0   1  INCI, SXFERX+INCX, INCL
-		  0D	/LTC ? 0C : 0E		  2   2  ZERORAM, INCPC, SWVRAM
-		  0E	19					  2   2
+    /*
+    	Actual microcode:
+    		  06	0C					  0   0  SLOADLH, SLOADPC
+    		  0C	0D					  0   1  INCI, SXFERX+INCX, INCL
+    		  0D	/LTC ? 0C : 0E		  2   2  ZERORAM, INCPC, SWVRAM
+    		  0E	19					  2   2
 
-	Basic gist of things:
-		H = R >> 5
-		L = (R & 0x1f) << 1
-		PC = Y'
-		state0C:
-			I++; X = X'; L++
-			WRITE(I, *PC)
-			PC++
-			if ((L & 0x20) == 0) goto state1C
-*/
-	int i;
+    	Basic gist of things:
+    		H = R >> 5
+    		L = (R & 0x1f) << 1
+    		PC = Y'
+    		state0C:
+    			I++; X = X'; L++
+    			WRITE(I, *PC)
+    			PC++
+    			if ((L & 0x20) == 0) goto state1C
+    */
+    int i;
 
-	micro.pc = micro.yp << 1;
-	for (i = (micro.r & 31) << 1; i < 64; i++)
-	{
-		int saddr = micro.i++ & 0x3fff;
-		int daddr = 0x2000 + micro.pc++;
-		micro.pc &= 0x1ff;
+    micro.pc = micro.yp << 1;
+    for (i = (micro.r & 31) << 1; i < 64; i++) {
+        int saddr = micro.i++ & 0x3fff;
+        int daddr = 0x2000 + micro.pc++;
+        micro.pc &= 0x1ff;
 
-		if (micro.cmd & 0x10)
-			gram[daddr] = gram[saddr];
-		if (micro.cmd & 0x20)
-			bram[daddr] = bram[saddr];
-		if (micro.cmd & 0x40)
-			rram[daddr] = rram[saddr];
+        if (micro.cmd & 0x10)
+            gram[daddr] = gram[saddr];
+        if (micro.cmd & 0x20)
+            bram[daddr] = bram[saddr];
+        if (micro.cmd & 0x40)
+            rram[daddr] = rram[saddr];
 
-		scandirty[daddr >> 5] = 1;
-	}
+        scandirty[daddr >> 5] = 1;
+    }
 
-	count_states(3 + 2 * (64 - (micro.r & 31) * 2));
+    count_states(3 + 2 * (64 - (micro.r & 31) * 2));
 
-	return micro.cmd & 0x80;
+    return micro.cmd & 0x80;
 }
 
 
@@ -1039,74 +1011,66 @@ static int command6(void)
 
 static int command7(void)
 {
-/*
-	Actual microcode:
-		  07	08					  1   0  SXFERY, SXFERX+INCX
-		  08	09					  1   2  INCX, SWVRAM
-		  09	00					  1   3  SWVRAM
+    /*
+    	Actual microcode:
+    		  07	08					  1   0  SXFERY, SXFERX+INCX
+    		  08	09					  1   2  INCX, SWVRAM
+    		  09	00					  1   3  SWVRAM
 
-	Basic gist of things:
-		Y = Y'
-		X = X'/CLOCK SR
-		WRITE SR1
-		X++
-		WRITE SR2
-*/
-	int addr = micro.yp * 32 + micro.xp / 8;
-	int shift = micro.xp & 7;
-	int nshift = 8 - shift;
+    	Basic gist of things:
+    		Y = Y'
+    		X = X'/CLOCK SR
+    		WRITE SR1
+    		X++
+    		WRITE SR2
+    */
+    int addr = micro.yp * 32 + micro.xp / 8;
+    int shift = micro.xp & 7;
+    int nshift = 8 - shift;
 
-	/* non-collision-detect case */
-	if (!(micro.cmd & 0x08) || fgcoll)
-	{
-		if (micro.cmd & 0x10)
-		{
-			gram[addr + 0] ^= micro.g >> shift;
-			gram[addr + 1] ^= micro.g << nshift;
-		}
-		if (micro.cmd & 0x20)
-		{
-			bram[addr + 0] ^= micro.b >> shift;
-			bram[addr + 1] ^= micro.b << nshift;
-		}
-		if (micro.cmd & 0x40)
-		{
-			rram[addr + 0] ^= micro.r >> shift;
-			rram[addr + 1] ^= micro.r << nshift;
-		}
-	}
+    /* non-collision-detect case */
+    if (!(micro.cmd & 0x08) || fgcoll) {
+        if (micro.cmd & 0x10) {
+            gram[addr + 0] ^= micro.g >> shift;
+            gram[addr + 1] ^= micro.g << nshift;
+        }
+        if (micro.cmd & 0x20) {
+            bram[addr + 0] ^= micro.b >> shift;
+            bram[addr + 1] ^= micro.b << nshift;
+        }
+        if (micro.cmd & 0x40) {
+            rram[addr + 0] ^= micro.r >> shift;
+            rram[addr + 1] ^= micro.r << nshift;
+        }
+    }
 
-	/* collision-detect case */
-	else
-	{
-		if (micro.cmd & 0x10)
-		{
-			if ((gram[addr + 0] & (micro.g >> shift)) | (gram[addr + 1] & (micro.g << nshift)))
-				fgcoll = 1, fgcollx = micro.xp + 8, fgcolly = micro.yp;
-			gram[addr + 0] ^= micro.g >> shift;
-			gram[addr + 1] ^= micro.g << nshift;
-		}
-		if (micro.cmd & 0x20)
-		{
-			if ((bram[addr + 0] & (micro.b >> shift)) | (bram[addr + 1] & (micro.b << nshift)))
-				fgcoll = 1, fgcollx = micro.xp + 8, fgcolly = micro.yp;
-			bram[addr + 0] ^= micro.b >> shift;
-			bram[addr + 1] ^= micro.b << nshift;
-		}
-		if (micro.cmd & 0x40)
-		{
-			if ((rram[addr + 0] & (micro.r >> shift)) | (rram[addr + 1] & (micro.r << nshift)))
-				fgcoll = 1, fgcollx = micro.xp + 8, fgcolly = micro.yp;
-			rram[addr + 0] ^= micro.r >> shift;
-			rram[addr + 1] ^= micro.r << nshift;
-		}
-		if (fgcoll) victory_update_irq();
-	}
+    /* collision-detect case */
+    else {
+        if (micro.cmd & 0x10) {
+            if ((gram[addr + 0] & (micro.g >> shift)) | (gram[addr + 1] & (micro.g << nshift)))
+                fgcoll = 1, fgcollx = micro.xp + 8, fgcolly = micro.yp;
+            gram[addr + 0] ^= micro.g >> shift;
+            gram[addr + 1] ^= micro.g << nshift;
+        }
+        if (micro.cmd & 0x20) {
+            if ((bram[addr + 0] & (micro.b >> shift)) | (bram[addr + 1] & (micro.b << nshift)))
+                fgcoll = 1, fgcollx = micro.xp + 8, fgcolly = micro.yp;
+            bram[addr + 0] ^= micro.b >> shift;
+            bram[addr + 1] ^= micro.b << nshift;
+        }
+        if (micro.cmd & 0x40) {
+            if ((rram[addr + 0] & (micro.r >> shift)) | (rram[addr + 1] & (micro.r << nshift)))
+                fgcoll = 1, fgcollx = micro.xp + 8, fgcolly = micro.yp;
+            rram[addr + 0] ^= micro.r >> shift;
+            rram[addr + 1] ^= micro.r << nshift;
+        }
+        if (fgcoll) victory_update_irq();
+    }
 
-	count_states(4);
+    count_states(4);
 
-	scandirty[micro.yp] = 1;
-	return micro.cmd & 0x80;
+    scandirty[micro.yp] = 1;
+    return micro.cmd & 0x80;
 }
 
 
@@ -1118,33 +1082,30 @@ static int command7(void)
 
 static void update_background(void)
 {
-	int x, y, offs;
+    int x, y, offs;
 
-	/* update the background and any dirty characters in it */
-	for (y = offs = 0; y < 32; y++)
-		for (x = 0; x < 32; x++, offs++)
-		{
-			int code = videoram[offs];
+    /* update the background and any dirty characters in it */
+    for (y = offs = 0; y < 32; y++)
+        for (x = 0; x < 32; x++, offs++) {
+            int code = videoram[offs];
 
-			/* see if the character is dirty */
-			if (chardirty[code] == 1)
-			{
-				decodechar(Machine->gfx[0], code, victory_charram, Machine->drv->gfxdecodeinfo[0].gfxlayout);
-				chardirty[code] = 2;
-			}
+            /* see if the character is dirty */
+            if (chardirty[code] == 1) {
+                decodechar(Machine->gfx[0], code, victory_charram, Machine->drv->gfxdecodeinfo[0].gfxlayout);
+                chardirty[code] = 2;
+            }
 
-			/* see if the bitmap is dirty */
-			if (bgdirty[offs] || chardirty[code])
-			{
-				drawgfx(bgbitmap, Machine->gfx[0], code, 0, 0, 0, x * 8, y * 8, NULL, TRANSPARENCY_NONE_RAW, 0);
-				bgdirty[offs] = 0;
-			}
-		}
+            /* see if the bitmap is dirty */
+            if (bgdirty[offs] || chardirty[code]) {
+                drawgfx(bgbitmap, Machine->gfx[0], code, 0, 0, 0, x * 8, y * 8, NULL, TRANSPARENCY_NONE_RAW, 0);
+                bgdirty[offs] = 0;
+            }
+        }
 
-	/* reset the char dirty array */
-	for (y = 0; y < 256; y++)
-		if (chardirty[y] == 2)
-			chardirty[y] = 0;
+    /* reset the char dirty array */
+    for (y = 0; y < 256; y++)
+        if (chardirty[y] == 2)
+            chardirty[y] = 0;
 }
 
 
@@ -1156,28 +1117,26 @@ static void update_background(void)
 
 static void update_foreground(void)
 {
-	int x, y;
+    int x, y;
 
-	/* update the foreground's dirty scanlines */
-	for (y = 0; y < 256; y++)
-		if (scandirty[y])
-		{
-			for (x = 0; x < 256; x += 8)
-			{
-				UINT8 g = gram[y * 32 + x / 8];
-				UINT8 b = bram[y * 32 + x / 8];
-				UINT8 r = rram[y * 32 + x / 8];
-				plot_pixel(fgbitmap, x + 0, y, ((r & 0x80) >> 5) | ((b & 0x80) >> 6) | ((g & 0x80) >> 7));
-				plot_pixel(fgbitmap, x + 1, y, ((r & 0x40) >> 4) | ((b & 0x40) >> 5) | ((g & 0x40) >> 6));
-				plot_pixel(fgbitmap, x + 2, y, ((r & 0x20) >> 3) | ((b & 0x20) >> 4) | ((g & 0x20) >> 5));
-				plot_pixel(fgbitmap, x + 3, y, ((r & 0x10) >> 2) | ((b & 0x10) >> 3) | ((g & 0x10) >> 4));
-				plot_pixel(fgbitmap, x + 4, y, ((r & 0x08) >> 1) | ((b & 0x08) >> 2) | ((g & 0x08) >> 3));
-				plot_pixel(fgbitmap, x + 5, y, ((r & 0x04)     ) | ((b & 0x04) >> 1) | ((g & 0x04) >> 2));
-				plot_pixel(fgbitmap, x + 6, y, ((r & 0x02) << 1) | ((b & 0x02)     ) | ((g & 0x02) >> 1));
-				plot_pixel(fgbitmap, x + 7, y, ((r & 0x01) << 2) | ((b & 0x01) << 1) | ((g & 0x01)     ));
-			}
-			scandirty[y] = 0;
-		}
+    /* update the foreground's dirty scanlines */
+    for (y = 0; y < 256; y++)
+        if (scandirty[y]) {
+            for (x = 0; x < 256; x += 8) {
+                UINT8 g = gram[y * 32 + x / 8];
+                UINT8 b = bram[y * 32 + x / 8];
+                UINT8 r = rram[y * 32 + x / 8];
+                plot_pixel(fgbitmap, x + 0, y, ((r & 0x80) >> 5) | ((b & 0x80) >> 6) | ((g & 0x80) >> 7));
+                plot_pixel(fgbitmap, x + 1, y, ((r & 0x40) >> 4) | ((b & 0x40) >> 5) | ((g & 0x40) >> 6));
+                plot_pixel(fgbitmap, x + 2, y, ((r & 0x20) >> 3) | ((b & 0x20) >> 4) | ((g & 0x20) >> 5));
+                plot_pixel(fgbitmap, x + 3, y, ((r & 0x10) >> 2) | ((b & 0x10) >> 3) | ((g & 0x10) >> 4));
+                plot_pixel(fgbitmap, x + 4, y, ((r & 0x08) >> 1) | ((b & 0x08) >> 2) | ((g & 0x08) >> 3));
+                plot_pixel(fgbitmap, x + 5, y, ((r & 0x04)) | ((b & 0x04) >> 1) | ((g & 0x04) >> 2));
+                plot_pixel(fgbitmap, x + 6, y, ((r & 0x02) << 1) | ((b & 0x02)) | ((g & 0x02) >> 1));
+                plot_pixel(fgbitmap, x + 7, y, ((r & 0x01) << 2) | ((b & 0x01) << 1) | ((g & 0x01)));
+            }
+            scandirty[y] = 0;
+        }
 }
 
 
@@ -1190,18 +1149,18 @@ static void update_foreground(void)
 
 static timer_tm pixel_time(int x, int y)
 {
-	/* assuming this is called at refresh time, compute how long until we
-	 * hit the given x,y position */
-	return cpu_getscanlinetime(y) + (cpu_getscanlineperiod() * (timer_tm)x * (TIME_ONE_SEC / 256));
+    /* assuming this is called at refresh time, compute how long until we
+     * hit the given x,y position */
+    return cpu_getscanlinetime(y) + (cpu_getscanlineperiod() * (timer_tm) x * (TIME_ONE_SEC / 256));
 }
 
 
 static void bgcoll_irq_callback(int param)
 {
-	bgcollx = param & 0xff;
-	bgcolly = param >> 8;
-	bgcoll = 1;
-	victory_update_irq();
+    bgcollx = param & 0xff;
+    bgcolly = param >> 8;
+    bgcoll = 1;
+    victory_update_irq();
 }
 
 
@@ -1214,53 +1173,46 @@ static void bgcoll_irq_callback(int param)
 
 void victory_vh_eof(void)
 {
-	int bgcollmask = (video_control & 4) ? 4 : 7;
-	int count = 0;
-	int x, y;
+    int bgcollmask = (video_control & 4) ? 4 : 7;
+    int count = 0;
+    int x, y;
 
-	/* if we already did it, skip it */
-	if (update_complete)
-	{
-		update_complete = 0;
-		return;
-	}
-	update_complete = 0;
+    /* if we already did it, skip it */
+    if (update_complete) {
+        update_complete = 0;
+        return;
+    }
+    update_complete = 0;
 
-	/* update the foreground & background */
-	update_foreground();
-	update_background();
+    /* update the foreground & background */
+    update_foreground();
+    update_background();
 
-	/* blend the bitmaps and do collision detection */
-	for (y = 0; y < 256; y++)
-	{
-		int sy = (scrolly + y) & 255;
-		if (fgbitmap->depth == 8)
-		{
-			UINT8 *fg = &fgbitmap->line[sy][0];
-			UINT8 *bg = &bgbitmap->line[y][0];
+    /* blend the bitmaps and do collision detection */
+    for (y = 0; y < 256; y++) {
+        int sy = (scrolly + y) & 255;
+        if (fgbitmap->depth == 8) {
+            UINT8 *fg = &fgbitmap->line[sy][0];
+            UINT8 *bg = &bgbitmap->line[y][0];
 
-			for (x = 0; x < 256; x++)
-			{
-				int fpix = *fg++;
-				int bpix = bg[(x + scrollx) & 255];
-				if (fpix && (bpix & bgcollmask) && count++ < 128)
-					timer_set(pixel_time(x, y), x | (y << 8), bgcoll_irq_callback);
-			}
-		}
-		else
-		{
-			UINT16 *fg = &((UINT16 *)fgbitmap->line[sy])[0];
-			UINT16 *bg = &((UINT16 *)bgbitmap->line[y])[0];
+            for (x = 0; x < 256; x++) {
+                int fpix = *fg++;
+                int bpix = bg[(x + scrollx) & 255];
+                if (fpix && (bpix & bgcollmask) && count++ < 128)
+                    timer_set(pixel_time(x, y), x | (y << 8), bgcoll_irq_callback);
+            }
+        } else {
+            UINT16 *fg = & ((UINT16 *) fgbitmap->line[sy]) [0];
+            UINT16 *bg = & ((UINT16 *) bgbitmap->line[y]) [0];
 
-			for (x = 0; x < 256; x++)
-			{
-				int fpix = *fg++;
-				int bpix = bg[(x + scrollx) & 255];
-				if (fpix && (bpix & bgcollmask) && count++ < 128)
-					timer_set(pixel_time(x, y), x | (y << 8), bgcoll_irq_callback);
-			}
-		}
-	}
+            for (x = 0; x < 256; x++) {
+                int fpix = *fg++;
+                int bpix = bg[(x + scrollx) & 255];
+                if (fpix && (bpix & bgcollmask) && count++ < 128)
+                    timer_set(pixel_time(x, y), x | (y << 8), bgcoll_irq_callback);
+            }
+        }
+    }
 }
 
 
@@ -1273,53 +1225,47 @@ void victory_vh_eof(void)
 
 void victory_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int bgcollmask = (video_control & 4) ? 4 : 7;
-	int count = 0;
-	int x, y;
+    int bgcollmask = (video_control & 4) ? 4 : 7;
+    int count = 0;
+    int x, y;
 
-	/* recalc the palette */
-	palette_recalc();
+    /* recalc the palette */
+    palette_recalc();
 
-	/* update the foreground & background */
-	update_foreground();
-	update_background();
+    /* update the foreground & background */
+    update_foreground();
+    update_background();
 
-	/* blend the bitmaps and do collision detection */
-	for (y = 0; y < 256; y++)
-	{
-		int sy = (scrolly + y) & 255;
-		if (bitmap->depth == 8)
-		{
-			UINT8 *fg = &fgbitmap->line[y][0];
-			UINT8 *bg = &bgbitmap->line[sy][0];
-			UINT8 *dst = &bitmap->line[y][0];
+    /* blend the bitmaps and do collision detection */
+    for (y = 0; y < 256; y++) {
+        int sy = (scrolly + y) & 255;
+        if (bitmap->depth == 8) {
+            UINT8 *fg = &fgbitmap->line[y][0];
+            UINT8 *bg = &bgbitmap->line[sy][0];
+            UINT8 *dst = &bitmap->line[y][0];
 
-			for (x = 0; x < 256; x++)
-			{
-				int fpix = *fg++;
-				int bpix = bg[(x + scrollx) & 255];
-				*dst++ = Machine->pens[bpix | (fpix << 3)];
-				if (fpix && (bpix & bgcollmask) && count++ < 128)
-					timer_set(pixel_time(x, y), x | (y << 8), bgcoll_irq_callback);
-			}
-		}
-		else
-		{
-			UINT16 *fg = &((UINT16 *)fgbitmap->line[y])[0];
-			UINT16 *bg = &((UINT16 *)bgbitmap->line[sy])[0];
-			UINT16 *dst = &((UINT16 *)bitmap->line[y])[0];
+            for (x = 0; x < 256; x++) {
+                int fpix = *fg++;
+                int bpix = bg[(x + scrollx) & 255];
+                *dst++ = Machine->pens[bpix | (fpix << 3)];
+                if (fpix && (bpix & bgcollmask) && count++ < 128)
+                    timer_set(pixel_time(x, y), x | (y << 8), bgcoll_irq_callback);
+            }
+        } else {
+            UINT16 *fg = & ((UINT16 *) fgbitmap->line[y]) [0];
+            UINT16 *bg = & ((UINT16 *) bgbitmap->line[sy]) [0];
+            UINT16 *dst = & ((UINT16 *) bitmap->line[y]) [0];
 
-			for (x = 0; x < 256; x++)
-			{
-				int fpix = *fg++;
-				int bpix = bg[(x + scrollx) & 255];
-				*dst++ = Machine->pens[bpix | (fpix << 3)];
-				if (fpix && (bpix & bgcollmask) && count++ < 128)
-					timer_set(pixel_time(x, y), x | (y << 8), bgcoll_irq_callback);
-			}
-		}
-	}
+            for (x = 0; x < 256; x++) {
+                int fpix = *fg++;
+                int bpix = bg[(x + scrollx) & 255];
+                *dst++ = Machine->pens[bpix | (fpix << 3)];
+                if (fpix && (bpix & bgcollmask) && count++ < 128)
+                    timer_set(pixel_time(x, y), x | (y << 8), bgcoll_irq_callback);
+            }
+        }
+    }
 
-	/* indicate that we already did collision detection */
-	update_complete = 1;
+    /* indicate that we already did collision detection */
+    update_complete = 1;
 }

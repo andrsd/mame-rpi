@@ -46,7 +46,7 @@ typedef union {
 
 typedef struct {
     UINT16  op[4];      /* opcodes/data of current instruction */
-	UINT16	ppc;		/* previous program counter */
+    UINT16	ppc;		/* previous program counter */
     UINT16  pc;         /* program counter */
     UINT16  psap;       /* program status pointer */
     UINT16  fcw;        /* flags and control word */
@@ -56,8 +56,8 @@ typedef struct {
     UINT16  irq_srv;    /* serviced interrupt request */
     UINT16  irq_vec;    /* interrupt vector */
     z8000_reg_file regs;/* registers */
-	int nmi_state;		/* NMI line state */
-	int irq_state[2];	/* IRQ line states (NVI, VI) */
+    int nmi_state;		/* NMI line state */
+    int irq_state[2];	/* IRQ line states (NVI, VI) */
     int (*irq_callback)(int irqline);
 }   z8000_Regs;
 
@@ -101,195 +101,172 @@ static UINT8 z8000_zsp[256];
  * That's the reason for the ordering in the following pointer table.
  **************************************************************************/
 #ifdef	LSB_FIRST
-	/* pointers to byte (8bit) registers */
-	static UINT8	*pRB[16] =
-	{
-		&Z.regs.B[ 7],&Z.regs.B[ 5],&Z.regs.B[ 3],&Z.regs.B[ 1],
-		&Z.regs.B[15],&Z.regs.B[13],&Z.regs.B[11],&Z.regs.B[ 9],
-		&Z.regs.B[ 6],&Z.regs.B[ 4],&Z.regs.B[ 2],&Z.regs.B[ 0],
-		&Z.regs.B[14],&Z.regs.B[12],&Z.regs.B[10],&Z.regs.B[ 8]
-	};
+/* pointers to byte (8bit) registers */
+static UINT8	*pRB[16] = {
+    &Z.regs.B[ 7], &Z.regs.B[ 5], &Z.regs.B[ 3], &Z.regs.B[ 1],
+    &Z.regs.B[15], &Z.regs.B[13], &Z.regs.B[11], &Z.regs.B[ 9],
+    &Z.regs.B[ 6], &Z.regs.B[ 4], &Z.regs.B[ 2], &Z.regs.B[ 0],
+    &Z.regs.B[14], &Z.regs.B[12], &Z.regs.B[10], &Z.regs.B[ 8]
+};
 
-	static UINT16	*pRW[16] =
-	{
-        &Z.regs.W[ 3],&Z.regs.W[ 2],&Z.regs.W[ 1],&Z.regs.W[ 0],
-        &Z.regs.W[ 7],&Z.regs.W[ 6],&Z.regs.W[ 5],&Z.regs.W[ 4],
-        &Z.regs.W[11],&Z.regs.W[10],&Z.regs.W[ 9],&Z.regs.W[ 8],
-        &Z.regs.W[15],&Z.regs.W[14],&Z.regs.W[13],&Z.regs.W[12]
-    };
+static UINT16	*pRW[16] = {
+    &Z.regs.W[ 3], &Z.regs.W[ 2], &Z.regs.W[ 1], &Z.regs.W[ 0],
+    &Z.regs.W[ 7], &Z.regs.W[ 6], &Z.regs.W[ 5], &Z.regs.W[ 4],
+    &Z.regs.W[11], &Z.regs.W[10], &Z.regs.W[ 9], &Z.regs.W[ 8],
+    &Z.regs.W[15], &Z.regs.W[14], &Z.regs.W[13], &Z.regs.W[12]
+};
 
-    /* pointers to long (32bit) registers */
-	static UINT32	*pRL[16] =
-	{
-		&Z.regs.L[ 1],&Z.regs.L[ 1],&Z.regs.L[ 0],&Z.regs.L[ 0],
-		&Z.regs.L[ 3],&Z.regs.L[ 3],&Z.regs.L[ 2],&Z.regs.L[ 2],
-		&Z.regs.L[ 5],&Z.regs.L[ 5],&Z.regs.L[ 4],&Z.regs.L[ 4],
-		&Z.regs.L[ 7],&Z.regs.L[ 7],&Z.regs.L[ 6],&Z.regs.L[ 6]
-    };
+/* pointers to long (32bit) registers */
+static UINT32	*pRL[16] = {
+    &Z.regs.L[ 1], &Z.regs.L[ 1], &Z.regs.L[ 0], &Z.regs.L[ 0],
+    &Z.regs.L[ 3], &Z.regs.L[ 3], &Z.regs.L[ 2], &Z.regs.L[ 2],
+    &Z.regs.L[ 5], &Z.regs.L[ 5], &Z.regs.L[ 4], &Z.regs.L[ 4],
+    &Z.regs.L[ 7], &Z.regs.L[ 7], &Z.regs.L[ 6], &Z.regs.L[ 6]
+};
 
 #else	/* MSB_FIRST */
 
-    /* pointers to byte (8bit) registers */
-	static UINT8	*pRB[16] =
-	{
-		&Z.regs.B[ 0],&Z.regs.B[ 2],&Z.regs.B[ 4],&Z.regs.B[ 6],
-		&Z.regs.B[ 8],&Z.regs.B[10],&Z.regs.B[12],&Z.regs.B[14],
-		&Z.regs.B[ 1],&Z.regs.B[ 3],&Z.regs.B[ 5],&Z.regs.B[ 7],
-		&Z.regs.B[ 9],&Z.regs.B[11],&Z.regs.B[13],&Z.regs.B[15]
-	};
+/* pointers to byte (8bit) registers */
+static UINT8	*pRB[16] = {
+    &Z.regs.B[ 0], &Z.regs.B[ 2], &Z.regs.B[ 4], &Z.regs.B[ 6],
+    &Z.regs.B[ 8], &Z.regs.B[10], &Z.regs.B[12], &Z.regs.B[14],
+    &Z.regs.B[ 1], &Z.regs.B[ 3], &Z.regs.B[ 5], &Z.regs.B[ 7],
+    &Z.regs.B[ 9], &Z.regs.B[11], &Z.regs.B[13], &Z.regs.B[15]
+};
 
-	/* pointers to word (16bit) registers */
-	static UINT16	*pRW[16] =
-	{
-		&Z.regs.W[ 0],&Z.regs.W[ 1],&Z.regs.W[ 2],&Z.regs.W[ 3],
-		&Z.regs.W[ 4],&Z.regs.W[ 5],&Z.regs.W[ 6],&Z.regs.W[ 7],
-		&Z.regs.W[ 8],&Z.regs.W[ 9],&Z.regs.W[10],&Z.regs.W[11],
-		&Z.regs.W[12],&Z.regs.W[13],&Z.regs.W[14],&Z.regs.W[15]
-	};
+/* pointers to word (16bit) registers */
+static UINT16	*pRW[16] = {
+    &Z.regs.W[ 0], &Z.regs.W[ 1], &Z.regs.W[ 2], &Z.regs.W[ 3],
+    &Z.regs.W[ 4], &Z.regs.W[ 5], &Z.regs.W[ 6], &Z.regs.W[ 7],
+    &Z.regs.W[ 8], &Z.regs.W[ 9], &Z.regs.W[10], &Z.regs.W[11],
+    &Z.regs.W[12], &Z.regs.W[13], &Z.regs.W[14], &Z.regs.W[15]
+};
 
-	/* pointers to long (32bit) registers */
-	static UINT32	*pRL[16] =
-	{
-		&Z.regs.L[ 0],&Z.regs.L[ 0],&Z.regs.L[ 1],&Z.regs.L[ 1],
-		&Z.regs.L[ 2],&Z.regs.L[ 2],&Z.regs.L[ 3],&Z.regs.L[ 3],
-		&Z.regs.L[ 4],&Z.regs.L[ 4],&Z.regs.L[ 5],&Z.regs.L[ 5],
-		&Z.regs.L[ 6],&Z.regs.L[ 6],&Z.regs.L[ 7],&Z.regs.L[ 7]
-	};
+/* pointers to long (32bit) registers */
+static UINT32	*pRL[16] = {
+    &Z.regs.L[ 0], &Z.regs.L[ 0], &Z.regs.L[ 1], &Z.regs.L[ 1],
+    &Z.regs.L[ 2], &Z.regs.L[ 2], &Z.regs.L[ 3], &Z.regs.L[ 3],
+    &Z.regs.L[ 4], &Z.regs.L[ 4], &Z.regs.L[ 5], &Z.regs.L[ 5],
+    &Z.regs.L[ 6], &Z.regs.L[ 6], &Z.regs.L[ 7], &Z.regs.L[ 7]
+};
 
 #endif
 
 /* pointers to quad word (64bit) registers */
 static UINT64   *pRQ[16] = {
-    &Z.regs.Q[ 0],&Z.regs.Q[ 0],&Z.regs.Q[ 0],&Z.regs.Q[ 0],
-    &Z.regs.Q[ 1],&Z.regs.Q[ 1],&Z.regs.Q[ 1],&Z.regs.Q[ 1],
-    &Z.regs.Q[ 2],&Z.regs.Q[ 2],&Z.regs.Q[ 2],&Z.regs.Q[ 2],
-    &Z.regs.Q[ 3],&Z.regs.Q[ 3],&Z.regs.Q[ 3],&Z.regs.Q[ 3]};
+    &Z.regs.Q[ 0], &Z.regs.Q[ 0], &Z.regs.Q[ 0], &Z.regs.Q[ 0],
+    &Z.regs.Q[ 1], &Z.regs.Q[ 1], &Z.regs.Q[ 1], &Z.regs.Q[ 1],
+    &Z.regs.Q[ 2], &Z.regs.Q[ 2], &Z.regs.Q[ 2], &Z.regs.Q[ 2],
+    &Z.regs.Q[ 3], &Z.regs.Q[ 3], &Z.regs.Q[ 3], &Z.regs.Q[ 3]
+};
 
 INLINE UINT16 RDOP(void)
 {
-	UINT16 res = cpu_readop16(PC);
+    UINT16 res = cpu_readop16(PC);
     PC += 2;
     return res;
 }
 
 INLINE UINT8 RDMEM_B(UINT16 addr)
 {
-	return cpu_readmem16bew(addr);
+    return cpu_readmem16bew(addr);
 }
 
 INLINE UINT16 RDMEM_W(UINT16 addr)
 {
-	addr &= ~1;
-	return cpu_readmem16bew_word(addr);
+    addr &= ~1;
+    return cpu_readmem16bew_word(addr);
 }
 
 INLINE UINT32 RDMEM_L(UINT16 addr)
 {
-	UINT32 result;
-	addr &= ~1;
-	result = cpu_readmem16bew_word(addr) << 16;
-	return result + cpu_readmem16bew_word(addr + 2);
+    UINT32 result;
+    addr &= ~1;
+    result = cpu_readmem16bew_word(addr) << 16;
+    return result + cpu_readmem16bew_word(addr + 2);
 }
 
 INLINE void WRMEM_B(UINT16 addr, UINT8 value)
 {
-	cpu_writemem16bew(addr, value);
+    cpu_writemem16bew(addr, value);
 }
 
 INLINE void WRMEM_W(UINT16 addr, UINT16 value)
 {
-	addr &= ~1;
-	cpu_writemem16bew_word(addr, value);
+    addr &= ~1;
+    cpu_writemem16bew_word(addr, value);
 }
 
 INLINE void WRMEM_L(UINT16 addr, UINT32 value)
 {
-	addr &= ~1;
-	cpu_writemem16bew_word(addr, value >> 16);
-	cpu_writemem16bew_word((UINT16)(addr + 2), value & 0xffff);
+    addr &= ~1;
+    cpu_writemem16bew_word(addr, value >> 16);
+    cpu_writemem16bew_word((UINT16)(addr + 2), value & 0xffff);
 }
 
 INLINE UINT8 RDPORT_B(int mode, UINT16 addr)
 {
-	if( mode == 0 )
-	{
-		return cpu_readport(addr);
-	}
-	else
-	{
-		/* how to handle MMU reads? */
-		return 0x00;
-	}
+    if (mode == 0) {
+        return cpu_readport(addr);
+    } else {
+        /* how to handle MMU reads? */
+        return 0x00;
+    }
 }
 
 INLINE UINT16 RDPORT_W(int mode, UINT16 addr)
 {
-	if( mode == 0 )
-	{
-		return cpu_readport((UINT16)(addr)) +
-			  (cpu_readport((UINT16)(addr+1)) << 8);
-	}
-	else
-	{
-		/* how to handle MMU reads? */
-		return 0x0000;
-	}
+    if (mode == 0) {
+        return cpu_readport((UINT16)(addr)) +
+               (cpu_readport((UINT16)(addr + 1)) << 8);
+    } else {
+        /* how to handle MMU reads? */
+        return 0x0000;
+    }
 }
 
 INLINE UINT32 RDPORT_L(int mode, UINT16 addr)
 {
-	if( mode == 0 )
-	{
-		return	cpu_readport((UINT16)(addr)) +
-			   (cpu_readport((UINT16)(addr+1)) <<  8) +
-			   (cpu_readport((UINT16)(addr+2)) << 16) +
-			   (cpu_readport((UINT16)(addr+3)) << 24);
-	}
-	else
-	{
-		/* how to handle MMU reads? */
-		return 0x00000000;
-	}
+    if (mode == 0) {
+        return	cpu_readport((UINT16)(addr)) +
+                (cpu_readport((UINT16)(addr + 1)) <<  8) +
+                (cpu_readport((UINT16)(addr + 2)) << 16) +
+                (cpu_readport((UINT16)(addr + 3)) << 24);
+    } else {
+        /* how to handle MMU reads? */
+        return 0x00000000;
+    }
 }
 
 INLINE void WRPORT_B(int mode, UINT16 addr, UINT8 value)
 {
-	if( mode == 0 )
-	{
-        cpu_writeport(addr,value);
-	}
-	else
-	{
-		/* how to handle MMU writes? */
+    if (mode == 0) {
+        cpu_writeport(addr, value);
+    } else {
+        /* how to handle MMU writes? */
     }
 }
 
 INLINE void WRPORT_W(int mode, UINT16 addr, UINT16 value)
 {
-	if( mode == 0 )
-	{
-		cpu_writeport((UINT16)(addr),value & 0xff);
-		cpu_writeport((UINT16)(addr+1),(value >> 8) & 0xff);
-	}
-	else
-	{
-		/* how to handle MMU writes? */
+    if (mode == 0) {
+        cpu_writeport((UINT16)(addr), value & 0xff);
+        cpu_writeport((UINT16)(addr + 1), (value >> 8) & 0xff);
+    } else {
+        /* how to handle MMU writes? */
     }
 }
 
 INLINE void WRPORT_L(int mode, UINT16 addr, UINT32 value)
 {
-	if( mode == 0 )
-	{
-		cpu_writeport((UINT16)(addr),value & 0xff);
-		cpu_writeport((UINT16)(addr+1),(value >> 8) & 0xff);
-		cpu_writeport((UINT16)(addr+2),(value >> 16) & 0xff);
-		cpu_writeport((UINT16)(addr+3),(value >> 24) & 0xff);
-	}
-	else
-	{
-		/* how to handle MMU writes? */
-	}
+    if (mode == 0) {
+        cpu_writeport((UINT16)(addr), value & 0xff);
+        cpu_writeport((UINT16)(addr + 1), (value >> 8) & 0xff);
+        cpu_writeport((UINT16)(addr + 2), (value >> 16) & 0xff);
+        cpu_writeport((UINT16)(addr + 3), (value >> 24) & 0xff);
+    } else {
+        /* how to handle MMU writes? */
+    }
 }
 
 #include "z8000ops.cpp"
@@ -297,42 +274,41 @@ INLINE void WRPORT_L(int mode, UINT16 addr, UINT32 value)
 
 INLINE void set_irq(int type)
 {
-    switch ((type >> 8) & 255)
-    {
-        case Z8000_INT_NONE >> 8:
-            return;
-        case Z8000_TRAP >> 8:
-            if (IRQ_SRV >= Z8000_TRAP)
-                return; /* double TRAP.. very bad :( */
-            IRQ_REQ = type;
-            break;
-        case Z8000_NMI >> 8:
-            if (IRQ_SRV >= Z8000_NMI)
-                return; /* no NMIs inside trap */
-            IRQ_REQ = type;
-            break;
-        case Z8000_SEGTRAP >> 8:
-            if (IRQ_SRV >= Z8000_SEGTRAP)
-                return; /* no SEGTRAPs inside NMI/TRAP */
-            IRQ_REQ = type;
-            break;
-        case Z8000_NVI >> 8:
-            if (IRQ_SRV >= Z8000_NVI)
-                return; /* no NVIs inside SEGTRAP/NMI/TRAP */
-            IRQ_REQ = type;
-            break;
-        case Z8000_VI >> 8:
-            if (IRQ_SRV >= Z8000_VI)
-                return; /* no VIs inside NVI/SEGTRAP/NMI/TRAP */
-            IRQ_REQ = type;
-            break;
-        case Z8000_SYSCALL >> 8:
-            LOG(("Z8K#%d SYSCALL $%02x\n", cpu_getactivecpu(), type & 0xff));
-            IRQ_REQ = type;
-            break;
-        default:
-            /*logerror("Z8000 invalid Cause_Interrupt %04x\n", type);*/
-            return;
+    switch ((type >> 8) & 255) {
+    case Z8000_INT_NONE >> 8:
+        return;
+    case Z8000_TRAP >> 8:
+        if (IRQ_SRV >= Z8000_TRAP)
+            return; /* double TRAP.. very bad :( */
+        IRQ_REQ = type;
+        break;
+    case Z8000_NMI >> 8:
+        if (IRQ_SRV >= Z8000_NMI)
+            return; /* no NMIs inside trap */
+        IRQ_REQ = type;
+        break;
+    case Z8000_SEGTRAP >> 8:
+        if (IRQ_SRV >= Z8000_SEGTRAP)
+            return; /* no SEGTRAPs inside NMI/TRAP */
+        IRQ_REQ = type;
+        break;
+    case Z8000_NVI >> 8:
+        if (IRQ_SRV >= Z8000_NVI)
+            return; /* no NVIs inside SEGTRAP/NMI/TRAP */
+        IRQ_REQ = type;
+        break;
+    case Z8000_VI >> 8:
+        if (IRQ_SRV >= Z8000_VI)
+            return; /* no VIs inside NVI/SEGTRAP/NMI/TRAP */
+        IRQ_REQ = type;
+        break;
+    case Z8000_SYSCALL >> 8:
+        LOG(("Z8K#%d SYSCALL $%02x\n", cpu_getactivecpu(), type & 0xff));
+        IRQ_REQ = type;
+        break;
+    default:
+        /*logerror("Z8000 invalid Cause_Interrupt %04x\n", type);*/
+        return;
     }
     /* set interrupt request flag, reset HALT flag */
     IRQ_REQ = type & ~Z8000_HALT;
@@ -343,96 +319,78 @@ INLINE void Interrupt(void)
 {
     UINT16 fcw = FCW;
 
-    if (IRQ_REQ & Z8000_NVI)
-    {
+    if (IRQ_REQ & Z8000_NVI) {
         int type = (*Z.irq_callback)(0);
         set_irq(type);
     }
 
-    if (IRQ_REQ & Z8000_VI)
-    {
+    if (IRQ_REQ & Z8000_VI) {
         int type = (*Z.irq_callback)(1);
         set_irq(type);
     }
 
-   /* trap ? */
-   if ( IRQ_REQ & Z8000_TRAP )
-   {
-        CHANGE_FCW(fcw | F_S_N);/* swap to system stack */
-        PUSHW( SP, PC );        /* save current PC */
-        PUSHW( SP, fcw );       /* save current FCW */
-        PUSHW( SP, IRQ_REQ );   /* save interrupt/trap type tag */
+    /* trap ? */
+    if (IRQ_REQ & Z8000_TRAP) {
+        CHANGE_FCW(fcw | F_S_N);    /* swap to system stack */
+        PUSHW(SP, PC);          /* save current PC */
+        PUSHW(SP, fcw);         /* save current FCW */
+        PUSHW(SP, IRQ_REQ);     /* save interrupt/trap type tag */
         IRQ_SRV = IRQ_REQ;
         IRQ_REQ &= ~Z8000_TRAP;
         PC = TRAP;
-        LOG(("Z8K#%d trap $%04x\n", cpu_getactivecpu(), PC ));
-   }
-   else
-   if ( IRQ_REQ & Z8000_SYSCALL )
-   {
-        CHANGE_FCW(fcw | F_S_N);/* swap to system stack */
-        PUSHW( SP, PC );        /* save current PC */
-        PUSHW( SP, fcw );       /* save current FCW */
-        PUSHW( SP, IRQ_REQ );   /* save interrupt/trap type tag */
+        LOG(("Z8K#%d trap $%04x\n", cpu_getactivecpu(), PC));
+    } else if (IRQ_REQ & Z8000_SYSCALL) {
+        CHANGE_FCW(fcw | F_S_N);    /* swap to system stack */
+        PUSHW(SP, PC);          /* save current PC */
+        PUSHW(SP, fcw);         /* save current FCW */
+        PUSHW(SP, IRQ_REQ);     /* save interrupt/trap type tag */
         IRQ_SRV = IRQ_REQ;
         IRQ_REQ &= ~Z8000_SYSCALL;
         PC = SYSCALL;
-        LOG(("Z8K#%d syscall $%04x\n", cpu_getactivecpu(), PC ));
-   }
-   else
-   if ( IRQ_REQ & Z8000_SEGTRAP )
-   {
-        CHANGE_FCW(fcw | F_S_N);/* swap to system stack */
-        PUSHW( SP, PC );        /* save current PC */
-        PUSHW( SP, fcw );       /* save current FCW */
-        PUSHW( SP, IRQ_REQ );   /* save interrupt/trap type tag */
+        LOG(("Z8K#%d syscall $%04x\n", cpu_getactivecpu(), PC));
+    } else if (IRQ_REQ & Z8000_SEGTRAP) {
+        CHANGE_FCW(fcw | F_S_N);    /* swap to system stack */
+        PUSHW(SP, PC);          /* save current PC */
+        PUSHW(SP, fcw);         /* save current FCW */
+        PUSHW(SP, IRQ_REQ);     /* save interrupt/trap type tag */
         IRQ_SRV = IRQ_REQ;
         IRQ_REQ &= ~Z8000_SEGTRAP;
         PC = SEGTRAP;
-        LOG(("Z8K#%d segtrap $%04x\n", cpu_getactivecpu(), PC ));
-   }
-   else
-   if ( IRQ_REQ & Z8000_NMI )
-   {
-        CHANGE_FCW(fcw | F_S_N);/* swap to system stack */
-        PUSHW( SP, PC );        /* save current PC */
-        PUSHW( SP, fcw );       /* save current FCW */
-        PUSHW( SP, IRQ_REQ );   /* save interrupt/trap type tag */
+        LOG(("Z8K#%d segtrap $%04x\n", cpu_getactivecpu(), PC));
+    } else if (IRQ_REQ & Z8000_NMI) {
+        CHANGE_FCW(fcw | F_S_N);    /* swap to system stack */
+        PUSHW(SP, PC);          /* save current PC */
+        PUSHW(SP, fcw);         /* save current FCW */
+        PUSHW(SP, IRQ_REQ);     /* save interrupt/trap type tag */
         IRQ_SRV = IRQ_REQ;
-        fcw = RDMEM_W( NMI );
-        PC = RDMEM_W( NMI + 2 );
+        fcw = RDMEM_W(NMI);
+        PC = RDMEM_W(NMI + 2);
         IRQ_REQ &= ~Z8000_NMI;
         CHANGE_FCW(fcw);
         PC = NMI;
-        LOG(("Z8K#%d NMI $%04x\n", cpu_getactivecpu(), PC ));
-    }
-    else
-    if ( (IRQ_REQ & Z8000_NVI) && (FCW & F_NVIE) )
-    {
-        CHANGE_FCW(fcw | F_S_N);/* swap to system stack */
-        PUSHW( SP, PC );        /* save current PC */
-        PUSHW( SP, fcw );       /* save current FCW */
-        PUSHW( SP, IRQ_REQ );   /* save interrupt/trap type tag */
+        LOG(("Z8K#%d NMI $%04x\n", cpu_getactivecpu(), PC));
+    } else if ((IRQ_REQ & Z8000_NVI) && (FCW & F_NVIE)) {
+        CHANGE_FCW(fcw | F_S_N);    /* swap to system stack */
+        PUSHW(SP, PC);          /* save current PC */
+        PUSHW(SP, fcw);         /* save current FCW */
+        PUSHW(SP, IRQ_REQ);     /* save interrupt/trap type tag */
         IRQ_SRV = IRQ_REQ;
-        fcw = RDMEM_W( NVI );
-        PC = RDMEM_W( NVI + 2 );
+        fcw = RDMEM_W(NVI);
+        PC = RDMEM_W(NVI + 2);
         IRQ_REQ &= ~Z8000_NVI;
         CHANGE_FCW(fcw);
-        LOG(("Z8K#%d NVI $%04x\n", cpu_getactivecpu(), PC ));
-    }
-    else
-    if ( (IRQ_REQ & Z8000_VI) && (FCW & F_VIE) )
-    {
-        CHANGE_FCW(fcw | F_S_N);/* swap to system stack */
-        PUSHW( SP, PC );        /* save current PC */
-        PUSHW( SP, fcw );       /* save current FCW */
-        PUSHW( SP, IRQ_REQ );   /* save interrupt/trap type tag */
+        LOG(("Z8K#%d NVI $%04x\n", cpu_getactivecpu(), PC));
+    } else if ((IRQ_REQ & Z8000_VI) && (FCW & F_VIE)) {
+        CHANGE_FCW(fcw | F_S_N);    /* swap to system stack */
+        PUSHW(SP, PC);          /* save current PC */
+        PUSHW(SP, fcw);         /* save current FCW */
+        PUSHW(SP, IRQ_REQ);     /* save interrupt/trap type tag */
         IRQ_SRV = IRQ_REQ;
-        fcw = RDMEM_W( IRQ_VEC );
-        PC = RDMEM_W( VEC00 + 2 * (IRQ_REQ & 0xff) );
+        fcw = RDMEM_W(IRQ_VEC);
+        PC = RDMEM_W(VEC00 + 2 * (IRQ_REQ & 0xff));
         IRQ_REQ &= ~Z8000_VI;
         CHANGE_FCW(fcw);
-        LOG(("Z8K#%d VI [$%04x/$%04x] fcw $%04x, pc $%04x\n", cpu_getactivecpu(), IRQ_VEC, VEC00 + VEC00 + 2 * (IRQ_REQ & 0xff), FCW, PC ));
+        LOG(("Z8K#%d VI [$%04x/$%04x] fcw $%04x, pc $%04x\n", cpu_getactivecpu(), IRQ_VEC, VEC00 + VEC00 + 2 * (IRQ_REQ & 0xff), FCW, PC));
     }
 }
 
@@ -440,33 +398,29 @@ INLINE void Interrupt(void)
 void z8000_reset(void *param)
 {
     z8000_init();
-	memset(&Z, 0, sizeof(z8000_Regs));
-	FCW = RDMEM_W( 2 ); /* get reset FCW */
-	PC	= RDMEM_W( 4 ); /* get reset PC  */
-	change_pc16bew(PC);
+    memset(&Z, 0, sizeof(z8000_Regs));
+    FCW = RDMEM_W(2);    /* get reset FCW */
+    PC	= RDMEM_W(4);    /* get reset PC  */
+    change_pc16bew(PC);
 }
 
 void z8000_exit(void)
 {
-	z8000_deinit();
+    z8000_deinit();
 }
 
 int z8000_execute(int cycles)
 {
     z8000_ICount = cycles;
 
-    do
-    {
+    do {
         /* any interrupt request pending? */
         if (IRQ_REQ)
-			Interrupt();
+            Interrupt();
 
-		if (IRQ_REQ & Z8000_HALT)
-        {
+        if (IRQ_REQ & Z8000_HALT) {
             z8000_ICount = 0;
-        }
-        else
-        {
+        } else {
             Z8000_exec *exec;
             Z.op[0] = RDOP();
             exec = &z8000_exec[Z.op[0]];
@@ -488,18 +442,17 @@ int z8000_execute(int cycles)
 
 unsigned z8000_get_context(void *dst)
 {
-	if( dst )
-		*(z8000_Regs*)dst = Z;
+    if (dst)
+        * (z8000_Regs*) dst = Z;
     return sizeof(z8000_Regs);
 }
 
 void z8000_set_context(void *src)
 {
-	if( src )
-	{
-		Z = *(z8000_Regs*)src;
-		change_pc16bew(PC);
-	}
+    if (src) {
+        Z = * (z8000_Regs*) src;
+        change_pc16bew(PC);
+    }
 }
 
 unsigned z8000_get_pc(void)
@@ -509,154 +462,222 @@ unsigned z8000_get_pc(void)
 
 void z8000_set_pc(unsigned val)
 {
-	PC = val;
-	change_pc16bew(PC);
+    PC = val;
+    change_pc16bew(PC);
 }
 
 unsigned z8000_get_sp(void)
 {
-	return NSP;
+    return NSP;
 }
 
 void z8000_set_sp(unsigned val)
 {
-	NSP = val;
+    NSP = val;
 }
 
 unsigned z8000_get_reg(int regnum)
 {
-	switch( regnum )
-	{
-		case Z8000_PC: return PC;
-        case Z8000_NSP: return NSP;
-        case Z8000_FCW: return FCW;
-		case Z8000_PSAP: return PSAP;
-		case Z8000_REFRESH: return REFRESH;
-		case Z8000_IRQ_REQ: return IRQ_REQ;
-		case Z8000_IRQ_SRV: return IRQ_SRV;
-		case Z8000_IRQ_VEC: return IRQ_VEC;
-		case Z8000_R0: return RW( 0);
-		case Z8000_R1: return RW( 1);
-		case Z8000_R2: return RW( 2);
-		case Z8000_R3: return RW( 3);
-		case Z8000_R4: return RW( 4);
-		case Z8000_R5: return RW( 5);
-		case Z8000_R6: return RW( 6);
-		case Z8000_R7: return RW( 7);
-		case Z8000_R8: return RW( 8);
-		case Z8000_R9: return RW( 9);
-		case Z8000_R10: return RW(10);
-		case Z8000_R11: return RW(11);
-		case Z8000_R12: return RW(12);
-		case Z8000_R13: return RW(13);
-		case Z8000_R14: return RW(14);
-		case Z8000_R15: return RW(15);
-		case Z8000_NMI_STATE: return Z.nmi_state;
-		case Z8000_NVI_STATE: return Z.irq_state[0];
-		case Z8000_VI_STATE: return Z.irq_state[1];
-		case REG_PREVIOUSPC: return PPC;
-		default:
-			if( regnum <= REG_SP_CONTENTS )
-			{
-				unsigned offset = NSP + 2 * (REG_SP_CONTENTS - regnum);
-				if( offset < 0xffff )
-					return RDMEM_W( offset );
-			}
-	}
+    switch (regnum) {
+    case Z8000_PC:
+        return PC;
+    case Z8000_NSP:
+        return NSP;
+    case Z8000_FCW:
+        return FCW;
+    case Z8000_PSAP:
+        return PSAP;
+    case Z8000_REFRESH:
+        return REFRESH;
+    case Z8000_IRQ_REQ:
+        return IRQ_REQ;
+    case Z8000_IRQ_SRV:
+        return IRQ_SRV;
+    case Z8000_IRQ_VEC:
+        return IRQ_VEC;
+    case Z8000_R0:
+        return RW(0);
+    case Z8000_R1:
+        return RW(1);
+    case Z8000_R2:
+        return RW(2);
+    case Z8000_R3:
+        return RW(3);
+    case Z8000_R4:
+        return RW(4);
+    case Z8000_R5:
+        return RW(5);
+    case Z8000_R6:
+        return RW(6);
+    case Z8000_R7:
+        return RW(7);
+    case Z8000_R8:
+        return RW(8);
+    case Z8000_R9:
+        return RW(9);
+    case Z8000_R10:
+        return RW(10);
+    case Z8000_R11:
+        return RW(11);
+    case Z8000_R12:
+        return RW(12);
+    case Z8000_R13:
+        return RW(13);
+    case Z8000_R14:
+        return RW(14);
+    case Z8000_R15:
+        return RW(15);
+    case Z8000_NMI_STATE:
+        return Z.nmi_state;
+    case Z8000_NVI_STATE:
+        return Z.irq_state[0];
+    case Z8000_VI_STATE:
+        return Z.irq_state[1];
+    case REG_PREVIOUSPC:
+        return PPC;
+    default:
+        if (regnum <= REG_SP_CONTENTS) {
+            unsigned offset = NSP + 2 * (REG_SP_CONTENTS - regnum);
+            if (offset < 0xffff)
+                return RDMEM_W(offset);
+        }
+    }
     return 0;
 }
 
 void z8000_set_reg(int regnum, unsigned val)
 {
-	switch( regnum )
-	{
-		case Z8000_PC: PC = val; break;
-		case Z8000_NSP: NSP = val; break;
-		case Z8000_FCW: FCW = val; break;
-		case Z8000_PSAP: PSAP = val; break;
-		case Z8000_REFRESH: REFRESH = val; break;
-		case Z8000_IRQ_REQ: IRQ_REQ = val; break;
-		case Z8000_IRQ_SRV: IRQ_SRV = val; break;
-		case Z8000_IRQ_VEC: IRQ_VEC = val; break;
-		case Z8000_R0: RW( 0) = val; break;
-		case Z8000_R1: RW( 1) = val; break;
-		case Z8000_R2: RW( 2) = val; break;
-		case Z8000_R3: RW( 3) = val; break;
-		case Z8000_R4: RW( 4) = val; break;
-		case Z8000_R5: RW( 5) = val; break;
-		case Z8000_R6: RW( 6) = val; break;
-		case Z8000_R7: RW( 7) = val; break;
-		case Z8000_R8: RW( 8) = val; break;
-		case Z8000_R9: RW( 9) = val; break;
-		case Z8000_R10: RW(10) = val; break;
-		case Z8000_R11: RW(11) = val; break;
-		case Z8000_R12: RW(12) = val; break;
-		case Z8000_R13: RW(13) = val; break;
-		case Z8000_R14: RW(14) = val; break;
-		case Z8000_R15: RW(15) = val; break;
-		case Z8000_NMI_STATE: Z.nmi_state = val; break;
-		case Z8000_NVI_STATE: Z.irq_state[0] = val; break;
-		case Z8000_VI_STATE: Z.irq_state[1] = val; break;
-		default:
-			if( regnum < REG_SP_CONTENTS )
-			{
-				unsigned offset = NSP + 2 * (REG_SP_CONTENTS - regnum);
-				if( offset < 0xffff )
-					WRMEM_W( offset, val & 0xffff );
-			}
+    switch (regnum) {
+    case Z8000_PC:
+        PC = val;
+        break;
+    case Z8000_NSP:
+        NSP = val;
+        break;
+    case Z8000_FCW:
+        FCW = val;
+        break;
+    case Z8000_PSAP:
+        PSAP = val;
+        break;
+    case Z8000_REFRESH:
+        REFRESH = val;
+        break;
+    case Z8000_IRQ_REQ:
+        IRQ_REQ = val;
+        break;
+    case Z8000_IRQ_SRV:
+        IRQ_SRV = val;
+        break;
+    case Z8000_IRQ_VEC:
+        IRQ_VEC = val;
+        break;
+    case Z8000_R0:
+        RW(0) = val;
+        break;
+    case Z8000_R1:
+        RW(1) = val;
+        break;
+    case Z8000_R2:
+        RW(2) = val;
+        break;
+    case Z8000_R3:
+        RW(3) = val;
+        break;
+    case Z8000_R4:
+        RW(4) = val;
+        break;
+    case Z8000_R5:
+        RW(5) = val;
+        break;
+    case Z8000_R6:
+        RW(6) = val;
+        break;
+    case Z8000_R7:
+        RW(7) = val;
+        break;
+    case Z8000_R8:
+        RW(8) = val;
+        break;
+    case Z8000_R9:
+        RW(9) = val;
+        break;
+    case Z8000_R10:
+        RW(10) = val;
+        break;
+    case Z8000_R11:
+        RW(11) = val;
+        break;
+    case Z8000_R12:
+        RW(12) = val;
+        break;
+    case Z8000_R13:
+        RW(13) = val;
+        break;
+    case Z8000_R14:
+        RW(14) = val;
+        break;
+    case Z8000_R15:
+        RW(15) = val;
+        break;
+    case Z8000_NMI_STATE:
+        Z.nmi_state = val;
+        break;
+    case Z8000_NVI_STATE:
+        Z.irq_state[0] = val;
+        break;
+    case Z8000_VI_STATE:
+        Z.irq_state[1] = val;
+        break;
+    default:
+        if (regnum < REG_SP_CONTENTS) {
+            unsigned offset = NSP + 2 * (REG_SP_CONTENTS - regnum);
+            if (offset < 0xffff)
+                WRMEM_W(offset, val & 0xffff);
+        }
     }
 }
 
 void z8000_set_nmi_line(int state)
 {
-	if (Z.nmi_state == state)
-		return;
+    if (Z.nmi_state == state)
+        return;
 
     Z.nmi_state = state;
 
-    if (state != CLEAR_LINE)
-	{
-		if (IRQ_SRV >= Z8000_NMI)	/* no NMIs inside trap */
-			return;
-		IRQ_REQ = Z8000_NMI;
-		IRQ_VEC = NMI;
-	}
+    if (state != CLEAR_LINE) {
+        if (IRQ_SRV >= Z8000_NMI)	/* no NMIs inside trap */
+            return;
+        IRQ_REQ = Z8000_NMI;
+        IRQ_VEC = NMI;
+    }
 }
 
 void z8000_set_irq_line(int irqline, int state)
 {
-	Z.irq_state[irqline] = state;
-	if (irqline == 0)
-	{
-		if (state == CLEAR_LINE)
-		{
-			if (!(FCW & F_NVIE))
-				IRQ_REQ &= ~Z8000_NVI;
-		}
-		else
-		{
-			if (FCW & F_NVIE)
-				IRQ_REQ |= Z8000_NVI;
+    Z.irq_state[irqline] = state;
+    if (irqline == 0) {
+        if (state == CLEAR_LINE) {
+            if (!(FCW & F_NVIE))
+                IRQ_REQ &= ~Z8000_NVI;
+        } else {
+            if (FCW & F_NVIE)
+                IRQ_REQ |= Z8000_NVI;
         }
-	}
-	else
-	{
-		if (state == CLEAR_LINE)
-		{
-			if (!(FCW & F_VIE))
-				IRQ_REQ &= ~Z8000_VI;
-		}
-		else
-		{
-			if (FCW & F_VIE)
-				IRQ_REQ |= Z8000_VI;
-		}
-	}
+    } else {
+        if (state == CLEAR_LINE) {
+            if (!(FCW & F_VIE))
+                IRQ_REQ &= ~Z8000_VI;
+        } else {
+            if (FCW & F_VIE)
+                IRQ_REQ |= Z8000_VI;
+        }
+    }
 }
 
 void z8000_set_irq_callback(int (*callback)(int irqline))
 {
-	Z.irq_callback = callback;
+    Z.irq_callback = callback;
 }
 
 /****************************************************************************
@@ -664,21 +685,25 @@ void z8000_set_irq_callback(int (*callback)(int irqline))
  ****************************************************************************/
 const char *z8000_info(void *context, int regnum)
 {
-    switch( regnum )
-	{
-		case CPU_INFO_NAME: return "Z8002";
-		case CPU_INFO_FAMILY: return "Zilog Z8000";
-		case CPU_INFO_VERSION: return "1.1";
-		case CPU_INFO_FILE: return __FILE__;
-		case CPU_INFO_CREDITS: return "Copyright (C) 1998,1999 Juergen Buchmueller, all rights reserved.";
+    switch (regnum) {
+    case CPU_INFO_NAME:
+        return "Z8002";
+    case CPU_INFO_FAMILY:
+        return "Zilog Z8000";
+    case CPU_INFO_VERSION:
+        return "1.1";
+    case CPU_INFO_FILE:
+        return __FILE__;
+    case CPU_INFO_CREDITS:
+        return "Copyright (C) 1998,1999 Juergen Buchmueller, all rights reserved.";
     }
-	return "";
+    return "";
 }
 
 
 unsigned z8000_dasm(char *buffer, unsigned pc)
 {
-	sprintf( buffer, "$%04X", cpu_readop16(pc) );
-	return 2;
+    sprintf(buffer, "$%04X", cpu_readop16(pc));
+    return 2;
 }
 

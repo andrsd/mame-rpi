@@ -13,11 +13,11 @@ int tia_sh_start(const struct MachineSound *msound)
     if (Machine->sample_rate == 0)
         return 0;
 
-	channel = stream_init("TIA", intf->volume, Machine->sample_rate, 0, tia_process);
-	if (channel == -1)
+    channel = stream_init("TIA", intf->volume, Machine->sample_rate, 0, tia_process);
+    if (channel == -1)
         return 1;
 
-	tia_sound_init(intf->clock, Machine->sample_rate, intf->gain);
+    tia_sound_init(intf->clock, Machine->sample_rate, intf->gain);
 
     return 0;
 }
@@ -30,7 +30,7 @@ void tia_sh_stop(void)
 
 void tia_sh_update(void)
 {
-	stream_update(channel, 0);
+    stream_update(channel, 0);
 }
 
 

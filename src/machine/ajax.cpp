@@ -34,24 +34,24 @@ static int firq_enable;
 	(*)	The Coin Counters are handled by the Konami Custom 051550
 */
 
-static WRITE_HANDLER( ajax_bankswitch_w )
+static WRITE_HANDLER(ajax_bankswitch_w)
 {
-	unsigned char *RAM = memory_region(REGION_CPU1);
-	int bankaddress = 0;
+    unsigned char *RAM = memory_region(REGION_CPU1);
+    int bankaddress = 0;
 
-	/* rom select */
-	if (!(data & 0x80))	bankaddress += 0x8000;
+    /* rom select */
+    if (!(data & 0x80))	bankaddress += 0x8000;
 
-	/* coin counters */
-	coin_counter_w(0,data & 0x20);
-	coin_counter_w(1,data & 0x40);
+    /* coin counters */
+    coin_counter_w(0, data & 0x20);
+    coin_counter_w(1, data & 0x40);
 
-	/* priority */
-	ajax_priority = data & 0x08;
+    /* priority */
+    ajax_priority = data & 0x08;
 
-	/* bank # (ROMS N11 and N12) */
-	bankaddress += 0x10000 + (data & 0x07)*0x2000;
-	cpu_setbank(2,&RAM[bankaddress]);
+    /* bank # (ROMS N11 and N12) */
+    bankaddress += 0x10000 + (data & 0x07) * 0x2000;
+    cpu_setbank(2, &RAM[bankaddress]);
 }
 
 /*	ajax_lamps_w:
@@ -78,16 +78,16 @@ static WRITE_HANDLER( ajax_bankswitch_w )
 		LS393		C20			Dual -ve edge trigger 4-bit Binary Ripple Counter with Resets
 */
 
-static WRITE_HANDLER( ajax_lamps_w )
+static WRITE_HANDLER(ajax_lamps_w)
 {
-	osd_led_w(0,(data & 0x02) >> 1);	/* super weapon lamp */
-	osd_led_w(1,(data & 0x04) >> 2);	/* power up lamps */
-	osd_led_w(5,(data & 0x04) >> 2);	/* power up lamps */
-	osd_led_w(2,(data & 0x20) >> 5);	/* start lamp */
-	osd_led_w(3,(data & 0x40) >> 6);	/* game over lamps */
-	osd_led_w(6,(data & 0x40) >> 6);	/* game over lamps */
-	osd_led_w(4,(data & 0x80) >> 7);	/* game over lamps */
-	osd_led_w(7,(data & 0x80) >> 7);	/* game over lamps */
+    osd_led_w(0, (data & 0x02) >> 1);	/* super weapon lamp */
+    osd_led_w(1, (data & 0x04) >> 2);	/* power up lamps */
+    osd_led_w(5, (data & 0x04) >> 2);	/* power up lamps */
+    osd_led_w(2, (data & 0x20) >> 5);	/* start lamp */
+    osd_led_w(3, (data & 0x40) >> 6);	/* game over lamps */
+    osd_led_w(6, (data & 0x40) >> 6);	/* game over lamps */
+    osd_led_w(4, (data & 0x80) >> 7);	/* game over lamps */
+    osd_led_w(7, (data & 0x80) >> 7);	/* game over lamps */
 }
 
 /*	ajax_ls138_f10:
@@ -107,74 +107,74 @@ static WRITE_HANDLER( ajax_lamps_w )
 	0x01c0	(r) MIO2			Enables DIPSW #3 reading
 */
 
-READ_HANDLER( ajax_ls138_f10_r )
+READ_HANDLER(ajax_ls138_f10_r)
 {
-	int data = 0;
+    int data = 0;
 
-	switch ((offset & 0x01c0) >> 6){
-		case 0x00:	/* ??? */
-			data = rand();
-			break;
-		case 0x04:	/* 2P inputs */
-			data = readinputport(5);
-			break;
-		case 0x06:	/* 1P inputs + DIPSW #1 & #2 */
-			if (offset & 0x02)
-				data = readinputport(offset & 0x01);
-			else
-				data = readinputport(3 + (offset & 0x01));
-			break;
-		case 0x07:	/* DIPSW #3 */
-			data = readinputport(2);
-			break;
+    switch ((offset & 0x01c0) >> 6) {
+    case 0x00:	/* ??? */
+        data = rand();
+        break;
+    case 0x04:	/* 2P inputs */
+        data = readinputport(5);
+        break;
+    case 0x06:	/* 1P inputs + DIPSW #1 & #2 */
+        if (offset & 0x02)
+            data = readinputport(offset & 0x01);
+        else
+            data = readinputport(3 + (offset & 0x01));
+        break;
+    case 0x07:	/* DIPSW #3 */
+        data = readinputport(2);
+        break;
 
-		default:
-			//logerror("%04x: (ls138_f10) read from an unknown address %02x\n",cpu_get_pc(), offset);
-			break;
-	}
+    default:
+        //logerror("%04x: (ls138_f10) read from an unknown address %02x\n",cpu_get_pc(), offset);
+        break;
+    }
 
-	return data;
+    return data;
 }
 
-WRITE_HANDLER( ajax_ls138_f10_w )
+WRITE_HANDLER(ajax_ls138_f10_w)
 {
-	switch ((offset & 0x01c0) >> 6){
-		case 0x00:	/* NSFIRQ + AFR */
-			if (offset)
-				watchdog_reset_w(0, data);
-			else{
-				if (firq_enable)	/* Cause interrupt on slave CPU */
-					cpu_cause_interrupt(1,M6809_INT_FIRQ);
-			}
-			break;
-		case 0x01:	/* Cause interrupt on audio CPU */
-			cpu_cause_interrupt(2,Z80_IRQ_INT);
-			break;
-		case 0x02:	/* Sound command number */
-			soundlatch_w(offset,data);
-			break;
-		case 0x03:	/* Bankswitch + coin counters + priority*/
-			ajax_bankswitch_w(0, data);
-			break;
-		case 0x05:	/* Lamps + Joystick vibration + Control panel quaking */
-			ajax_lamps_w(0, data);
-			break;
+    switch ((offset & 0x01c0) >> 6) {
+    case 0x00:	/* NSFIRQ + AFR */
+        if (offset)
+            watchdog_reset_w(0, data);
+        else {
+            if (firq_enable)	/* Cause interrupt on slave CPU */
+                cpu_cause_interrupt(1, M6809_INT_FIRQ);
+        }
+        break;
+    case 0x01:	/* Cause interrupt on audio CPU */
+        cpu_cause_interrupt(2, Z80_IRQ_INT);
+        break;
+    case 0x02:	/* Sound command number */
+        soundlatch_w(offset, data);
+        break;
+    case 0x03:	/* Bankswitch + coin counters + priority*/
+        ajax_bankswitch_w(0, data);
+        break;
+    case 0x05:	/* Lamps + Joystick vibration + Control panel quaking */
+        ajax_lamps_w(0, data);
+        break;
 
-		default:
-			//logerror("%04x: (ls138_f10) write %02x to an unknown address %02x\n",cpu_get_pc(), data, offset);
-			break;
-	}
+    default:
+        //logerror("%04x: (ls138_f10) write %02x to an unknown address %02x\n",cpu_get_pc(), data, offset);
+        break;
+    }
 }
 
 /* Shared RAM between the 052001 and the 6809 (6264SL at I8) */
-READ_HANDLER( ajax_sharedram_r )
+READ_HANDLER(ajax_sharedram_r)
 {
-	return ajax_sharedram[offset];
+    return ajax_sharedram[offset];
 }
 
-WRITE_HANDLER( ajax_sharedram_w )
+WRITE_HANDLER(ajax_sharedram_w)
 {
-	ajax_sharedram[offset] = data;
+    ajax_sharedram[offset] = data;
 }
 
 /*	ajax_bankswitch_w_2:
@@ -192,35 +192,35 @@ WRITE_HANDLER( ajax_sharedram_w )
 	0	SRB0	/
 */
 
-WRITE_HANDLER( ajax_bankswitch_2_w )
+WRITE_HANDLER(ajax_bankswitch_2_w)
 {
-	unsigned char *RAM = memory_region(REGION_CPU2);
-	int bankaddress;
+    unsigned char *RAM = memory_region(REGION_CPU2);
+    int bankaddress;
 
-	/* enable char ROM reading through the video RAM */
-	K052109_set_RMRD_line((data & 0x40) ? ASSERT_LINE : CLEAR_LINE);
+    /* enable char ROM reading through the video RAM */
+    K052109_set_RMRD_line((data & 0x40) ? ASSERT_LINE : CLEAR_LINE);
 
-	/* bit 5 enables 051316 wraparound */
-	K051316_wraparound_enable(0, data & 0x20);
+    /* bit 5 enables 051316 wraparound */
+    K051316_wraparound_enable(0, data & 0x20);
 
-	/* FIRQ control */
-	firq_enable = data & 0x10;
+    /* FIRQ control */
+    firq_enable = data & 0x10;
 
-	/* bank # (ROMS G16 and I16) */
-	bankaddress = 0x10000 + (data & 0x0f)*0x2000;
-	cpu_setbank(1,&RAM[bankaddress]);
+    /* bank # (ROMS G16 and I16) */
+    bankaddress = 0x10000 + (data & 0x0f) * 0x2000;
+    cpu_setbank(1, &RAM[bankaddress]);
 }
 
 
-void ajax_init_machine( void )
+void ajax_init_machine(void)
 {
-	firq_enable = 1;
+    firq_enable = 1;
 }
 
-int ajax_interrupt( void )
+int ajax_interrupt(void)
 {
-	if (K051960_is_IRQ_enabled())
-		return KONAMI_INT_IRQ;
-	else
-		return ignore_interrupt();
+    if (K051960_is_IRQ_enabled())
+        return KONAMI_INT_IRQ;
+    else
+        return ignore_interrupt();
 }

@@ -39,43 +39,48 @@ typedef int bool;
 /****************************************************************************
  * The 6502 registers.
  ****************************************************************************/
-typedef struct
-{
-	SC61860_CONFIG *config;
-	UINT8 ram[0x60]; // internal special ram
-	UINT8 p, q, r; //6 bits only?
+typedef struct {
+    SC61860_CONFIG *config;
+    UINT8 ram[0x60]; // internal special ram
+    UINT8 p, q, r; //6 bits only?
 
-	UINT16 oldpc, pc, dp;
-	
-	bool carry, zero;
+    UINT16 oldpc, pc, dp;
 
-	struct { bool t2ms, t512ms; int count;} timer;
+    bool carry, zero;
+
+    struct {
+        bool t2ms, t512ms;
+        int count;
+    } timer;
 }	SC61860_Regs;
 
 int sc61860_icount = 0;
 
 static SC61860_Regs sc61860;
 
-UINT8 *sc61860_internal_ram(void) { return sc61860.ram; }
+UINT8 *sc61860_internal_ram(void)
+{
+    return sc61860.ram;
+}
 
 void sc61860_2ms_tick(int param)
 {
-	if (--sc61860.timer.count==0) {
-		sc61860.timer.count=256;
-		sc61860.timer.t512ms=!sc61860.timer.t512ms;
-	}
-	sc61860.timer.t2ms=!sc61860.timer.t2ms;
+    if (--sc61860.timer.count == 0) {
+        sc61860.timer.count = 256;
+        sc61860.timer.t512ms = !sc61860.timer.t512ms;
+    }
+    sc61860.timer.t2ms = !sc61860.timer.t2ms;
 }
 
 
 READ_HANDLER(sc61860_read_internal)
 {
-	return sc61860.ram[offset];
+    return sc61860.ram[offset];
 }
 
 WRITE_HANDLER(sc61860_write_internal)
 {
-	sc61860.ram[offset]=data;
+    sc61860.ram[offset] = data;
 }
 
 /***************************************************************
@@ -86,111 +91,133 @@ WRITE_HANDLER(sc61860_write_internal)
 
 void sc61860_reset(void *param)
 {
-	if (param) {
-		sc61860.config=(SC61860_CONFIG *)param;
-	}
-	sc61860.timer.t2ms=0;
-	sc61860.timer.t512ms=0;
-	sc61860.timer.count=256;
-	sc61860.pc=0;
-	change_pc(sc61860.pc);
+    if (param) {
+        sc61860.config = (SC61860_CONFIG *) param;
+    }
+    sc61860.timer.t2ms = 0;
+    sc61860.timer.t512ms = 0;
+    sc61860.timer.count = 256;
+    sc61860.pc = 0;
+    change_pc(sc61860.pc);
 }
 
 void sc61860_exit(void)
 {
-	/* nothing to do yet */
+    /* nothing to do yet */
 }
 
-unsigned sc61860_get_context (void *dst)
+unsigned sc61860_get_context(void *dst)
 {
-	if( dst )
-		*(SC61860_Regs*)dst = sc61860;
-	return sizeof(SC61860_Regs);
+    if (dst)
+        * (SC61860_Regs*) dst = sc61860;
+    return sizeof(SC61860_Regs);
 }
 
-void sc61860_set_context (void *src)
+void sc61860_set_context(void *src)
 {
-	if( src )
-	{
-		sc61860 = *(SC61860_Regs*)src;
-		change_pc(sc61860.pc);
-	}
+    if (src) {
+        sc61860 = * (SC61860_Regs*) src;
+        change_pc(sc61860.pc);
+    }
 }
 
-unsigned sc61860_get_pc (void)
+unsigned sc61860_get_pc(void)
 {
-	return sc61860.pc;
+    return sc61860.pc;
 }
 
-void sc61860_set_pc (unsigned val)
+void sc61860_set_pc(unsigned val)
 {
-	sc61860.pc = val;
-	change_pc(sc61860.pc);
+    sc61860.pc = val;
+    change_pc(sc61860.pc);
 }
 
-unsigned sc61860_get_sp (void)
+unsigned sc61860_get_sp(void)
 {
-	return sc61860.r;
+    return sc61860.r;
 }
 
-void sc61860_set_sp (unsigned val)
+void sc61860_set_sp(unsigned val)
 {
-	sc61860.r=val;
+    sc61860.r = val;
 }
 
-unsigned sc61860_get_reg (int regnum)
+unsigned sc61860_get_reg(int regnum)
 {
-	switch( regnum )
-	{
-	case SC61860_PC: return sc61860.pc;
-	case SC61860_DP: return sc61860.dp;
-	case SC61860_P: return sc61860.p;
-	case SC61860_Q: return sc61860.q;
-	case SC61860_R: return sc61860.r;
-	case SC61860_CARRY: return sc61860.carry;
-	case SC61860_ZERO: return sc61860.zero;
-	case REG_PREVIOUSPC: return sc61860.oldpc;
+    switch (regnum) {
+    case SC61860_PC:
+        return sc61860.pc;
+    case SC61860_DP:
+        return sc61860.dp;
+    case SC61860_P:
+        return sc61860.p;
+    case SC61860_Q:
+        return sc61860.q;
+    case SC61860_R:
+        return sc61860.r;
+    case SC61860_CARRY:
+        return sc61860.carry;
+    case SC61860_ZERO:
+        return sc61860.zero;
+    case REG_PREVIOUSPC:
+        return sc61860.oldpc;
 #if 0
-	case SATURN_NMI_STATE: return saturn.nmi_state;
-	case SATURN_IRQ_STATE: return saturn.irq_state;
-		default:
-			if( regnum <= REG_SP_CONTENTS )
-			{
-				unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
-				if( offset < 0x1ff )
-					return RDMEM( offset ) | ( RDMEM( offset + 1 ) << 8 );
-			}
+    case SATURN_NMI_STATE:
+        return saturn.nmi_state;
+    case SATURN_IRQ_STATE:
+        return saturn.irq_state;
+    default:
+        if (regnum <= REG_SP_CONTENTS) {
+            unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
+            if (offset < 0x1ff)
+                return RDMEM(offset) | (RDMEM(offset + 1) << 8);
+        }
 #endif
-	}
-	return 0;
+    }
+    return 0;
 }
 
-void sc61860_set_reg (int regnum, unsigned val)
+void sc61860_set_reg(int regnum, unsigned val)
 {
-	switch( regnum )
-	{
-	case SC61860_PC: sc61860.pc=val;break;
-	case SC61860_DP: sc61860.dp=val;break;
-	case SC61860_P: sc61860.p=val;break;
-	case SC61860_Q: sc61860.q=val;break;
-	case SC61860_R: sc61860.r=val;break;
-	case SC61860_CARRY: sc61860.carry=val;break;
-	case SC61860_ZERO: sc61860.zero=val;break;
+    switch (regnum) {
+    case SC61860_PC:
+        sc61860.pc = val;
+        break;
+    case SC61860_DP:
+        sc61860.dp = val;
+        break;
+    case SC61860_P:
+        sc61860.p = val;
+        break;
+    case SC61860_Q:
+        sc61860.q = val;
+        break;
+    case SC61860_R:
+        sc61860.r = val;
+        break;
+    case SC61860_CARRY:
+        sc61860.carry = val;
+        break;
+    case SC61860_ZERO:
+        sc61860.zero = val;
+        break;
 #if 0
-	case SATURN_NMI_STATE: saturn.nmi_state=val;break;
-	case SATURN_IRQ_STATE: saturn.irq_state=val;break;
-	default:
-		if( regnum <= REG_SP_CONTENTS )
-		{
-			unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
-			if( offset < 0x1ff )
-			{
-				WRMEM( offset, val & 0xfff );
-				WRMEM( offset + 1, (val >> 8) & 0xff );
-			}
-		}
+    case SATURN_NMI_STATE:
+        saturn.nmi_state = val;
+        break;
+    case SATURN_IRQ_STATE:
+        saturn.irq_state = val;
+        break;
+    default:
+        if (regnum <= REG_SP_CONTENTS) {
+            unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
+            if (offset < 0x1ff) {
+                WRMEM(offset, val & 0xfff);
+                WRMEM(offset + 1, (val >> 8) & 0xff);
+            }
+        }
 #endif
-	}
+    }
 }
 
 INLINE void sc61860_take_irq(void)
@@ -199,19 +226,18 @@ INLINE void sc61860_take_irq(void)
 
 int sc61860_execute(int cycles)
 {
-	sc61860_icount = cycles;
+    sc61860_icount = cycles;
 
-	change_pc(sc61860.pc);
+    change_pc(sc61860.pc);
 
-	do
-	{
-		sc61860.oldpc = sc61860.pc;
+    do {
+        sc61860.oldpc = sc61860.pc;
 
-		sc61860_instruction();
+        sc61860_instruction();
 
-	} while (sc61860_icount > 0);
+    } while (sc61860_icount > 0);
 
-	return cycles - sc61860_icount;
+    return cycles - sc61860_icount;
 }
 
 void sc61860_set_nmi_line(int state)
@@ -228,28 +254,28 @@ void sc61860_set_irq_callback(int (*callback)(int))
 
 void sc61860_state_save(void *file)
 {
-	int cpu = cpu_getactivecpu();
-	state_save_UINT16(file,"sc61860",cpu,"PC",&sc61860.pc,2);
-	state_save_UINT16(file,"sc61860",cpu,"DP",&sc61860.dp,2);
-	state_save_UINT8(file,"sc61860",cpu,"P",&sc61860.p,1);
-	state_save_UINT8(file,"sc61860",cpu,"Q",&sc61860.q,1);
-	state_save_UINT8(file,"sc61860",cpu,"R",&sc61860.r,1);
+    int cpu = cpu_getactivecpu();
+    state_save_UINT16(file, "sc61860", cpu, "PC", &sc61860.pc, 2);
+    state_save_UINT16(file, "sc61860", cpu, "DP", &sc61860.dp, 2);
+    state_save_UINT8(file, "sc61860", cpu, "P", &sc61860.p, 1);
+    state_save_UINT8(file, "sc61860", cpu, "Q", &sc61860.q, 1);
+    state_save_UINT8(file, "sc61860", cpu, "R", &sc61860.r, 1);
 //	state_save_UINT8(file,"sc61860",cpu,"C",&sc61860.carry,1);
 //	state_save_UINT8(file,"sc61860",cpu,"Z",&sc61860.zero,1);
-	// internal ram
+    // internal ram
 }
 
 void sc61860_state_load(void *file)
 {
-	int cpu = cpu_getactivecpu();
-	state_load_UINT16(file,"sc61860",cpu,"PC",&sc61860.pc,2);
-	state_load_UINT16(file,"sc61860",cpu,"DP",&sc61860.dp,2);
-	state_load_UINT8(file,"sc61860",cpu,"P",&sc61860.p,1);
-	state_load_UINT8(file,"sc61860",cpu,"Q",&sc61860.q,1);
-	state_load_UINT8(file,"sc61860",cpu,"R",&sc61860.r,1);
+    int cpu = cpu_getactivecpu();
+    state_load_UINT16(file, "sc61860", cpu, "PC", &sc61860.pc, 2);
+    state_load_UINT16(file, "sc61860", cpu, "DP", &sc61860.dp, 2);
+    state_load_UINT8(file, "sc61860", cpu, "P", &sc61860.p, 1);
+    state_load_UINT8(file, "sc61860", cpu, "Q", &sc61860.q, 1);
+    state_load_UINT8(file, "sc61860", cpu, "R", &sc61860.r, 1);
 //	state_load_UINT8(file,"sc61860",cpu,"C",&sc61860.carry,1);
 //	state_load_UINT8(file,"sc61860",cpu,"Z",&sc61860.zero,1);
-	// internal ram
+    // internal ram
 }
 
 /****************************************************************************
@@ -257,13 +283,17 @@ void sc61860_state_load(void *file)
  ****************************************************************************/
 const char *sc61860_info(void *context, int regnum)
 {
-	switch( regnum )
-	{
-	case CPU_INFO_NAME: return "SC61860";
-	case CPU_INFO_FAMILY: return "SC61860";
-	case CPU_INFO_VERSION: return "1.0alpha";
-	case CPU_INFO_FILE: return __FILE__;
-	case CPU_INFO_CREDITS: return "Copyright (c) 2000 Peter Trauner, all rights reserved.";
-	}
-	return "";
+    switch (regnum) {
+    case CPU_INFO_NAME:
+        return "SC61860";
+    case CPU_INFO_FAMILY:
+        return "SC61860";
+    case CPU_INFO_VERSION:
+        return "1.0alpha";
+    case CPU_INFO_FILE:
+        return __FILE__;
+    case CPU_INFO_CREDITS:
+        return "Copyright (c) 2000 Peter Trauner, all rights reserved.";
+    }
+    return "";
 }

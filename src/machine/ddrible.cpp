@@ -12,23 +12,23 @@
 
 int ddrible_int_enable_0, ddrible_int_enable_1;
 
-void ddrible_init_machine( void )
+void ddrible_init_machine(void)
 {
-	ddrible_int_enable_0 = ddrible_int_enable_1 = 0;
+    ddrible_int_enable_0 = ddrible_int_enable_1 = 0;
 }
 
-WRITE_HANDLER( int_0_w )
+WRITE_HANDLER(int_0_w)
 {
-	if (data & 0x02)
-		ddrible_int_enable_0 = 1;
-	else
-		ddrible_int_enable_0 = 0;
+    if (data & 0x02)
+        ddrible_int_enable_0 = 1;
+    else
+        ddrible_int_enable_0 = 0;
 }
 
-WRITE_HANDLER( int_1_w )
+WRITE_HANDLER(int_1_w)
 {
-	if (data & 0x02)
-		ddrible_int_enable_1 = 1;
-	else
-		ddrible_int_enable_1 = 0;
+    if (data & 0x02)
+        ddrible_int_enable_1 = 1;
+    else
+        ddrible_int_enable_1 = 0;
 }

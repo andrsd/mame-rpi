@@ -94,7 +94,7 @@ void tms5220_reset(void)
 
     /* initialize the chip state */
     speak_external = speak_delay_frames = talk_status = irq_pin = 0;
-	buffer_empty = buffer_low = 1;
+    buffer_empty = buffer_low = 1;
 
     /* initialize the energy/pitch/k states */
     old_energy = new_energy = current_energy = target_energy = 0;
@@ -134,21 +134,20 @@ void tms5220_set_irq(void (*func)(int))
 void tms5220_data_write(int data)
 {
     /* add this byte to the FIFO */
-    if (fifo_count < FIFO_SIZE)
-    {
+    if (fifo_count < FIFO_SIZE) {
         fifo[fifo_tail] = data;
         fifo_tail = (fifo_tail + 1) % FIFO_SIZE;
         fifo_count++;
 
-		/* if we were speaking, then we're no longer empty */
-		if (speak_external)
-			buffer_empty = 0;
+        /* if we were speaking, then we're no longer empty */
+        if (speak_external)
+            buffer_empty = 0;
 
         //if (DEBUG_5220) logerror("Added byte to FIFO (size=%2d)\n", fifo_count);
     }
     //else
     //{
-        //if (DEBUG_5220) logerror("Ran out of room in the FIFO!\n");
+    //if (DEBUG_5220) logerror("Ran out of room in the FIFO!\n");
     //}
 
     /* update the buffer low state */
@@ -199,7 +198,7 @@ int tms5220_status_read(void)
 
 int tms5220_ready_read(void)
 {
-    return (fifo_count < FIFO_SIZE-1);
+    return (fifo_count < FIFO_SIZE - 1);
 }
 
 
@@ -225,7 +224,7 @@ int tms5220_int_read(void)
 
 void tms5220_process(INT16 *buffer, unsigned int size)
 {
-    int buf_count=0;
+    int buf_count = 0;
     int i, interp_period;
 
 tryagain:
@@ -239,10 +238,9 @@ tryagain:
         goto empty;
 
     /* if we're to speak, but haven't started, wait for the 9th byte */
-    if (!talk_status)
-    {
+    if (!talk_status) {
         if (fifo_count < 9)
-           goto empty;
+            goto empty;
 
         /* parse but don't remove the first frame, and set the status to 1 */
         parse_frame(0);
@@ -251,28 +249,22 @@ tryagain:
     }
 
     /* apply some delay before we actually consume data; Victory requires this */
-    if (speak_delay_frames)
-    {
-    	if (size <= speak_delay_frames)
-    	{
-    		speak_delay_frames -= size;
-    		size = 0;
-    	}
-    	else
-    	{
-    		size -= speak_delay_frames;
-    		speak_delay_frames = 0;
-    	}
+    if (speak_delay_frames) {
+        if (size <= speak_delay_frames) {
+            speak_delay_frames -= size;
+            size = 0;
+        } else {
+            size -= speak_delay_frames;
+            speak_delay_frames = 0;
+        }
     }
 
     /* loop until the buffer is full or we've stopped speaking */
-    while ((size > 0) && speak_external)
-    {
+    while ((size > 0) && speak_external) {
         int current_val;
 
         /* if we're ready for a new frame */
-        if ((interp_count == 0) && (sample_count == 0))
-        {
+        if ((interp_count == 0) && (sample_count == 0)) {
             /* Parse a new frame */
             if (!parse_frame(1))
                 break;
@@ -284,8 +276,7 @@ tryagain:
                 current_k[i] = old_k[i];
 
             /* is this a zero energy frame? */
-            if (current_energy == 0)
-            {
+            if (current_energy == 0) {
                 /*printf("processing frame: zero energy\n");*/
                 target_energy = 0;
                 target_pitch = current_pitch;
@@ -294,8 +285,7 @@ tryagain:
             }
 
             /* is this a stop frame? */
-            else if (current_energy == (energytable[15] >> 6))
-            {
+            else if (current_energy == (energytable[15] >> 6)) {
                 /*printf("processing frame: stop frame\n");*/
                 current_energy = energytable[0] >> 6;
                 target_energy = current_energy;
@@ -307,12 +297,9 @@ tryagain:
 
                 /* try to fetch commands again */
                 goto tryagain;
-            }
-            else
-            {
+            } else {
                 /* is this the ramp down frame? */
-                if (new_energy == (energytable[15] >> 6))
-                {
+                if (new_energy == (energytable[15] >> 6)) {
                     /*printf("processing frame: ramp down\n");*/
                     target_energy = 0;
                     target_pitch = current_pitch;
@@ -320,8 +307,7 @@ tryagain:
                         target_k[i] = current_k[i];
                 }
                 /* Reset the step size */
-                else
-                {
+                else {
                     /*printf("processing frame: Normal\n");*/
                     /*printf("*** Energy = %d\n",current_energy);*/
                     /*printf("proc: %d %d\n",last_fbuf_head,fbuf_head);*/
@@ -332,8 +318,7 @@ tryagain:
                     for (i = 0; i < 4; i++)
                         target_k[i] = new_k[i];
                     if (current_pitch == 0)
-                        for (i = 4; i < 10; i++)
-                        {
+                        for (i = 4; i < 10; i++) {
                             target_k[i] = current_k[i] = 0;
                         }
                     else
@@ -341,9 +326,7 @@ tryagain:
                             target_k[i] = new_k[i];
                 }
             }
-        }
-        else if (interp_count == 0)
-        {
+        } else if (interp_count == 0) {
             /* Update values based on step values */
             /*printf("\n");*/
 
@@ -354,25 +337,19 @@ tryagain:
 
             /*printf("*** Energy = %d\n",current_energy);*/
 
-            for (i = 0; i < 10; i++)
-            {
+            for (i = 0; i < 10; i++) {
                 current_k[i] += (target_k[i] - current_k[i]) / interp_coeff[interp_period];
             }
         }
 
-        if (old_energy == 0)
-        {
+        if (old_energy == 0) {
             /* generate silent samples here */
             current_val = 0x00;
-        }
-        else if (old_pitch == 0)
-        {
+        } else if (old_pitch == 0) {
             /* generate unvoiced samples here */
             randbit = (rand() % 2) * 2 - 1;
             current_val = (randbit * current_energy) / 4;
-        }
-        else
-        {
+        } else {
             /* generate voiced samples here */
             if (pitch_count < sizeof(chirptable))
                 current_val = (chirptable[pitch_count] * current_energy) / 256;
@@ -384,13 +361,11 @@ tryagain:
 
         u[10] = current_val;
 
-        for (i = 9; i >= 0; i--)
-        {
-            u[i] = u[i+1] - ((current_k[i] * x[i]) / 32768);
+        for (i = 9; i >= 0; i--) {
+            u[i] = u[i + 1] - ((current_k[i] * x[i]) / 32768);
         }
-        for (i = 9; i >= 1; i--)
-        {
-            x[i] = x[i-1] + ((current_k[i-1] * u[i-1]) / 32768);
+        for (i = 9; i >= 1; i--) {
+            x[i] = x[i - 1] + ((current_k[i - 1] * u[i - 1]) / 32768);
         }
 
         x[0] = u[0];
@@ -398,9 +373,9 @@ tryagain:
         /* clipping, just like the chip */
 
         if (u[0] > 511)
-            buffer[buf_count] = 127<<8;
+            buffer[buf_count] = 127 << 8;
         else if (u[0] < -512)
-            buffer[buf_count] = -128<<8;
+            buffer[buf_count] = -128 << 8;
         else
             buffer[buf_count] = u[0] << 6;
 
@@ -420,8 +395,7 @@ tryagain:
 
 empty:
 
-    while (size > 0)
-    {
+    while (size > 0) {
         buffer[buf_count] = 0x00;
         buf_count++;
         size--;
@@ -441,29 +415,25 @@ static void process_command(void)
     unsigned char cmd;
 
     /* if there are stray bits, ignore them */
-    if (bits_taken)
-    {
+    if (bits_taken) {
         bits_taken = 0;
         fifo_count--;
         fifo_head = (fifo_head + 1) % FIFO_SIZE;
     }
 
     /* grab a full byte from the FIFO */
-    if (fifo_count > 0)
-    {
+    if (fifo_count > 0) {
         cmd = fifo[fifo_head] & 0x70;
         fifo_count--;
         fifo_head = (fifo_head + 1) % FIFO_SIZE;
 
         /* only real command we handle now is speak external */
-        if (cmd == 0x60)
-        {
+        if (cmd == 0x60) {
             speak_external = 1;
             speak_delay_frames = 10;
 
             /* according to the datasheet, this will cause an interrupt due to a BE condition */
-            if (!buffer_empty)
-            {
+            if (!buffer_empty) {
                 buffer_empty = 1;
                 set_interrupt_state(1);
             }
@@ -486,12 +456,10 @@ static int extract_bits(int count)
 {
     int val = 0;
 
-    while (count--)
-    {
+    while (count--) {
         val = (val << 1) | ((fifo[fifo_head] >> bits_taken) & 1);
         bits_taken++;
-        if (bits_taken >= 8)
-        {
+        if (bits_taken >= 8) {
             fifo_count--;
             fifo_head = (fifo_head + 1) % FIFO_SIZE;
             bits_taken = 0;
@@ -544,19 +512,17 @@ static int parse_frame(int removeit)
     indx = extract_bits(4);
     new_energy = energytable[indx] >> 6;
 
-	/* if the index is 0 or 15, we're done */
-	if (indx == 0 || indx == 15)
-	{
-		//if (DEBUG_5220) logerror("  (4-bit energy=%d frame)\n",new_energy);
+    /* if the index is 0 or 15, we're done */
+    if (indx == 0 || indx == 15) {
+        //if (DEBUG_5220) logerror("  (4-bit energy=%d frame)\n",new_energy);
 
-		/* clear fifo if stop frame encountered */
-		if (indx == 15)
-		{
-			fifo_head = fifo_tail = fifo_count = bits_taken = 0;
-			removeit = 1;
-		}
-		goto done;
-	}
+        /* clear fifo if stop frame encountered */
+        if (indx == 15) {
+            fifo_head = fifo_tail = fifo_count = bits_taken = 0;
+            removeit = 1;
+        }
+        goto done;
+    }
 
     /* attempt to extract the repeat flag */
     bits -= 1;
@@ -572,8 +538,7 @@ static int parse_frame(int removeit)
     new_pitch = pitchtable[indx] / 256;
 
     /* if this is a repeat frame, just copy the k's */
-    if (rep_flag)
-    {
+    if (rep_flag) {
         for (i = 0; i < 10; i++)
             new_k[i] = old_k[i];
 
@@ -582,8 +547,7 @@ static int parse_frame(int removeit)
     }
 
     /* if the pitch index was zero, we need 4 k's */
-    if (indx == 0)
-    {
+    if (indx == 0) {
         /* attempt to extract 4 K's */
         bits -= 18;
         if (bits < 0)
@@ -619,8 +583,7 @@ done:
     //if (DEBUG_5220) logerror("Parsed a frame successfully - %d bits remaining\n", bits);
 
     /* if we're not to remove this one, restore the FIFO */
-    if (!removeit)
-    {
+    if (!removeit) {
         fifo_count = old_count;
         fifo_head = old_head;
         bits_taken = old_taken;
@@ -655,8 +618,7 @@ ranout:
 static void check_buffer_low(void)
 {
     /* did we just become low? */
-    if (fifo_count <= 8)
-    {
+    if (fifo_count <= 8) {
         /* generate an interrupt if necessary */
         if (!buffer_low)
             set_interrupt_state(1);
@@ -666,8 +628,7 @@ static void check_buffer_low(void)
     }
 
     /* did we just become full? */
-    else
-    {
+    else {
         buffer_low = 0;
 
         //if (DEBUG_5220) logerror("Buffer low cleared\n");
@@ -685,6 +646,6 @@ static void check_buffer_low(void)
 static void set_interrupt_state(int state)
 {
     if (irq_func && state != irq_pin)
-    	irq_func(state);
+        irq_func(state);
     irq_pin = state;
 }

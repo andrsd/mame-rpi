@@ -61,13 +61,13 @@ extern INT8 mcr68_sprite_xoffset;
 static UINT8 *control_word;
 
 
-WRITE_HANDLER( mcr68_videoram_w );
-WRITE_HANDLER( mcr68_paletteram_w );
+WRITE_HANDLER(mcr68_videoram_w);
+WRITE_HANDLER(mcr68_paletteram_w);
 void mcr68_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh);
 
-WRITE_HANDLER( zwackery_videoram_w );
-WRITE_HANDLER( zwackery_paletteram_w );
-WRITE_HANDLER( zwackery_spriteram_w );
+WRITE_HANDLER(zwackery_videoram_w);
+WRITE_HANDLER(zwackery_paletteram_w);
+WRITE_HANDLER(zwackery_spriteram_w);
 void zwackery_convert_color_prom(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom);
 void zwackery_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh);
 
@@ -79,27 +79,27 @@ void zwackery_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh);
  *
  *************************************/
 
-READ_HANDLER( zwackery_port_2_r )
+READ_HANDLER(zwackery_port_2_r)
 {
-	int result = input_port_2_r(offset);
-	int wheel = input_port_5_r(offset);
+    int result = input_port_2_r(offset);
+    int wheel = input_port_5_r(offset);
 
-	return result | ((wheel >> 2) & 0x3e);
+    return result | ((wheel >> 2) & 0x3e);
 }
 
 
-static READ_HANDLER( zwackery_6840_r )
+static READ_HANDLER(zwackery_6840_r)
 {
-	/* Zwackery does a timer test:                          */
-	/* It loads $1388 into one of the timers clocked by E   */
-	/* Then it sits in a tight loop counting down from $4E4 */
-	/*       BTST #$1,($2,A0)                               */
-	/*       DBNE D1,*-6                                    */
-	/* It expects D1 to end up between 0 and 5; in order to */
-	/* make this happen, we must assume that reads from the */
-	/* 6840 take 14 additional cycles                       */
-	*cpuintf[Machine->drv->cpu[0].cpu_type & ~CPU_FLAGS_MASK].icount -= 14;
-	return mcr68_6840_upper_r(offset);
+    /* Zwackery does a timer test:                          */
+    /* It loads $1388 into one of the timers clocked by E   */
+    /* Then it sits in a tight loop counting down from $4E4 */
+    /*       BTST #$1,($2,A0)                               */
+    /*       DBNE D1,*-6                                    */
+    /* It expects D1 to end up between 0 and 5; in order to */
+    /* make this happen, we must assume that reads from the */
+    /* 6840 take 14 additional cycles                       */
+    *cpuintf[Machine->drv->cpu[0].cpu_type & ~CPU_FLAGS_MASK].icount -= 14;
+    return mcr68_6840_upper_r(offset);
 }
 
 
@@ -110,14 +110,14 @@ static READ_HANDLER( zwackery_6840_r )
  *
  *************************************/
 
-static WRITE_HANDLER( xenophobe_control_w )
+static WRITE_HANDLER(xenophobe_control_w)
 {
-	int oldword = READ_WORD(&control_word[offset]);
-	int newword = COMBINE_WORD(oldword, data);
-	WRITE_WORD(&control_word[offset], newword);
+    int oldword = READ_WORD(&control_word[offset]);
+    int newword = COMBINE_WORD(oldword, data);
+    WRITE_WORD(&control_word[offset], newword);
 
-/*	soundsgood_reset_w(~newword & 0x0020);*/
-	soundsgood_data_w(offset, ((newword & 0x000f) << 1) | ((newword & 0x0010) >> 4));
+    /*	soundsgood_reset_w(~newword & 0x0020);*/
+    soundsgood_data_w(offset, ((newword & 0x000f) << 1) | ((newword & 0x0010) >> 4));
 }
 
 
@@ -128,14 +128,14 @@ static WRITE_HANDLER( xenophobe_control_w )
  *
  *************************************/
 
-static WRITE_HANDLER( blasted_control_w )
+static WRITE_HANDLER(blasted_control_w)
 {
-	int oldword = READ_WORD(&control_word[offset]);
-	int newword = COMBINE_WORD(oldword, data);
-	WRITE_WORD(&control_word[offset], newword);
+    int oldword = READ_WORD(&control_word[offset]);
+    int newword = COMBINE_WORD(oldword, data);
+    WRITE_WORD(&control_word[offset], newword);
 
-/*	soundsgood_reset_w(~newword & 0x0020);*/
-	soundsgood_data_w(offset, (newword >> 8) & 0x1f);
+    /*	soundsgood_reset_w(~newword & 0x0020);*/
+    soundsgood_data_w(offset, (newword >> 8) & 0x1f);
 }
 
 
@@ -146,33 +146,33 @@ static WRITE_HANDLER( blasted_control_w )
  *
  *************************************/
 
-static READ_HANDLER( spyhunt2_port_0_r )
+static READ_HANDLER(spyhunt2_port_0_r)
 {
-	int result = input_port_0_r(offset);
-	int which = (READ_WORD(control_word) >> 3) & 3;
-	int analog = readinputport(3 + which);
-	return result | ((soundsgood_status_r(0) & 1) << 5) | (analog << 8);
+    int result = input_port_0_r(offset);
+    int which = (READ_WORD(control_word) >> 3) & 3;
+    int analog = readinputport(3 + which);
+    return result | ((soundsgood_status_r(0) & 1) << 5) | (analog << 8);
 }
 
 
-static READ_HANDLER( spyhunt2_port_1_r )
+static READ_HANDLER(spyhunt2_port_1_r)
 {
-	int result = input_port_1_r(offset);
-	return result | ((turbocs_status_r(0) & 1) << 7);
+    int result = input_port_1_r(offset);
+    return result | ((turbocs_status_r(0) & 1) << 7);
 }
 
 
-static WRITE_HANDLER( spyhunt2_control_w )
+static WRITE_HANDLER(spyhunt2_control_w)
 {
-	int oldword = READ_WORD(&control_word[offset]);
-	int newword = COMBINE_WORD(oldword, data);
-	WRITE_WORD(&control_word[offset], newword);
+    int oldword = READ_WORD(&control_word[offset]);
+    int newword = COMBINE_WORD(oldword, data);
+    WRITE_WORD(&control_word[offset], newword);
 
-/* 	turbocs_reset_w(~newword & 0x0080);*/
-	turbocs_data_w(offset, (newword >> 8) & 0x001f);
+    /* 	turbocs_reset_w(~newword & 0x0080);*/
+    turbocs_data_w(offset, (newword >> 8) & 0x001f);
 
-/*	soundsgood_reset_w(~newword & 0x2000);*/
-	soundsgood_data_w(offset, (newword >> 8) & 0x001f);
+    /*	soundsgood_reset_w(~newword & 0x2000);*/
+    soundsgood_data_w(offset, (newword >> 8) & 0x001f);
 }
 
 
@@ -183,44 +183,44 @@ static WRITE_HANDLER( spyhunt2_control_w )
  *
  *************************************/
 
-static READ_HANDLER( archrivl_port_1_r )
+static READ_HANDLER(archrivl_port_1_r)
 {
-	int joystick = input_port_3_r(offset);
-	int result = 0;
+    int joystick = input_port_3_r(offset);
+    int result = 0;
 
-	/* each axis of the 49-way joystick is mapped like this:*/
-	/*      0 8      = neutral                              */
-	/*      1        = slightly left/up                     */
-	/*      2 3      = middle left/up                       */
-	/*      4 5 6 7  = full left/up                         */
-	/*      C        = slightly right/down                  */
-	/*      A E      = middle right/down                    */
-	/*      9 B D F  = full right/down                      */
+    /* each axis of the 49-way joystick is mapped like this:*/
+    /*      0 8      = neutral                              */
+    /*      1        = slightly left/up                     */
+    /*      2 3      = middle left/up                       */
+    /*      4 5 6 7  = full left/up                         */
+    /*      C        = slightly right/down                  */
+    /*      A E      = middle right/down                    */
+    /*      9 B D F  = full right/down                      */
 
-	if (joystick & 0x0001) result |= 0x0040;
-	else if (joystick & 0x0002) result |= 0x0090;
+    if (joystick & 0x0001) result |= 0x0040;
+    else if (joystick & 0x0002) result |= 0x0090;
 
-	if (joystick & 0x0004) result |= 0x0004;
-	else if (joystick & 0x0008) result |= 0x0009;
+    if (joystick & 0x0004) result |= 0x0004;
+    else if (joystick & 0x0008) result |= 0x0009;
 
-	if (joystick & 0x0010) result |= 0x4000;
-	else if (joystick & 0x0020) result |= 0x9000;
+    if (joystick & 0x0010) result |= 0x4000;
+    else if (joystick & 0x0020) result |= 0x9000;
 
-	if (joystick & 0x0040) result |= 0x0400;
-	else if (joystick & 0x0080) result |= 0x0900;
+    if (joystick & 0x0040) result |= 0x0400;
+    else if (joystick & 0x0080) result |= 0x0900;
 
-	return result;
+    return result;
 }
 
 
-static WRITE_HANDLER( archrivl_control_w )
+static WRITE_HANDLER(archrivl_control_w)
 {
-	int oldword = READ_WORD(&control_word[offset]);
-	int newword = COMBINE_WORD(oldword, data);
-	WRITE_WORD(&control_word[offset], newword);
+    int oldword = READ_WORD(&control_word[offset]);
+    int newword = COMBINE_WORD(oldword, data);
+    WRITE_WORD(&control_word[offset], newword);
 
-	williams_cvsd_reset_w(~newword & 0x0400);
-	williams_cvsd_data_w(offset, newword & 0x3ff);
+    williams_cvsd_reset_w(~newword & 0x0400);
+    williams_cvsd_data_w(offset, newword & 0x3ff);
 }
 
 
@@ -232,73 +232,73 @@ static WRITE_HANDLER( archrivl_control_w )
  *************************************/
 
 static UINT8 protection_data[5];
-static WRITE_HANDLER( pigskin_protection_w )
+static WRITE_HANDLER(pigskin_protection_w)
 {
-	/* ignore upper-byte only */
-	if (data & 0x00ff0000) return;
+    /* ignore upper-byte only */
+    if (data & 0x00ff0000) return;
 
-	/* track the last 5 bytes */
-	protection_data[0] = protection_data[1];
-	protection_data[1] = protection_data[2];
-	protection_data[2] = protection_data[3];
-	protection_data[3] = protection_data[4];
-	protection_data[4] = data;
+    /* track the last 5 bytes */
+    protection_data[0] = protection_data[1];
+    protection_data[1] = protection_data[2];
+    protection_data[2] = protection_data[3];
+    protection_data[3] = protection_data[4];
+    protection_data[4] = data;
 
-	//logerror("%06X:protection_w=%02X\n", cpu_getpreviouspc(), data & 0xff);
+    //logerror("%06X:protection_w=%02X\n", cpu_getpreviouspc(), data & 0xff);
 }
 
 
-static READ_HANDLER( pigskin_protection_r )
+static READ_HANDLER(pigskin_protection_r)
 {
-	/* based on the last 5 bytes return a value */
-	if (protection_data[4] == 0xe3 && protection_data[3] == 0x94)
-		return 0x00;	/* must be <= 1 */
-	if (protection_data[4] == 0xc7 && protection_data[3] == 0x7b && protection_data[2] == 0x36)
-		return 0x00;	/* must be <= 1 */
-	if (protection_data[4] == 0xc7 && protection_data[3] == 0x7b)
-		return 0x07;	/* must be > 5 */
-	if (protection_data[4] == 0xc7 && protection_data[3] == 0x1f && protection_data[2] == 0x03 &&
-		protection_data[1] == 0x25 && protection_data[0] == 0x36)
-		return 0x00;	/* must be < 3 */
+    /* based on the last 5 bytes return a value */
+    if (protection_data[4] == 0xe3 && protection_data[3] == 0x94)
+        return 0x00;	/* must be <= 1 */
+    if (protection_data[4] == 0xc7 && protection_data[3] == 0x7b && protection_data[2] == 0x36)
+        return 0x00;	/* must be <= 1 */
+    if (protection_data[4] == 0xc7 && protection_data[3] == 0x7b)
+        return 0x07;	/* must be > 5 */
+    if (protection_data[4] == 0xc7 && protection_data[3] == 0x1f && protection_data[2] == 0x03 &&
+        protection_data[1] == 0x25 && protection_data[0] == 0x36)
+        return 0x00;	/* must be < 3 */
 
-	/*logerror("Protection read after unrecognized sequence: %02X %02X %02X %02X %02X\n",
-			protection_data[0], protection_data[1], protection_data[2], protection_data[3], protection_data[4]);*/
+    /*logerror("Protection read after unrecognized sequence: %02X %02X %02X %02X %02X\n",
+    		protection_data[0], protection_data[1], protection_data[2], protection_data[3], protection_data[4]);*/
 
-	return 0x00;
+    return 0x00;
 }
 
 
-static READ_HANDLER( pigskin_port_1_r )
+static READ_HANDLER(pigskin_port_1_r)
 {
-	int joystick = input_port_3_r(offset);
-	int result = input_port_1_r(offset);
+    int joystick = input_port_3_r(offset);
+    int result = input_port_1_r(offset);
 
-	/* see archrivl_port_1_r for 49-way joystick description */
+    /* see archrivl_port_1_r for 49-way joystick description */
 
-	if (joystick & 0x0001) result |= 0x4000;
-	else if (joystick & 0x0002) result |= 0x9000;
+    if (joystick & 0x0001) result |= 0x4000;
+    else if (joystick & 0x0002) result |= 0x9000;
 
-	if (joystick & 0x0004) result |= 0x0400;
-	else if (joystick & 0x0008) result |= 0x0900;
+    if (joystick & 0x0004) result |= 0x0400;
+    else if (joystick & 0x0008) result |= 0x0900;
 
-	return result;
+    return result;
 }
 
 
-static READ_HANDLER( pigskin_port_2_r )
+static READ_HANDLER(pigskin_port_2_r)
 {
-	int joystick = input_port_3_r(offset);
-	int result = input_port_2_r(offset);
+    int joystick = input_port_3_r(offset);
+    int result = input_port_2_r(offset);
 
-	/* see archrivl_port_1_r for 49-way joystick description */
+    /* see archrivl_port_1_r for 49-way joystick description */
 
-	if (joystick & 0x0010) result |= 0x4000;
-	else if (joystick & 0x0020) result |= 0x9000;
+    if (joystick & 0x0010) result |= 0x4000;
+    else if (joystick & 0x0020) result |= 0x9000;
 
-	if (joystick & 0x0040) result |= 0x0400;
-	else if (joystick & 0x0080) result |= 0x0900;
+    if (joystick & 0x0040) result |= 0x0400;
+    else if (joystick & 0x0080) result |= 0x0900;
 
-	return result;
+    return result;
 }
 
 
@@ -309,16 +309,16 @@ static READ_HANDLER( pigskin_port_2_r )
  *
  *************************************/
 
-static READ_HANDLER( trisport_port_1_r )
+static READ_HANDLER(trisport_port_1_r)
 {
-	int xaxis = (INT8)input_port_3_r(offset);
-	int yaxis = (INT8)input_port_4_r(offset);
-	int result = input_port_1_r(offset);
+    int xaxis = (INT8) input_port_3_r(offset);
+    int yaxis = (INT8) input_port_4_r(offset);
+    int result = input_port_1_r(offset);
 
-	result |= (xaxis & 0x3c) << 6;
-	result |= (yaxis & 0x3c) << 10;
+    result |= (xaxis & 0x3c) << 6;
+    result |= (yaxis & 0x3c) << 10;
 
-	return result;
+    return result;
 }
 
 
@@ -329,33 +329,31 @@ static READ_HANDLER( trisport_port_1_r )
  *
  *************************************/
 
-static struct MemoryReadAddress mcr68_readmem[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM },
-	{ 0x060000, 0x063fff, MRA_BANK2 },
-	{ 0x070000, 0x070fff, MRA_BANK3 },
-	{ 0x071000, 0x071fff, MRA_BANK4 },
-	{ 0x080000, 0x080fff, MRA_BANK5 },
-	{ 0x0a0000, 0x0a000f, mcr68_6840_upper_r },
-	{ 0x0d0000, 0x0dffff, input_port_0_r },
-	{ 0x0e0000, 0x0effff, input_port_1_r },
-	{ 0x0f0000, 0x0fffff, input_port_2_r },
-	{ -1 }  /* end of table */
+static struct MemoryReadAddress mcr68_readmem[] = {
+    { 0x000000, 0x03ffff, MRA_ROM },
+    { 0x060000, 0x063fff, MRA_BANK2 },
+    { 0x070000, 0x070fff, MRA_BANK3 },
+    { 0x071000, 0x071fff, MRA_BANK4 },
+    { 0x080000, 0x080fff, MRA_BANK5 },
+    { 0x0a0000, 0x0a000f, mcr68_6840_upper_r },
+    { 0x0d0000, 0x0dffff, input_port_0_r },
+    { 0x0e0000, 0x0effff, input_port_1_r },
+    { 0x0f0000, 0x0fffff, input_port_2_r },
+    { -1 }  /* end of table */
 };
 
 
-static struct MemoryWriteAddress mcr68_writemem[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM },
-	{ 0x060000, 0x063fff, MWA_BANK2 },
-	{ 0x070000, 0x070fff, mcr68_videoram_w, &videoram, &videoram_size },
-	{ 0x071000, 0x071fff, MWA_BANK4 },
-	{ 0x080000, 0x080fff, MWA_BANK5, &spriteram, &spriteram_size },
-	{ 0x090000, 0x09007f, mcr68_paletteram_w, &paletteram },
-	{ 0x0a0000, 0x0a000f, mcr68_6840_upper_w },
-	{ 0x0b0000, 0x0bffff, watchdog_reset_w },
-	{ 0x0c0000, 0x0cffff, MWA_NOP, &control_word },
-	{ -1 }  /* end of table */
+static struct MemoryWriteAddress mcr68_writemem[] = {
+    { 0x000000, 0x03ffff, MWA_ROM },
+    { 0x060000, 0x063fff, MWA_BANK2 },
+    { 0x070000, 0x070fff, mcr68_videoram_w, &videoram, &videoram_size },
+    { 0x071000, 0x071fff, MWA_BANK4 },
+    { 0x080000, 0x080fff, MWA_BANK5, &spriteram, &spriteram_size },
+    { 0x090000, 0x09007f, mcr68_paletteram_w, &paletteram },
+    { 0x0a0000, 0x0a000f, mcr68_6840_upper_w },
+    { 0x0b0000, 0x0bffff, watchdog_reset_w },
+    { 0x0c0000, 0x0cffff, MWA_NOP, &control_word },
+    { -1 }  /* end of table */
 };
 
 
@@ -366,35 +364,33 @@ static struct MemoryWriteAddress mcr68_writemem[] =
  *
  *************************************/
 
-static struct MemoryReadAddress zwackery_readmem[] =
-{
-	{ 0x000000, 0x037fff, MRA_ROM },
-	{ 0x080000, 0x080fff, MRA_BANK2 },
-	{ 0x084000, 0x084fff, MRA_BANK3 },
-	{ 0x100000, 0x10000f, zwackery_6840_r },
-	{ 0x104000, 0x104007, pia_2_r },
-	{ 0x108000, 0x108007, pia_3_r },
-	{ 0x10c000, 0x10c007, pia_4_r },
-	{ 0x800000, 0x800fff, MRA_BANK4 },
-	{ 0x802000, 0x803fff, paletteram_word_r },
-	{ 0xc00000, 0xc00fff, MRA_BANK5 },
-	{ -1 }  /* end of table */
+static struct MemoryReadAddress zwackery_readmem[] = {
+    { 0x000000, 0x037fff, MRA_ROM },
+    { 0x080000, 0x080fff, MRA_BANK2 },
+    { 0x084000, 0x084fff, MRA_BANK3 },
+    { 0x100000, 0x10000f, zwackery_6840_r },
+    { 0x104000, 0x104007, pia_2_r },
+    { 0x108000, 0x108007, pia_3_r },
+    { 0x10c000, 0x10c007, pia_4_r },
+    { 0x800000, 0x800fff, MRA_BANK4 },
+    { 0x802000, 0x803fff, paletteram_word_r },
+    { 0xc00000, 0xc00fff, MRA_BANK5 },
+    { -1 }  /* end of table */
 };
 
 
-static struct MemoryWriteAddress zwackery_writemem[] =
-{
-	{ 0x000000, 0x037fff, MWA_ROM },
-	{ 0x080000, 0x080fff, MWA_BANK2 },
-	{ 0x084000, 0x084fff, MWA_BANK3 },
-	{ 0x100000, 0x10000f, mcr68_6840_upper_w },
-	{ 0x104000, 0x104007, pia_2_w },
-	{ 0x108000, 0x108007, pia_3_w },
-	{ 0x10c000, 0x10c007, pia_4_w },
-	{ 0x800000, 0x800fff, zwackery_videoram_w, &videoram, &videoram_size },
-	{ 0x802000, 0x803fff, zwackery_paletteram_w, &paletteram },
-	{ 0xc00000, 0xc00fff, zwackery_spriteram_w, &spriteram, &spriteram_size },
-	{ -1 }  /* end of table */
+static struct MemoryWriteAddress zwackery_writemem[] = {
+    { 0x000000, 0x037fff, MWA_ROM },
+    { 0x080000, 0x080fff, MWA_BANK2 },
+    { 0x084000, 0x084fff, MWA_BANK3 },
+    { 0x100000, 0x10000f, mcr68_6840_upper_w },
+    { 0x104000, 0x104007, pia_2_w },
+    { 0x108000, 0x108007, pia_3_w },
+    { 0x10c000, 0x10c007, pia_4_w },
+    { 0x800000, 0x800fff, zwackery_videoram_w, &videoram, &videoram_size },
+    { 0x802000, 0x803fff, zwackery_paletteram_w, &paletteram },
+    { 0xc00000, 0xc00fff, zwackery_spriteram_w, &spriteram, &spriteram_size },
+    { -1 }  /* end of table */
 };
 
 
@@ -405,33 +401,31 @@ static struct MemoryWriteAddress zwackery_writemem[] =
  *
  *************************************/
 
-static struct MemoryReadAddress pigskin_readmem[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM },
-	{ 0x080000, 0x08ffff, pigskin_port_1_r },
-	{ 0x0a0000, 0x0affff, pigskin_port_2_r },
-	{ 0x100000, 0x100fff, MRA_BANK2 },
-	{ 0x120000, 0x120001, pigskin_protection_r },
-	{ 0x140000, 0x143fff, MRA_BANK3 },
-	{ 0x160000, 0x1607ff, MRA_BANK4 },
-	{ 0x180000, 0x18000f, mcr68_6840_upper_r },
-	{ 0x1e0000, 0x1effff, input_port_0_r },
-	{ -1 }  /* end of table */
+static struct MemoryReadAddress pigskin_readmem[] = {
+    { 0x000000, 0x03ffff, MRA_ROM },
+    { 0x080000, 0x08ffff, pigskin_port_1_r },
+    { 0x0a0000, 0x0affff, pigskin_port_2_r },
+    { 0x100000, 0x100fff, MRA_BANK2 },
+    { 0x120000, 0x120001, pigskin_protection_r },
+    { 0x140000, 0x143fff, MRA_BANK3 },
+    { 0x160000, 0x1607ff, MRA_BANK4 },
+    { 0x180000, 0x18000f, mcr68_6840_upper_r },
+    { 0x1e0000, 0x1effff, input_port_0_r },
+    { -1 }  /* end of table */
 };
 
 
-static struct MemoryWriteAddress pigskin_writemem[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM },
-	{ 0x0c0000, 0x0c007f, mcr68_paletteram_w, &paletteram },
-	{ 0x0e0000, 0x0effff, watchdog_reset_w },
-	{ 0x100000, 0x100fff, mcr68_videoram_w, &videoram, &videoram_size },
-	{ 0x120000, 0x120001, pigskin_protection_w },
-	{ 0x140000, 0x143fff, MWA_BANK3 },
-	{ 0x160000, 0x1607ff, MWA_BANK4, &spriteram, &spriteram_size },
-	{ 0x180000, 0x18000f, mcr68_6840_upper_w },
-	{ 0x1a0000, 0x1affff, MWA_NOP, &control_word },
-	{ -1 }  /* end of table */
+static struct MemoryWriteAddress pigskin_writemem[] = {
+    { 0x000000, 0x03ffff, MWA_ROM },
+    { 0x0c0000, 0x0c007f, mcr68_paletteram_w, &paletteram },
+    { 0x0e0000, 0x0effff, watchdog_reset_w },
+    { 0x100000, 0x100fff, mcr68_videoram_w, &videoram, &videoram_size },
+    { 0x120000, 0x120001, pigskin_protection_w },
+    { 0x140000, 0x143fff, MWA_BANK3 },
+    { 0x160000, 0x1607ff, MWA_BANK4, &spriteram, &spriteram_size },
+    { 0x180000, 0x18000f, mcr68_6840_upper_w },
+    { 0x1a0000, 0x1affff, MWA_NOP, &control_word },
+    { -1 }  /* end of table */
 };
 
 
@@ -442,31 +436,29 @@ static struct MemoryWriteAddress pigskin_writemem[] =
  *
  *************************************/
 
-static struct MemoryReadAddress trisport_readmem[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM },
-	{ 0x080000, 0x08ffff, trisport_port_1_r },
-	{ 0x0a0000, 0x0affff, input_port_2_r },
-	{ 0x100000, 0x103fff, MRA_BANK2 },
-	{ 0x140000, 0x1407ff, MRA_BANK3 },
-	{ 0x160000, 0x160fff, MRA_BANK4 },
-	{ 0x180000, 0x18000f, mcr68_6840_upper_r },
-	{ 0x1e0000, 0x1effff, input_port_0_r },
-	{ -1 }  /* end of table */
+static struct MemoryReadAddress trisport_readmem[] = {
+    { 0x000000, 0x03ffff, MRA_ROM },
+    { 0x080000, 0x08ffff, trisport_port_1_r },
+    { 0x0a0000, 0x0affff, input_port_2_r },
+    { 0x100000, 0x103fff, MRA_BANK2 },
+    { 0x140000, 0x1407ff, MRA_BANK3 },
+    { 0x160000, 0x160fff, MRA_BANK4 },
+    { 0x180000, 0x18000f, mcr68_6840_upper_r },
+    { 0x1e0000, 0x1effff, input_port_0_r },
+    { -1 }  /* end of table */
 };
 
 
-static struct MemoryWriteAddress trisport_writemem[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM },
-	{ 0x100000, 0x103fff, MWA_BANK2 },
-	{ 0x120000, 0x12007f, mcr68_paletteram_w, &paletteram },
-	{ 0x140000, 0x1407ff, MWA_BANK3, &spriteram, &spriteram_size },
-	{ 0x160000, 0x160fff, mcr68_videoram_w, &videoram, &videoram_size },
-	{ 0x180000, 0x18000f, mcr68_6840_upper_w },
-	{ 0x1a0000, 0x1affff, MWA_NOP, &control_word },
-	{ 0x1c0000, 0x1cffff, watchdog_reset_w },
-	{ -1 }  /* end of table */
+static struct MemoryWriteAddress trisport_writemem[] = {
+    { 0x000000, 0x03ffff, MWA_ROM },
+    { 0x100000, 0x103fff, MWA_BANK2 },
+    { 0x120000, 0x12007f, mcr68_paletteram_w, &paletteram },
+    { 0x140000, 0x1407ff, MWA_BANK3, &spriteram, &spriteram_size },
+    { 0x160000, 0x160fff, mcr68_videoram_w, &videoram, &videoram_size },
+    { 0x180000, 0x18000f, mcr68_6840_upper_w },
+    { 0x1a0000, 0x1affff, MWA_NOP, &control_word },
+    { 0x1c0000, 0x1cffff, watchdog_reset_w },
+    { -1 }  /* end of table */
 };
 
 
@@ -477,414 +469,414 @@ static struct MemoryWriteAddress trisport_writemem[] =
  *
  *************************************/
 
-INPUT_PORTS_START( zwackery )
-	PORT_START
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_START1 )
-	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_START2 )
-	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_COIN1 )
-	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_COIN2 )
-	PORT_SERVICE( 0x0010, IP_ACTIVE_LOW )
-	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_COIN4 )
-	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_TILT )
-	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_BUTTON1 )	/* sword */
+INPUT_PORTS_START(zwackery)
+PORT_START
+PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_START1)
+PORT_BIT(0x02, IP_ACTIVE_LOW, IPT_START2)
+PORT_BIT(0x04, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x08, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_SERVICE(0x0010, IP_ACTIVE_LOW)
+PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_COIN4)
+PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_TILT)
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_BUTTON1)	/* sword */
 
-	PORT_START
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY )
-	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY )
-	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY )
-	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY )
-	PORT_BIT( 0xf0, IP_ACTIVE_HIGH, IPT_UNUSED )	/* sound communications */
+PORT_START
+PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY)
+PORT_BIT(0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY)
+PORT_BIT(0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY)
+PORT_BIT(0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY)
+PORT_BIT(0xf0, IP_ACTIVE_HIGH, IPT_UNUSED)	/* sound communications */
 
-	PORT_START
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_BUTTON3 )	/* spell up */
-	PORT_BIT( 0x3e, IP_ACTIVE_HIGH, IPT_UNUSED )	/* encoder wheel */
-	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_BUTTON2 )	/* shield */
-	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_BUTTON4 )	/* spell down */
+PORT_START
+PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_BUTTON3)	/* spell up */
+PORT_BIT(0x3e, IP_ACTIVE_HIGH, IPT_UNUSED)	/* encoder wheel */
+PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_BUTTON2)	/* shield */
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_BUTTON4)	/* spell down */
 
-	PORT_START
-	PORT_BIT( 0xff, IP_ACTIVE_LOW, IPT_UNUSED )
+PORT_START
+PORT_BIT(0xff, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START
-	PORT_DIPNAME( 0x07, 0x00, DEF_STR( Coinage ) )
-	PORT_DIPSETTING(    0x05, DEF_STR( 6C_1C ) )
-	PORT_DIPSETTING(    0x04, DEF_STR( 5C_1C ) )
-	PORT_DIPSETTING(    0x03, DEF_STR( 4C_1C ) )
-	PORT_DIPSETTING(    0x02, DEF_STR( 3C_1C ) )
-	PORT_DIPSETTING(    0x01, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(    0x00, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(    0x06, DEF_STR( 1C_2C ) )
-	PORT_DIPSETTING(    0x07, DEF_STR( Free_Play ) )
-	PORT_DIPNAME( 0x38, 0x00, "Buy-in" )
-	PORT_DIPSETTING(    0x00, "1 coin" )
-	PORT_DIPSETTING(    0x08, "2 coins" )
-	PORT_DIPSETTING(    0x10, "3 coins" )
-	PORT_DIPSETTING(    0x18, "4 coins" )
-	PORT_DIPSETTING(    0x20, "5 coins" )
-	PORT_DIPSETTING(    0x28, "6 coins" )
-	PORT_DIPSETTING(    0x30, "7 coins" )
-	PORT_DIPSETTING(    0x38, "None" )
-	PORT_DIPNAME( 0xc0, 0x00, DEF_STR( Difficulty ) )
-	PORT_DIPSETTING(    0xc0, "Easier" )
-	PORT_DIPSETTING(    0x00, "Normal" )
-	PORT_DIPSETTING(    0x40, "Harder" )
-	PORT_DIPSETTING(    0x80, "Hardest" )
+PORT_START
+PORT_DIPNAME(0x07, 0x00, DEF_STR(Coinage))
+PORT_DIPSETTING(0x05, DEF_STR(6C_1C))
+PORT_DIPSETTING(0x04, DEF_STR(5C_1C))
+PORT_DIPSETTING(0x03, DEF_STR(4C_1C))
+PORT_DIPSETTING(0x02, DEF_STR(3C_1C))
+PORT_DIPSETTING(0x01, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x00, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x06, DEF_STR(1C_2C))
+PORT_DIPSETTING(0x07, DEF_STR(Free_Play))
+PORT_DIPNAME(0x38, 0x00, "Buy-in")
+PORT_DIPSETTING(0x00, "1 coin")
+PORT_DIPSETTING(0x08, "2 coins")
+PORT_DIPSETTING(0x10, "3 coins")
+PORT_DIPSETTING(0x18, "4 coins")
+PORT_DIPSETTING(0x20, "5 coins")
+PORT_DIPSETTING(0x28, "6 coins")
+PORT_DIPSETTING(0x30, "7 coins")
+PORT_DIPSETTING(0x38, "None")
+PORT_DIPNAME(0xc0, 0x00, DEF_STR(Difficulty))
+PORT_DIPSETTING(0xc0, "Easier")
+PORT_DIPSETTING(0x00, "Normal")
+PORT_DIPSETTING(0x40, "Harder")
+PORT_DIPSETTING(0x80, "Hardest")
 
-	PORT_START
-	PORT_ANALOGX( 0xff, 0x00, IPT_DIAL | IPF_REVERSE, 50, 10, 0, 0, JOYCODE_1_BUTTON5, JOYCODE_1_BUTTON6, 0, 0 )
+PORT_START
+PORT_ANALOGX(0xff, 0x00, IPT_DIAL | IPF_REVERSE, 50, 10, 0, 0, JOYCODE_1_BUTTON5, JOYCODE_1_BUTTON6, 0, 0)
 INPUT_PORTS_END
 
 
-INPUT_PORTS_START( xenophob )
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_COIN1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_COIN2 )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_COIN3 )
-	PORT_BIT( 0x0018, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_TILT )
-	PORT_SERVICE( 0x0080, IP_ACTIVE_LOW )
-	PORT_BIT( 0x0100, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0200, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0400, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0800, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1 )
-	PORT_BIT( 0x2000, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER1 )
-	PORT_BIT( 0x4000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1 )
-	PORT_BIT( 0x8000, IP_ACTIVE_LOW, IPT_UNUSED )
+INPUT_PORTS_START(xenophob)
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_COIN3)
+PORT_BIT(0x0018, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0020, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_TILT)
+PORT_SERVICE(0x0080, IP_ACTIVE_LOW)
+PORT_BIT(0x0100, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0200, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0400, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0800, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1)
+PORT_BIT(0x2000, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER1)
+PORT_BIT(0x4000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1)
+PORT_BIT(0x8000, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER3 )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER3 )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER3 )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER3 )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER3 )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER3 )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER3 )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0100, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0200, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0400, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0800, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2 )
-	PORT_BIT( 0x2000, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER2 )
-	PORT_BIT( 0x4000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER2 )
-	PORT_BIT( 0x8000, IP_ACTIVE_LOW, IPT_UNUSED )
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER3)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER3)
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER3)
+PORT_BIT(0x0008, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER3)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER3)
+PORT_BIT(0x0020, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER3)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER3)
+PORT_BIT(0x0080, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0100, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0200, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0400, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0800, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2)
+PORT_BIT(0x2000, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER2)
+PORT_BIT(0x4000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER2)
+PORT_BIT(0x8000, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START
-	PORT_BIT( 0x0003, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_DIPNAME( 0x0004, 0x0004, DEF_STR( Free_Play ) )
-	PORT_DIPSETTING(      0x0004, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-	PORT_DIPNAME( 0x0008, 0x0008, "Coins per Life Unit" )
-	PORT_DIPSETTING(      0x0008, "1" )
-	PORT_DIPSETTING(      0x0000, "2" )
-	PORT_DIPNAME( 0x0010, 0x0010, "Life Unit" )
-	PORT_DIPSETTING(      0x0010, "1000" )
-	PORT_DIPSETTING(      0x0000, "2000" )
-	PORT_DIPNAME( 0x0020, 0x0020, DEF_STR( Demo_Sounds ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0020, DEF_STR( On ) )
-	PORT_DIPNAME( 0x00c0, 0x0000, DEF_STR( Difficulty ) )
-	PORT_DIPSETTING(      0x0040, "Easy" )
-	PORT_DIPSETTING(      0x0000, "Medium" )
-	PORT_DIPSETTING(      0x0080, "Hard" )
+PORT_START
+PORT_BIT(0x0003, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_DIPNAME(0x0004, 0x0004, DEF_STR(Free_Play))
+PORT_DIPSETTING(0x0004, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_DIPNAME(0x0008, 0x0008, "Coins per Life Unit")
+PORT_DIPSETTING(0x0008, "1")
+PORT_DIPSETTING(0x0000, "2")
+PORT_DIPNAME(0x0010, 0x0010, "Life Unit")
+PORT_DIPSETTING(0x0010, "1000")
+PORT_DIPSETTING(0x0000, "2000")
+PORT_DIPNAME(0x0020, 0x0020, DEF_STR(Demo_Sounds))
+PORT_DIPSETTING(0x0000, DEF_STR(Off))
+PORT_DIPSETTING(0x0020, DEF_STR(On))
+PORT_DIPNAME(0x00c0, 0x0000, DEF_STR(Difficulty))
+PORT_DIPSETTING(0x0040, "Easy")
+PORT_DIPSETTING(0x0000, "Medium")
+PORT_DIPSETTING(0x0080, "Hard")
 /*	PORT_DIPSETTING(      0x00c0, "Medium" )*/
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNUSED )
+PORT_BIT(0xff00, IP_ACTIVE_LOW, IPT_UNUSED)
 INPUT_PORTS_END
 
 
-INPUT_PORTS_START( spyhunt2 )
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_COIN1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_COIN2 )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_START1 )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_START2 )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_TILT )
-	PORT_BIT( 0x0020, IP_ACTIVE_HIGH, IPT_UNKNOWN ) /* SG status */
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_SERVICE )
-	PORT_SERVICE( 0x0080, IP_ACTIVE_LOW )
-	PORT_BIT( 0xff00, IP_ACTIVE_HIGH, IPT_UNKNOWN )
+INPUT_PORTS_START(spyhunt2)
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_START1)
+PORT_BIT(0x0008, IP_ACTIVE_LOW, IPT_START2)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_TILT)
+PORT_BIT(0x0020, IP_ACTIVE_HIGH, IPT_UNKNOWN)    /* SG status */
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_SERVICE)
+PORT_SERVICE(0x0080, IP_ACTIVE_LOW)
+PORT_BIT(0xff00, IP_ACTIVE_HIGH, IPT_UNKNOWN)
 
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_BUTTON5 | IPF_PLAYER2 ) /* 1st gear */
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_BUTTON6 | IPF_PLAYER2 ) /* 2nd gear */
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_BUTTON7 | IPF_PLAYER2 ) /* 3rd gear */
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_BUTTON5 | IPF_PLAYER1 ) /* 1st gear */
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_BUTTON6 | IPF_PLAYER1 ) /* 2nd gear */
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_BUTTON7 | IPF_PLAYER1 ) /* 3rd gear */
-	PORT_BIT( 0x0080, IP_ACTIVE_HIGH, IPT_UNUSED )               /* TCS status */
-	PORT_BIT( 0x0100, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER2 ) /* Left Trigger */
-	PORT_BIT( 0x0200, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER2 ) /* Left Button */
-	PORT_BIT( 0x0400, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2 ) /* Right Trigger */
-	PORT_BIT( 0x0800, IP_ACTIVE_LOW, IPT_BUTTON4 | IPF_PLAYER2 ) /* Right Button */
-	PORT_BIT( 0x1000, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER1 ) /* Left Trigger */
-	PORT_BIT( 0x2000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1 ) /* Left Button */
-	PORT_BIT( 0x4000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1 ) /* Right Trigger */
-	PORT_BIT( 0x8000, IP_ACTIVE_LOW, IPT_BUTTON4 | IPF_PLAYER1 ) /* Right Button */
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_BUTTON5 | IPF_PLAYER2)    /* 1st gear */
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_BUTTON6 | IPF_PLAYER2)    /* 2nd gear */
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_BUTTON7 | IPF_PLAYER2)    /* 3rd gear */
+PORT_BIT(0x0008, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_BUTTON5 | IPF_PLAYER1)    /* 1st gear */
+PORT_BIT(0x0020, IP_ACTIVE_LOW, IPT_BUTTON6 | IPF_PLAYER1)    /* 2nd gear */
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_BUTTON7 | IPF_PLAYER1)    /* 3rd gear */
+PORT_BIT(0x0080, IP_ACTIVE_HIGH, IPT_UNUSED)                 /* TCS status */
+PORT_BIT(0x0100, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER2)    /* Left Trigger */
+PORT_BIT(0x0200, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER2)    /* Left Button */
+PORT_BIT(0x0400, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2)    /* Right Trigger */
+PORT_BIT(0x0800, IP_ACTIVE_LOW, IPT_BUTTON4 | IPF_PLAYER2)    /* Right Button */
+PORT_BIT(0x1000, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER1)    /* Left Trigger */
+PORT_BIT(0x2000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1)    /* Left Button */
+PORT_BIT(0x4000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1)    /* Right Trigger */
+PORT_BIT(0x8000, IP_ACTIVE_LOW, IPT_BUTTON4 | IPF_PLAYER1)    /* Right Button */
 
-	PORT_START	/* IN3 -- dipswitches */
-	PORT_DIPNAME( 0x0003, 0x0003, DEF_STR( Coinage ) )
-	PORT_DIPSETTING(      0x0002, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(      0x0003, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0001, DEF_STR( 1C_2C ) )
-	/*PORT_DIPSETTING(      0x0000, DEF_STR( 1C_2C ) )*/
-	PORT_DIPNAME( 0x0004, 0x0004, DEF_STR( Free_Play ) )
-	PORT_DIPSETTING(      0x0004, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-	PORT_DIPNAME( 0x0018, 0x0008, "Point Threshholds" )
-	PORT_DIPSETTING(      0x0008, "Easy" )
-	PORT_DIPSETTING(      0x0018, "Medium" )
-	PORT_DIPSETTING(      0x0010, "Hard" )
-	PORT_DIPSETTING(      0x0000, "Hardest" )
-	PORT_DIPNAME( 0x0060, 0x0060, "Free Timer After" )
-	PORT_DIPSETTING(      0x0000, "30 sec" )
-	PORT_DIPSETTING(      0x0040, "45 sec" )
-	PORT_DIPSETTING(      0x0060, "60 sec" )
-	PORT_DIPSETTING(      0x0020, "90 sec" )
-	PORT_BITX( 0x0080,    0x0080, IPT_DIPSWITCH_NAME | IPF_CHEAT, "Rack Advance", KEYCODE_F1, IP_JOY_NONE )
-	PORT_DIPSETTING(      0x0080, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNUSED )
+PORT_START	/* IN3 -- dipswitches */
+PORT_DIPNAME(0x0003, 0x0003, DEF_STR(Coinage))
+PORT_DIPSETTING(0x0002, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x0003, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0001, DEF_STR(1C_2C))
+/*PORT_DIPSETTING(      0x0000, DEF_STR( 1C_2C ) )*/
+PORT_DIPNAME(0x0004, 0x0004, DEF_STR(Free_Play))
+PORT_DIPSETTING(0x0004, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_DIPNAME(0x0018, 0x0008, "Point Threshholds")
+PORT_DIPSETTING(0x0008, "Easy")
+PORT_DIPSETTING(0x0018, "Medium")
+PORT_DIPSETTING(0x0010, "Hard")
+PORT_DIPSETTING(0x0000, "Hardest")
+PORT_DIPNAME(0x0060, 0x0060, "Free Timer After")
+PORT_DIPSETTING(0x0000, "30 sec")
+PORT_DIPSETTING(0x0040, "45 sec")
+PORT_DIPSETTING(0x0060, "60 sec")
+PORT_DIPSETTING(0x0020, "90 sec")
+PORT_BITX(0x0080,    0x0080, IPT_DIPSWITCH_NAME | IPF_CHEAT, "Rack Advance", KEYCODE_F1, IP_JOY_NONE)
+PORT_DIPSETTING(0x0080, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_BIT(0xff00, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START	/* analog ports for steering and pedals */
-	PORT_ANALOG( 0xff, 0x30, IPT_PEDAL | IPF_PLAYER2 | IPF_REVERSE, 100, 10, 0x30, 0xff )
+PORT_START	/* analog ports for steering and pedals */
+PORT_ANALOG(0xff, 0x30, IPT_PEDAL | IPF_PLAYER2 | IPF_REVERSE, 100, 10, 0x30, 0xff)
 
-	PORT_START
-	PORT_ANALOG( 0xff, 0x30, IPT_PEDAL | IPF_PLAYER1 | IPF_REVERSE, 100, 10, 0x30, 0xff )
+PORT_START
+PORT_ANALOG(0xff, 0x30, IPT_PEDAL | IPF_PLAYER1 | IPF_REVERSE, 100, 10, 0x30, 0xff)
 
-	PORT_START
-	PORT_ANALOG( 0xff, 0x80, IPT_PADDLE | IPF_PLAYER2 | IPF_REVERSE, 80, 10, 0x10, 0xf0 )
+PORT_START
+PORT_ANALOG(0xff, 0x80, IPT_PADDLE | IPF_PLAYER2 | IPF_REVERSE, 80, 10, 0x10, 0xf0)
 
-	PORT_START
-	PORT_ANALOG( 0xff, 0x80, IPT_PADDLE | IPF_PLAYER1 | IPF_REVERSE, 80, 10, 0x10, 0xf0 )
+PORT_START
+PORT_ANALOG(0xff, 0x80, IPT_PADDLE | IPF_PLAYER1 | IPF_REVERSE, 80, 10, 0x10, 0xf0)
 INPUT_PORTS_END
 
 
-INPUT_PORTS_START( blasted )
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_COIN1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_COIN2 )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_UNUSED/* credit w/bill */ )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_TILT )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_COIN4 )
-	PORT_SERVICE( 0x0080, IP_ACTIVE_LOW )
-	PORT_BIT( 0x0100, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1 )
-	PORT_BIT( 0x0100, IP_ACTIVE_LOW, IPT_START1 )
-	PORT_BIT( 0x0200, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2 )
-	PORT_BIT( 0x0200, IP_ACTIVE_LOW, IPT_START2 )
-	PORT_BIT( 0x0400, IP_ACTIVE_LOW, IPT_UNUSED/* credit 1 w/bill */ )
-	PORT_BIT( 0x0800, IP_ACTIVE_LOW, IPT_UNUSED/* credit 2 w/bill */ )
-	PORT_BIT( 0xf000, IP_ACTIVE_LOW, IPT_UNUSED )
+INPUT_PORTS_START(blasted)
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_UNUSED/* credit w/bill */)
+PORT_BIT(0x0008, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_TILT)
+PORT_BIT(0x0020, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_COIN4)
+PORT_SERVICE(0x0080, IP_ACTIVE_LOW)
+PORT_BIT(0x0100, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1)
+PORT_BIT(0x0100, IP_ACTIVE_LOW, IPT_START1)
+PORT_BIT(0x0200, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2)
+PORT_BIT(0x0200, IP_ACTIVE_LOW, IPT_START2)
+PORT_BIT(0x0400, IP_ACTIVE_LOW, IPT_UNUSED/* credit 1 w/bill */)
+PORT_BIT(0x0800, IP_ACTIVE_LOW, IPT_UNUSED/* credit 2 w/bill */)
+PORT_BIT(0xf000, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNUSED )
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0008, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0020, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0080, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0xff00, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START
-	PORT_DIPNAME( 0x0003, 0x0003, DEF_STR( Coinage ) )
-	PORT_DIPSETTING(      0x0002, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(      0x0003, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0001, DEF_STR( 1C_2C ) )
-	/*PORT_DIPSETTING(      0x0000, DEF_STR( 1C_2C ) )*/
-	PORT_DIPNAME( 0x000c, 0x0000, DEF_STR( Difficulty ) )
-	PORT_DIPSETTING(      0x0008, "Easy" )
-	PORT_DIPSETTING(      0x0000, "Medium" )
-	PORT_DIPSETTING(      0x0004, "Hard" )
+PORT_START
+PORT_DIPNAME(0x0003, 0x0003, DEF_STR(Coinage))
+PORT_DIPSETTING(0x0002, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x0003, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0001, DEF_STR(1C_2C))
+/*PORT_DIPSETTING(      0x0000, DEF_STR( 1C_2C ) )*/
+PORT_DIPNAME(0x000c, 0x0000, DEF_STR(Difficulty))
+PORT_DIPSETTING(0x0008, "Easy")
+PORT_DIPSETTING(0x0000, "Medium")
+PORT_DIPSETTING(0x0004, "Hard")
 /*	PORT_DIPSETTING(      0x000c, "Medium" )*/
-	PORT_DIPNAME( 0x0020, 0x0020, "Dollar Receptor" )
-	PORT_DIPSETTING(      0x0020, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-	PORT_DIPNAME( 0x0040, 0x0040, DEF_STR( Demo_Sounds ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0040, DEF_STR( On ) )
-	PORT_BITX( 0x0080,    0x0080, IPT_DIPSWITCH_NAME | IPF_CHEAT, "Rack Advance", KEYCODE_F1, IP_JOY_NONE )
-	PORT_DIPSETTING(      0x0080, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNUSED )
+PORT_DIPNAME(0x0020, 0x0020, "Dollar Receptor")
+PORT_DIPSETTING(0x0020, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_DIPNAME(0x0040, 0x0040, DEF_STR(Demo_Sounds))
+PORT_DIPSETTING(0x0000, DEF_STR(Off))
+PORT_DIPSETTING(0x0040, DEF_STR(On))
+PORT_BITX(0x0080,    0x0080, IPT_DIPSWITCH_NAME | IPF_CHEAT, "Rack Advance", KEYCODE_F1, IP_JOY_NONE)
+PORT_DIPSETTING(0x0080, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_BIT(0xff00, IP_ACTIVE_LOW, IPT_UNUSED)
 INPUT_PORTS_END
 
 
-INPUT_PORTS_START( archrivl )
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_COIN1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_COIN2 )
-	PORT_BIT( 0x000c, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_TILT )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_COIN4 )
-	PORT_SERVICE( 0x0080, IP_ACTIVE_LOW )
-	PORT_BIT( 0x0100, IP_ACTIVE_LOW, IPT_START1 )
-	PORT_BIT( 0x0200, IP_ACTIVE_LOW, IPT_START2 )
-	PORT_BIT( 0x0c00, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1 )
-	PORT_BIT( 0x2000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1 )
-	PORT_BIT( 0x4000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2 )
-	PORT_BIT( 0x8000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER2 )
+INPUT_PORTS_START(archrivl)
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_BIT(0x000c, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_TILT)
+PORT_BIT(0x0020, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_COIN4)
+PORT_SERVICE(0x0080, IP_ACTIVE_LOW)
+PORT_BIT(0x0100, IP_ACTIVE_LOW, IPT_START1)
+PORT_BIT(0x0200, IP_ACTIVE_LOW, IPT_START2)
+PORT_BIT(0x0c00, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1)
+PORT_BIT(0x2000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1)
+PORT_BIT(0x4000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2)
+PORT_BIT(0x8000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER2)
 
-	PORT_START
-	PORT_BIT( 0xffff, IP_ACTIVE_HIGH, IPT_UNUSED )	/* player 1/2 joysticks go here */
+PORT_START
+PORT_BIT(0xffff, IP_ACTIVE_HIGH, IPT_UNUSED)	/* player 1/2 joysticks go here */
 
-	PORT_START
-	PORT_DIPNAME( 0x0003, 0x0003, "Game Time" )
-	PORT_DIPSETTING(      0x0003, "Preset Time" )
-	PORT_DIPSETTING(      0x0002, "Preset + 10sec" )
-	PORT_DIPSETTING(      0x0001, "Preset + 20sec" )
-	PORT_DIPSETTING(      0x0000, "Preset + 30sec" )
-	PORT_DIPNAME( 0x001c, 0x001c, DEF_STR( Coinage ) )
-	PORT_DIPSETTING(      0x0014, DEF_STR( 3C_1C ) )
-	PORT_DIPSETTING(      0x0018, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(      0x001c, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0010, DEF_STR( 2C_3C ) )
-	PORT_DIPSETTING(      0x000c, DEF_STR( 1C_2C ) )
-	PORT_DIPSETTING(      0x0008, DEF_STR( 1C_3C ) )
-	PORT_DIPSETTING(      0x0004, DEF_STR( 1C_5C ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( 1C_6C ) )
-	PORT_DIPNAME( 0x0020, 0x0020, "Team Names" )
-	PORT_DIPSETTING(      0x0020, "Default" )
-	PORT_DIPSETTING(      0x0000, "Hometown Heroes" )
-	PORT_DIPNAME( 0x0040, 0x0040, DEF_STR( Demo_Sounds ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0040, DEF_STR( On ) )
-	PORT_DIPNAME( 0x0080, 0x0080, DEF_STR( Free_Play ) )
-	PORT_DIPSETTING(      0x0080, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNUSED )
+PORT_START
+PORT_DIPNAME(0x0003, 0x0003, "Game Time")
+PORT_DIPSETTING(0x0003, "Preset Time")
+PORT_DIPSETTING(0x0002, "Preset + 10sec")
+PORT_DIPSETTING(0x0001, "Preset + 20sec")
+PORT_DIPSETTING(0x0000, "Preset + 30sec")
+PORT_DIPNAME(0x001c, 0x001c, DEF_STR(Coinage))
+PORT_DIPSETTING(0x0014, DEF_STR(3C_1C))
+PORT_DIPSETTING(0x0018, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x001c, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0010, DEF_STR(2C_3C))
+PORT_DIPSETTING(0x000c, DEF_STR(1C_2C))
+PORT_DIPSETTING(0x0008, DEF_STR(1C_3C))
+PORT_DIPSETTING(0x0004, DEF_STR(1C_5C))
+PORT_DIPSETTING(0x0000, DEF_STR(1C_6C))
+PORT_DIPNAME(0x0020, 0x0020, "Team Names")
+PORT_DIPSETTING(0x0020, "Default")
+PORT_DIPSETTING(0x0000, "Hometown Heroes")
+PORT_DIPNAME(0x0040, 0x0040, DEF_STR(Demo_Sounds))
+PORT_DIPSETTING(0x0000, DEF_STR(Off))
+PORT_DIPSETTING(0x0040, DEF_STR(On))
+PORT_DIPNAME(0x0080, 0x0080, DEF_STR(Free_Play))
+PORT_DIPSETTING(0x0080, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_BIT(0xff00, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START	/* 49-way joystick simulator */
-	PORT_BIT( 0x0001, IP_ACTIVE_HIGH, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_HIGH, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0004, IP_ACTIVE_HIGH, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0008, IP_ACTIVE_HIGH, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0010, IP_ACTIVE_HIGH, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0020, IP_ACTIVE_HIGH, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0040, IP_ACTIVE_HIGH, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0080, IP_ACTIVE_HIGH, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER2 )
+PORT_START	/* 49-way joystick simulator */
+PORT_BIT(0x0001, IP_ACTIVE_HIGH, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0002, IP_ACTIVE_HIGH, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0004, IP_ACTIVE_HIGH, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0008, IP_ACTIVE_HIGH, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0010, IP_ACTIVE_HIGH, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0020, IP_ACTIVE_HIGH, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0040, IP_ACTIVE_HIGH, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0080, IP_ACTIVE_HIGH, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER2)
 INPUT_PORTS_END
 
-INPUT_PORTS_START( pigskin )
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_COIN1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_COIN2 )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_START1 )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_START2 )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_TILT )
-	PORT_SERVICE( 0x0020, IP_ACTIVE_LOW )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_COIN4 )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0100, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0200, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0400, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0800, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1 )
-	PORT_BIT( 0x2000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1 )
-	PORT_BIT( 0x4000, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER1 )
-	PORT_BIT( 0x8000, IP_ACTIVE_LOW, IPT_UNUSED )
+INPUT_PORTS_START(pigskin)
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_START1)
+PORT_BIT(0x0008, IP_ACTIVE_LOW, IPT_START2)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_TILT)
+PORT_SERVICE(0x0020, IP_ACTIVE_LOW)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_COIN4)
+PORT_BIT(0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0100, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0200, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0400, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0800, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1)
+PORT_BIT(0x2000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1)
+PORT_BIT(0x4000, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER1)
+PORT_BIT(0x8000, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START
-	PORT_BIT( 0x000f, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2 )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER2 )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER2 )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0xff00, IP_ACTIVE_HIGH, IPT_UNUSED )	/* player 1 joystick goes here */
+PORT_START
+PORT_BIT(0x000f, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER2)
+PORT_BIT(0x0020, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER2)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_BUTTON3 | IPF_PLAYER2)
+PORT_BIT(0x0080, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0xff00, IP_ACTIVE_HIGH, IPT_UNUSED)	/* player 1 joystick goes here */
 
-	PORT_START
-	PORT_DIPNAME( 0x0003, 0x0003, "Game Time" )
-	PORT_DIPSETTING(      0x0000, "Shortest" )
-	PORT_DIPSETTING(      0x0002, "Short" )
-	PORT_DIPSETTING(      0x0003, "Medium" )
-	PORT_DIPSETTING(      0x0001, "Long" )
-	PORT_DIPNAME( 0x000c, 0x000c, DEF_STR( Coinage ) )
-	PORT_DIPSETTING(      0x0008, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(      0x000c, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( Free_Play ) )
-	PORT_DIPSETTING(      0x0004, "Set Your Own" )
-	PORT_DIPNAME( 0x0010, 0x0010, DEF_STR( Demo_Sounds ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0010, DEF_STR( On ) )
-	PORT_DIPNAME( 0x0020, 0x0020, "Test Switch" )
-	PORT_DIPSETTING(      0x0020, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-	PORT_DIPNAME( 0x0040, 0x0040, "Coin Chutes" )
-	PORT_DIPSETTING(      0x0000, "Individual" )
-	PORT_DIPSETTING(      0x0040, "Common" )
-	PORT_DIPNAME( 0x0080, 0x0080, "Joystick" )
-	PORT_DIPSETTING(      0x0080, "Standard" )
-	PORT_DIPSETTING(      0x0000, "Rotated" )
-	PORT_BIT( 0xff00, IP_ACTIVE_HIGH, IPT_UNUSED )	/* player 2 joystick goes here */
+PORT_START
+PORT_DIPNAME(0x0003, 0x0003, "Game Time")
+PORT_DIPSETTING(0x0000, "Shortest")
+PORT_DIPSETTING(0x0002, "Short")
+PORT_DIPSETTING(0x0003, "Medium")
+PORT_DIPSETTING(0x0001, "Long")
+PORT_DIPNAME(0x000c, 0x000c, DEF_STR(Coinage))
+PORT_DIPSETTING(0x0008, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x000c, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0000, DEF_STR(Free_Play))
+PORT_DIPSETTING(0x0004, "Set Your Own")
+PORT_DIPNAME(0x0010, 0x0010, DEF_STR(Demo_Sounds))
+PORT_DIPSETTING(0x0000, DEF_STR(Off))
+PORT_DIPSETTING(0x0010, DEF_STR(On))
+PORT_DIPNAME(0x0020, 0x0020, "Test Switch")
+PORT_DIPSETTING(0x0020, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_DIPNAME(0x0040, 0x0040, "Coin Chutes")
+PORT_DIPSETTING(0x0000, "Individual")
+PORT_DIPSETTING(0x0040, "Common")
+PORT_DIPNAME(0x0080, 0x0080, "Joystick")
+PORT_DIPSETTING(0x0080, "Standard")
+PORT_DIPSETTING(0x0000, "Rotated")
+PORT_BIT(0xff00, IP_ACTIVE_HIGH, IPT_UNUSED)	/* player 2 joystick goes here */
 
-	PORT_START	/* 49-way joystick simulator */
-	PORT_BIT( 0x0001, IP_ACTIVE_HIGH, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_HIGH, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0004, IP_ACTIVE_HIGH, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0008, IP_ACTIVE_HIGH, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1 )
-	PORT_BIT( 0x0010, IP_ACTIVE_HIGH, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0020, IP_ACTIVE_HIGH, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0040, IP_ACTIVE_HIGH, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER2 )
-	PORT_BIT( 0x0080, IP_ACTIVE_HIGH, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER2 )
+PORT_START	/* 49-way joystick simulator */
+PORT_BIT(0x0001, IP_ACTIVE_HIGH, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0002, IP_ACTIVE_HIGH, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0004, IP_ACTIVE_HIGH, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0008, IP_ACTIVE_HIGH, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER1)
+PORT_BIT(0x0010, IP_ACTIVE_HIGH, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0020, IP_ACTIVE_HIGH, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0040, IP_ACTIVE_HIGH, IPT_JOYSTICK_UP | IPF_8WAY | IPF_PLAYER2)
+PORT_BIT(0x0080, IP_ACTIVE_HIGH, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_PLAYER2)
 INPUT_PORTS_END
 
 
-INPUT_PORTS_START( trisport )
-	PORT_START
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_COIN1 )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_COIN2 )
-	PORT_BIT( 0x000c, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_TILT )
-	PORT_SERVICE( 0x0020, IP_ACTIVE_LOW )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_COIN4 )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0f00, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1 )
-	PORT_BIT( 0x1000, IP_ACTIVE_LOW, IPT_START1 )
-	PORT_BIT( 0x2000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1 )
-	PORT_BIT( 0xc000, IP_ACTIVE_LOW, IPT_UNUSED )
+INPUT_PORTS_START(trisport)
+PORT_START
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_BIT(0x000c, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_TILT)
+PORT_SERVICE(0x0020, IP_ACTIVE_LOW)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_COIN4)
+PORT_BIT(0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0f00, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0x1000, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_PLAYER1)
+PORT_BIT(0x1000, IP_ACTIVE_LOW, IPT_START1)
+PORT_BIT(0x2000, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_PLAYER1)
+PORT_BIT(0xc000, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START
-	PORT_BIT( 0x00ff, IP_ACTIVE_LOW, IPT_UNUSED )
-	PORT_BIT( 0xff00, IP_ACTIVE_HIGH, IPT_UNUSED )	/* analog controls go here */
+PORT_START
+PORT_BIT(0x00ff, IP_ACTIVE_LOW, IPT_UNUSED)
+PORT_BIT(0xff00, IP_ACTIVE_HIGH, IPT_UNUSED)	/* analog controls go here */
 
-	PORT_START
-	PORT_DIPNAME( 0x0007, 0x0007, DEF_STR( Coinage ) )
-	PORT_DIPSETTING(      0x0002, DEF_STR( 4C_1C ) )
-	PORT_DIPSETTING(      0x0003, DEF_STR( 3C_1C ) )
-	PORT_DIPSETTING(      0x0006, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(      0x0007, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0005, DEF_STR( 1C_2C ) )
-	PORT_DIPSETTING(      0x0004, DEF_STR( 1C_3C ) )
-	PORT_DIPSETTING(      0x0001, DEF_STR( Free_Play ) )
-	PORT_DIPSETTING(      0x0000, "Battery Options" )
-	PORT_DIPNAME( 0x0018, 0x0018, "Pool Turns" )
-	PORT_DIPSETTING(      0x0010, "5" )
-	PORT_DIPSETTING(      0x0008, "6" )
-	PORT_DIPSETTING(      0x0018, "7" )
-	PORT_DIPSETTING(      0x0000, "8" )
-	PORT_DIPNAME( 0x0020, 0x0020, "Bowling Difficulty" )
-	PORT_DIPSETTING(      0x0020, "Standard" )
-	PORT_DIPSETTING(      0x0000, "Advanced" )
-	PORT_DIPNAME( 0x0040, 0x0040, "Shot Timer" )
-	PORT_DIPSETTING(      0x0000, "Slower" )
-	PORT_DIPSETTING(      0x0040, "Standard" )
-	PORT_DIPNAME( 0x0080, 0x0080, "Golf Holes" )
-	PORT_DIPSETTING(      0x0080, "3" )
-	PORT_DIPSETTING(      0x0000, "4" )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNUSED )
+PORT_START
+PORT_DIPNAME(0x0007, 0x0007, DEF_STR(Coinage))
+PORT_DIPSETTING(0x0002, DEF_STR(4C_1C))
+PORT_DIPSETTING(0x0003, DEF_STR(3C_1C))
+PORT_DIPSETTING(0x0006, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x0007, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0005, DEF_STR(1C_2C))
+PORT_DIPSETTING(0x0004, DEF_STR(1C_3C))
+PORT_DIPSETTING(0x0001, DEF_STR(Free_Play))
+PORT_DIPSETTING(0x0000, "Battery Options")
+PORT_DIPNAME(0x0018, 0x0018, "Pool Turns")
+PORT_DIPSETTING(0x0010, "5")
+PORT_DIPSETTING(0x0008, "6")
+PORT_DIPSETTING(0x0018, "7")
+PORT_DIPSETTING(0x0000, "8")
+PORT_DIPNAME(0x0020, 0x0020, "Bowling Difficulty")
+PORT_DIPSETTING(0x0020, "Standard")
+PORT_DIPSETTING(0x0000, "Advanced")
+PORT_DIPNAME(0x0040, 0x0040, "Shot Timer")
+PORT_DIPSETTING(0x0000, "Slower")
+PORT_DIPSETTING(0x0040, "Standard")
+PORT_DIPNAME(0x0080, 0x0080, "Golf Holes")
+PORT_DIPSETTING(0x0080, "3")
+PORT_DIPSETTING(0x0000, "4")
+PORT_BIT(0xff00, IP_ACTIVE_LOW, IPT_UNUSED)
 
-	PORT_START
-    PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_X | IPF_PLAYER1, 100, 20, 0, 0 )
+PORT_START
+PORT_ANALOG(0xff, 0, IPT_TRACKBALL_X | IPF_PLAYER1, 100, 20, 0, 0)
 
-	PORT_START
-    PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_Y | IPF_REVERSE | IPF_PLAYER1, 100, 20, 0, 0 )
+PORT_START
+PORT_ANALOG(0xff, 0, IPT_TRACKBALL_Y | IPF_REVERSE | IPF_PLAYER1, 100, 20, 0, 0)
 INPUT_PORTS_END
 
 
@@ -895,32 +887,33 @@ INPUT_PORTS_END
  *
  *************************************/
 
-static struct GfxLayout zwackery_layout =
-{
-	16,16,
-	RGN_FRAC(1,2),
-	8,
-	{ 0, 0, 0, 0, 0, 0, 0, 0 },
-	{  3,  2,  1,  0, 11, 10,  9,  8,
-	  19, 18, 17, 16, 27, 26, 25, 24 },
-	{ 4, RGN_FRAC(1,2)+4, 0, RGN_FRAC(1,2)+0, 36, RGN_FRAC(1,2)+36, 32, RGN_FRAC(1,2)+32,
-	  68, RGN_FRAC(1,2)+68, 64, RGN_FRAC(1,2)+64, 100, RGN_FRAC(1,2)+100, 96, RGN_FRAC(1,2)+96 },
-	128
+static struct GfxLayout zwackery_layout = {
+    16, 16,
+    RGN_FRAC(1, 2),
+    8,
+    { 0, 0, 0, 0, 0, 0, 0, 0 },
+    {
+        3,  2,  1,  0, 11, 10,  9,  8,
+        19, 18, 17, 16, 27, 26, 25, 24
+    },
+    {
+        4, RGN_FRAC(1, 2) + 4, 0, RGN_FRAC(1, 2) + 0, 36, RGN_FRAC(1, 2) + 36, 32, RGN_FRAC(1, 2) + 32,
+        68, RGN_FRAC(1, 2) + 68, 64, RGN_FRAC(1, 2) + 64, 100, RGN_FRAC(1, 2) + 100, 96, RGN_FRAC(1, 2) + 96
+    },
+    128
 };
 
-static struct GfxDecodeInfo gfxdecodeinfo[] =
-{
-	{ REGION_GFX1, 0, &mcr_bg_layout,     0, 4 },
-	{ REGION_GFX2, 0, &mcr_sprite_layout, 0, 4 },
-	{ -1 } /* end of array */
+static struct GfxDecodeInfo gfxdecodeinfo[] = {
+    { REGION_GFX1, 0, &mcr_bg_layout,     0, 4 },
+    { REGION_GFX2, 0, &mcr_sprite_layout, 0, 4 },
+    { -1 } /* end of array */
 };
 
-static struct GfxDecodeInfo zwackery_gfxdecodeinfo[] =
-{
-	{ REGION_GFX1, 0, &zwackery_layout,       0, 16 },
-	{ REGION_GFX2, 0, &mcr_sprite_layout, 0x800, 32 },
-	{ REGION_GFX1, 0, &zwackery_layout,       0, 16 },	/* yes, an extra copy */
-	{ -1 } /* end of array */
+static struct GfxDecodeInfo zwackery_gfxdecodeinfo[] = {
+    { REGION_GFX1, 0, &zwackery_layout,       0, 16 },
+    { REGION_GFX2, 0, &mcr_sprite_layout, 0x800, 32 },
+    { REGION_GFX1, 0, &zwackery_layout,       0, 16 },	/* yes, an extra copy */
+    { -1 } /* end of array */
 };
 
 
@@ -959,40 +952,39 @@ static struct GfxDecodeInfo zwackery_gfxdecodeinfo[] =
 
 =================================================================*/
 
-static struct MachineDriver machine_driver_zwackery =
-{
-	/* basic machine hardware */
-	{
-		{
-			CPU_M68000,
-			7652400,	/* 8 Mhz */
-			zwackery_readmem,zwackery_writemem,0,0,
-			mcr68_interrupt,1
-		},
-		SOUND_CPU_CHIP_SQUEAK_DELUXE
-	},
-	30, DEFAULT_REAL_30HZ_VBLANK_DURATION,
-	1,
-	zwackery_init_machine,
+static struct MachineDriver machine_driver_zwackery = {
+    /* basic machine hardware */
+    {
+        {
+            CPU_M68000,
+            7652400,	/* 8 Mhz */
+            zwackery_readmem, zwackery_writemem, 0, 0,
+            mcr68_interrupt, 1
+        },
+        SOUND_CPU_CHIP_SQUEAK_DELUXE
+    },
+    30, DEFAULT_REAL_30HZ_VBLANK_DURATION,
+    1,
+    zwackery_init_machine,
 
-	/* video hardware */
-	32*16, 30*16, { 0, 32*16-1, 0, 30*16-1 },
-	zwackery_gfxdecodeinfo,
-	4096, 4096,
-	zwackery_convert_color_prom,
+    /* video hardware */
+    32 * 16, 30 * 16, { 0, 32 * 16 - 1, 0, 30 * 16 - 1 },
+    zwackery_gfxdecodeinfo,
+    4096, 4096,
+    zwackery_convert_color_prom,
 
-	VIDEO_TYPE_RASTER | VIDEO_MODIFIES_PALETTE | VIDEO_SUPPORTS_DIRTY,
-	0,
-	generic_vh_start,
-	generic_vh_stop,
-	zwackery_vh_screenrefresh,
+    VIDEO_TYPE_RASTER | VIDEO_MODIFIES_PALETTE | VIDEO_SUPPORTS_DIRTY,
+    0,
+    generic_vh_start,
+    generic_vh_stop,
+    zwackery_vh_screenrefresh,
 
-	/* sound hardware */
-	SOUND_SUPPORTS_STEREO,0,0,0,
-	{
-		SOUND_CHIP_SQUEAK_DELUXE
-	},
-	0
+    /* sound hardware */
+    SOUND_SUPPORTS_STEREO, 0, 0, 0,
+    {
+        SOUND_CHIP_SQUEAK_DELUXE
+    },
+    0
 };
 
 
@@ -1049,11 +1041,11 @@ MACHINE_DRIVER_MCR68(trisport, trisport, WILLIAMS_CVSD)
 
 static void rom_decode(void)
 {
-	int i;
+    int i;
 
-	/* tile graphics are inverted */
-	for (i = 0; i < memory_region_length(REGION_GFX1); i++)
-		memory_region(REGION_GFX1)[i] ^= 0xff;
+    /* tile graphics are inverted */
+    for (i = 0; i < memory_region_length(REGION_GFX1); i++)
+        memory_region(REGION_GFX1) [i] ^= 0xff;
 }
 
 
@@ -1064,238 +1056,238 @@ static void rom_decode(void)
  *
  *************************************/
 
-ROM_START( zwackery )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "pro0.bin",   0x00000, 0x4000, 0x6fb9731c )
-	ROM_LOAD_ODD ( "pro1.bin",   0x00000, 0x4000, 0x84b92555 )
-	ROM_LOAD_EVEN( "pro2.bin",   0x08000, 0x4000, 0xe6977a2a )
-	ROM_LOAD_ODD ( "pro3.bin",   0x08000, 0x4000, 0xf5d0a60e )
-	ROM_LOAD_EVEN( "pro4.bin",   0x10000, 0x4000, 0xec5841d9 )
-	ROM_LOAD_ODD ( "pro5.bin",   0x10000, 0x4000, 0xd7d99ce0 )
-	ROM_LOAD_EVEN( "pro6.bin",   0x18000, 0x4000, 0xb9fe7bf5 )
-	ROM_LOAD_ODD ( "pro7.bin",   0x18000, 0x4000, 0x5e261b3b )
-	ROM_LOAD_EVEN( "pro8.bin",   0x20000, 0x4000, 0x55e380a5 )
-	ROM_LOAD_ODD ( "pro9.bin",   0x20000, 0x4000, 0x12249dca )
-	ROM_LOAD_EVEN( "pro10.bin",  0x28000, 0x4000, 0x6a39a8ca )
-	ROM_LOAD_ODD ( "pro11.bin",  0x28000, 0x4000, 0xad6b45bc )
-	ROM_LOAD_EVEN( "pro12.bin",  0x30000, 0x4000, 0xe2d25e1f )
-	ROM_LOAD_ODD ( "pro13.bin",  0x30000, 0x4000, 0xe131f9b8 )
+ROM_START(zwackery)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("pro0.bin",   0x00000, 0x4000, 0x6fb9731c)
+ROM_LOAD_ODD("pro1.bin",   0x00000, 0x4000, 0x84b92555)
+ROM_LOAD_EVEN("pro2.bin",   0x08000, 0x4000, 0xe6977a2a)
+ROM_LOAD_ODD("pro3.bin",   0x08000, 0x4000, 0xf5d0a60e)
+ROM_LOAD_EVEN("pro4.bin",   0x10000, 0x4000, 0xec5841d9)
+ROM_LOAD_ODD("pro5.bin",   0x10000, 0x4000, 0xd7d99ce0)
+ROM_LOAD_EVEN("pro6.bin",   0x18000, 0x4000, 0xb9fe7bf5)
+ROM_LOAD_ODD("pro7.bin",   0x18000, 0x4000, 0x5e261b3b)
+ROM_LOAD_EVEN("pro8.bin",   0x20000, 0x4000, 0x55e380a5)
+ROM_LOAD_ODD("pro9.bin",   0x20000, 0x4000, 0x12249dca)
+ROM_LOAD_EVEN("pro10.bin",  0x28000, 0x4000, 0x6a39a8ca)
+ROM_LOAD_ODD("pro11.bin",  0x28000, 0x4000, 0xad6b45bc)
+ROM_LOAD_EVEN("pro12.bin",  0x30000, 0x4000, 0xe2d25e1f)
+ROM_LOAD_ODD("pro13.bin",  0x30000, 0x4000, 0xe131f9b8)
 
-	ROM_REGION( 0x20000, REGION_CPU2 )
-	ROM_LOAD_EVEN( "csd7.bin",  0x00000, 0x2000, 0x5501f54b )
-	ROM_LOAD_ODD ( "csd17.bin", 0x00000, 0x2000, 0x2e482580 )
-	ROM_LOAD_EVEN( "csd8.bin",  0x04000, 0x2000, 0x13366575 )
-	ROM_LOAD_ODD ( "csd18.bin", 0x04000, 0x2000, 0xbcfe5820 )
+ROM_REGION(0x20000, REGION_CPU2)
+ROM_LOAD_EVEN("csd7.bin",  0x00000, 0x2000, 0x5501f54b)
+ROM_LOAD_ODD("csd17.bin", 0x00000, 0x2000, 0x2e482580)
+ROM_LOAD_EVEN("csd8.bin",  0x04000, 0x2000, 0x13366575)
+ROM_LOAD_ODD("csd18.bin", 0x04000, 0x2000, 0xbcfe5820)
 
-	ROM_REGION( 0x8000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "tileh.bin",    0x00000, 0x4000, 0xa7237eb1 )
-	ROM_LOAD( "tileg.bin",    0x04000, 0x4000, 0x626cc69b )
+ROM_REGION(0x8000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("tileh.bin",    0x00000, 0x4000, 0xa7237eb1)
+ROM_LOAD("tileg.bin",    0x04000, 0x4000, 0x626cc69b)
 
-	ROM_REGION( 0x20000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "spr6h.bin",    0x00000, 0x4000, 0xa51158dc )
-	ROM_LOAD( "spr7h.bin",    0x04000, 0x4000, 0x941feecf )
-	ROM_LOAD( "spr6j.bin",    0x08000, 0x4000, 0xf3eef316 )
-	ROM_LOAD( "spr7j.bin",    0x0c000, 0x4000, 0xa8a34033 )
-	ROM_LOAD( "spr10h.bin",   0x10000, 0x4000, 0xa99daea6 )
-	ROM_LOAD( "spr11h.bin",   0x14000, 0x4000, 0xc1a767fb )
-	ROM_LOAD( "spr10j.bin",   0x18000, 0x4000, 0x4dd04376 )
-	ROM_LOAD( "spr11j.bin",   0x1c000, 0x4000, 0xe8c6a880 )
+ROM_REGION(0x20000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("spr6h.bin",    0x00000, 0x4000, 0xa51158dc)
+ROM_LOAD("spr7h.bin",    0x04000, 0x4000, 0x941feecf)
+ROM_LOAD("spr6j.bin",    0x08000, 0x4000, 0xf3eef316)
+ROM_LOAD("spr7j.bin",    0x0c000, 0x4000, 0xa8a34033)
+ROM_LOAD("spr10h.bin",   0x10000, 0x4000, 0xa99daea6)
+ROM_LOAD("spr11h.bin",   0x14000, 0x4000, 0xc1a767fb)
+ROM_LOAD("spr10j.bin",   0x18000, 0x4000, 0x4dd04376)
+ROM_LOAD("spr11j.bin",   0x1c000, 0x4000, 0xe8c6a880)
 
-	ROM_REGION( 0x8000, REGION_GFX3 )	/* bg color maps */
-	ROM_LOAD_GFX_EVEN( "tilef.bin",  0x0000, 0x4000, 0xa0dfcd7e )
-	ROM_LOAD_GFX_ODD ( "tilee.bin",  0x0000, 0x4000, 0xab504dc8 )
+ROM_REGION(0x8000, REGION_GFX3)	/* bg color maps */
+ROM_LOAD_GFX_EVEN("tilef.bin",  0x0000, 0x4000, 0xa0dfcd7e)
+ROM_LOAD_GFX_ODD("tilee.bin",  0x0000, 0x4000, 0xab504dc8)
 ROM_END
 
-ROM_START( xenophob )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "xeno_pro.3c",  0x00000, 0x10000, 0xf44c2e60 )
-	ROM_LOAD_ODD ( "xeno_pro.3b",  0x00000, 0x10000, 0x01609a3b )
-	ROM_LOAD_EVEN( "xeno_pro.2c",  0x20000, 0x10000, 0xe45bf669 )
-	ROM_LOAD_ODD ( "xeno_pro.2b",  0x20000, 0x10000, 0xda5d39d5 )
+ROM_START(xenophob)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("xeno_pro.3c",  0x00000, 0x10000, 0xf44c2e60)
+ROM_LOAD_ODD("xeno_pro.3b",  0x00000, 0x10000, 0x01609a3b)
+ROM_LOAD_EVEN("xeno_pro.2c",  0x20000, 0x10000, 0xe45bf669)
+ROM_LOAD_ODD("xeno_pro.2b",  0x20000, 0x10000, 0xda5d39d5)
 
-	ROM_REGION( 0x40000, REGION_CPU2 )  /* Sounds Good board */
-	ROM_LOAD_EVEN( "xeno_snd.u7",  0x00000, 0x10000, 0x77561d15 )
-	ROM_LOAD_ODD ( "xeno_snd.u17", 0x00000, 0x10000, 0x837a1a71 )
-	ROM_LOAD_EVEN( "xeno_snd.u8",  0x20000, 0x10000, 0x6e2915c7 )
-	ROM_LOAD_ODD ( "xeno_snd.u18", 0x20000, 0x10000, 0x12492145 )
+ROM_REGION(0x40000, REGION_CPU2)    /* Sounds Good board */
+ROM_LOAD_EVEN("xeno_snd.u7",  0x00000, 0x10000, 0x77561d15)
+ROM_LOAD_ODD("xeno_snd.u17", 0x00000, 0x10000, 0x837a1a71)
+ROM_LOAD_EVEN("xeno_snd.u8",  0x20000, 0x10000, 0x6e2915c7)
+ROM_LOAD_ODD("xeno_snd.u18", 0x20000, 0x10000, 0x12492145)
 
-	ROM_REGION( 0x10000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "xeno_bg.11d",  0x00000, 0x08000, 0x3d2cf284 )
-	ROM_LOAD( "xeno_bg.12d",  0x08000, 0x08000, 0xc32288b1 )
+ROM_REGION(0x10000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("xeno_bg.11d",  0x00000, 0x08000, 0x3d2cf284)
+ROM_LOAD("xeno_bg.12d",  0x08000, 0x08000, 0xc32288b1)
 
-	ROM_REGION( 0x40000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "xeno_fg.7j",   0x00000, 0x10000, 0xb12eddb2 )
-	ROM_LOAD( "xeno_fg.8j",   0x10000, 0x10000, 0x20e682f5 )
-	ROM_LOAD( "xeno_fg.9j",   0x20000, 0x10000, 0x82fb3e09 )
-	ROM_LOAD( "xeno_fg.10j",  0x30000, 0x10000, 0x6a7a3516 )
+ROM_REGION(0x40000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("xeno_fg.7j",   0x00000, 0x10000, 0xb12eddb2)
+ROM_LOAD("xeno_fg.8j",   0x10000, 0x10000, 0x20e682f5)
+ROM_LOAD("xeno_fg.9j",   0x20000, 0x10000, 0x82fb3e09)
+ROM_LOAD("xeno_fg.10j",  0x30000, 0x10000, 0x6a7a3516)
 ROM_END
 
-ROM_START( spyhunt2 )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "sh23c.bin",  0x00000, 0x10000, 0x30b91c90 )
-	ROM_LOAD_ODD ( "sh23b.bin",  0x00000, 0x10000, 0xf64513c6 )
-	ROM_LOAD_EVEN( "sh22c.bin",  0x20000, 0x10000, 0x8ee65009 )
-	ROM_LOAD_ODD ( "sh22b.bin",  0x20000, 0x10000, 0x850c21ad )
+ROM_START(spyhunt2)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("sh23c.bin",  0x00000, 0x10000, 0x30b91c90)
+ROM_LOAD_ODD("sh23b.bin",  0x00000, 0x10000, 0xf64513c6)
+ROM_LOAD_EVEN("sh22c.bin",  0x20000, 0x10000, 0x8ee65009)
+ROM_LOAD_ODD("sh22b.bin",  0x20000, 0x10000, 0x850c21ad)
 
-	ROM_REGION( 0x10000, REGION_CPU2 )  /* 64k for the Turbo Cheap Squeak */
-	ROM_LOAD( "turbo-cs.u5", 0x08000, 0x4000, 0x4b1d8a66 )
-	ROM_LOAD( "turbo-cs.u4", 0x0c000, 0x4000, 0x3722ce48 )
+ROM_REGION(0x10000, REGION_CPU2)    /* 64k for the Turbo Cheap Squeak */
+ROM_LOAD("turbo-cs.u5", 0x08000, 0x4000, 0x4b1d8a66)
+ROM_LOAD("turbo-cs.u4", 0x0c000, 0x4000, 0x3722ce48)
 
-	ROM_REGION( 0x40000, REGION_CPU3 )  /* Sounds Good board */
-	ROM_LOAD_EVEN( "sh2u7.bin",  0x00000, 0x10000, 0x02362ea4 )
-	ROM_LOAD_ODD ( "sh2u17.bin", 0x00000, 0x10000, 0xe29a2c37 )
+ROM_REGION(0x40000, REGION_CPU3)    /* Sounds Good board */
+ROM_LOAD_EVEN("sh2u7.bin",  0x00000, 0x10000, 0x02362ea4)
+ROM_LOAD_ODD("sh2u17.bin", 0x00000, 0x10000, 0xe29a2c37)
 
-	ROM_REGION( 0x10000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "sh2bg0.bin",  0x00000, 0x08000, 0xcb3c3d8e )
-	ROM_LOAD( "sh2bg1.bin",  0x08000, 0x08000, 0x029d4af1 )
+ROM_REGION(0x10000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("sh2bg0.bin",  0x00000, 0x08000, 0xcb3c3d8e)
+ROM_LOAD("sh2bg1.bin",  0x08000, 0x08000, 0x029d4af1)
 
-	ROM_REGION( 0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "fg0.7j",   0x00000, 0x20000, 0x55ce12ea )
-	ROM_LOAD( "fg1.8j",   0x20000, 0x20000, 0x692afb67 )
-	ROM_LOAD( "fg2.9j",   0x40000, 0x20000, 0xf1aba383 )
-	ROM_LOAD( "fg3.10j",  0x60000, 0x20000, 0xd3475ff8 )
+ROM_REGION(0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("fg0.7j",   0x00000, 0x20000, 0x55ce12ea)
+ROM_LOAD("fg1.8j",   0x20000, 0x20000, 0x692afb67)
+ROM_LOAD("fg2.9j",   0x40000, 0x20000, 0xf1aba383)
+ROM_LOAD("fg3.10j",  0x60000, 0x20000, 0xd3475ff8)
 ROM_END
 
-ROM_START( spyhnt2a )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "3c",  0x00000, 0x10000, 0x5b92aadf )
-	ROM_LOAD_ODD ( "3b",  0x00000, 0x10000, 0x6ed0a25f )
-	ROM_LOAD_EVEN( "2c",  0x20000, 0x10000, 0xbc834f3f )
-	ROM_LOAD_ODD ( "2b",  0x20000, 0x10000, 0x8a9f7ef3 )
+ROM_START(spyhnt2a)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("3c",  0x00000, 0x10000, 0x5b92aadf)
+ROM_LOAD_ODD("3b",  0x00000, 0x10000, 0x6ed0a25f)
+ROM_LOAD_EVEN("2c",  0x20000, 0x10000, 0xbc834f3f)
+ROM_LOAD_ODD("2b",  0x20000, 0x10000, 0x8a9f7ef3)
 
-	ROM_REGION( 0x10000, REGION_CPU2 )  /* 64k for the Turbo Cheap Squeak */
-	ROM_LOAD( "turbo-cs.u5", 0x08000, 0x4000, 0x4b1d8a66 )
-	ROM_LOAD( "turbo-cs.u4", 0x0c000, 0x4000, 0x3722ce48 )
+ROM_REGION(0x10000, REGION_CPU2)    /* 64k for the Turbo Cheap Squeak */
+ROM_LOAD("turbo-cs.u5", 0x08000, 0x4000, 0x4b1d8a66)
+ROM_LOAD("turbo-cs.u4", 0x0c000, 0x4000, 0x3722ce48)
 
-	ROM_REGION( 0x40000, REGION_CPU3 )  /* Sounds Good board */
-	ROM_LOAD_EVEN( "sh2u7.bin",  0x00000, 0x10000, 0x02362ea4 )
-	ROM_LOAD_ODD ( "sh2u17.bin", 0x00000, 0x10000, 0xe29a2c37 )
+ROM_REGION(0x40000, REGION_CPU3)    /* Sounds Good board */
+ROM_LOAD_EVEN("sh2u7.bin",  0x00000, 0x10000, 0x02362ea4)
+ROM_LOAD_ODD("sh2u17.bin", 0x00000, 0x10000, 0xe29a2c37)
 
-	ROM_REGION( 0x10000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "bg0.11d",  0x00000, 0x08000, 0x81efef7a )
-	ROM_LOAD( "bg1.12d",  0x08000, 0x08000, 0x6a902e4d )
+ROM_REGION(0x10000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("bg0.11d",  0x00000, 0x08000, 0x81efef7a)
+ROM_LOAD("bg1.12d",  0x08000, 0x08000, 0x6a902e4d)
 
-	ROM_REGION( 0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "fg0.7j",   0x00000, 0x20000, 0x55ce12ea )
-	ROM_LOAD( "fg1.8j",   0x20000, 0x20000, 0x692afb67 )
-	ROM_LOAD( "fg2.9j",   0x40000, 0x20000, 0xf1aba383 )
-	ROM_LOAD( "fg3.10j",  0x60000, 0x20000, 0xd3475ff8 )
+ROM_REGION(0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("fg0.7j",   0x00000, 0x20000, 0x55ce12ea)
+ROM_LOAD("fg1.8j",   0x20000, 0x20000, 0x692afb67)
+ROM_LOAD("fg2.9j",   0x40000, 0x20000, 0xf1aba383)
+ROM_LOAD("fg3.10j",  0x60000, 0x20000, 0xd3475ff8)
 ROM_END
 
-ROM_START( blasted )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "3c",  0x00000, 0x10000, 0xb243b7df )
-	ROM_LOAD_ODD ( "3b",  0x00000, 0x10000, 0x627e30d3 )
-	ROM_LOAD_EVEN( "2c",  0x20000, 0x10000, 0x026f30bf )
-	ROM_LOAD_ODD ( "2b",  0x20000, 0x10000, 0x8e0e91a9 )
+ROM_START(blasted)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("3c",  0x00000, 0x10000, 0xb243b7df)
+ROM_LOAD_ODD("3b",  0x00000, 0x10000, 0x627e30d3)
+ROM_LOAD_EVEN("2c",  0x20000, 0x10000, 0x026f30bf)
+ROM_LOAD_ODD("2b",  0x20000, 0x10000, 0x8e0e91a9)
 
-	ROM_REGION( 0x40000, REGION_CPU2 )  /* Sounds Good board */
-	ROM_LOAD_EVEN( "blasted.u7",  0x00000, 0x10000, 0x8d7c8ef6 )
-	ROM_LOAD_ODD ( "blasted.u17", 0x00000, 0x10000, 0xc79040b9 )
-	ROM_LOAD_EVEN( "blasted.u8",  0x20000, 0x10000, 0xc53094c0 )
-	ROM_LOAD_ODD ( "blasted.u18", 0x20000, 0x10000, 0x85688160 )
+ROM_REGION(0x40000, REGION_CPU2)    /* Sounds Good board */
+ROM_LOAD_EVEN("blasted.u7",  0x00000, 0x10000, 0x8d7c8ef6)
+ROM_LOAD_ODD("blasted.u17", 0x00000, 0x10000, 0xc79040b9)
+ROM_LOAD_EVEN("blasted.u8",  0x20000, 0x10000, 0xc53094c0)
+ROM_LOAD_ODD("blasted.u18", 0x20000, 0x10000, 0x85688160)
 
-	ROM_REGION( 0x10000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "11d",  0x00000, 0x08000, 0xd8ed5cbc )
-	ROM_LOAD( "12d",  0x08000, 0x08000, 0x60d00c69 )
+ROM_REGION(0x10000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("11d",  0x00000, 0x08000, 0xd8ed5cbc)
+ROM_LOAD("12d",  0x08000, 0x08000, 0x60d00c69)
 
-	ROM_REGION( 0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "fg0",  0x00000, 0x20000, 0x5034ae8a )
-	ROM_LOAD( "fg1",  0x20000, 0x20000, 0x4fbdba58 )
-	ROM_LOAD( "fg2",  0x40000, 0x20000, 0x8891f6f8 )
-	ROM_LOAD( "fg3",  0x60000, 0x20000, 0x18e4a130 )
+ROM_REGION(0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("fg0",  0x00000, 0x20000, 0x5034ae8a)
+ROM_LOAD("fg1",  0x20000, 0x20000, 0x4fbdba58)
+ROM_LOAD("fg2",  0x40000, 0x20000, 0x8891f6f8)
+ROM_LOAD("fg3",  0x60000, 0x20000, 0x18e4a130)
 ROM_END
 
-ROM_START( archrivl )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "3c-rev2",  0x00000, 0x10000, 0x60d4b760 )
-	ROM_LOAD_ODD ( "3b-rev2",  0x00000, 0x10000, 0xe0c07a8d )
-	ROM_LOAD_EVEN( "2c-rev2",  0x20000, 0x10000, 0xcc2893f7 )
-	ROM_LOAD_ODD ( "2b-rev2",  0x20000, 0x10000, 0xfa977050 )
+ROM_START(archrivl)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("3c-rev2",  0x00000, 0x10000, 0x60d4b760)
+ROM_LOAD_ODD("3b-rev2",  0x00000, 0x10000, 0xe0c07a8d)
+ROM_LOAD_EVEN("2c-rev2",  0x20000, 0x10000, 0xcc2893f7)
+ROM_LOAD_ODD("2b-rev2",  0x20000, 0x10000, 0xfa977050)
 
-	ROM_REGION( 0x70000, REGION_CPU2 )  /* Audio System board */
-	ROM_LOAD( "u4.snd",  0x10000, 0x08000, 0x96b3c652 )
-	ROM_LOAD( "u19.snd", 0x30000, 0x08000, 0xc4b3dc23 )
-	ROM_LOAD( "u20.snd", 0x50000, 0x08000, 0xf7907a02 )
+ROM_REGION(0x70000, REGION_CPU2)    /* Audio System board */
+ROM_LOAD("u4.snd",  0x10000, 0x08000, 0x96b3c652)
+ROM_LOAD("u19.snd", 0x30000, 0x08000, 0xc4b3dc23)
+ROM_LOAD("u20.snd", 0x50000, 0x08000, 0xf7907a02)
 
-	ROM_REGION( 0x20000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "11d-rev1",  0x00000, 0x10000, 0x7eb3d7c6 )
-	ROM_LOAD( "12d-rev1",  0x10000, 0x10000, 0x31e68050 )
+ROM_REGION(0x20000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("11d-rev1",  0x00000, 0x10000, 0x7eb3d7c6)
+ROM_LOAD("12d-rev1",  0x10000, 0x10000, 0x31e68050)
 
-	ROM_REGION( 0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "7j-rev1",   0x00000, 0x20000, 0x148ce28c )
-	ROM_LOAD( "8j-rev1",   0x20000, 0x20000, 0x58187ac2 )
-	ROM_LOAD( "9j-rev1",   0x40000, 0x20000, 0x0dd1204e )
-	ROM_LOAD( "10j-rev1",  0x60000, 0x20000, 0xeb3d0344 )
+ROM_REGION(0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("7j-rev1",   0x00000, 0x20000, 0x148ce28c)
+ROM_LOAD("8j-rev1",   0x20000, 0x20000, 0x58187ac2)
+ROM_LOAD("9j-rev1",   0x40000, 0x20000, 0x0dd1204e)
+ROM_LOAD("10j-rev1",  0x60000, 0x20000, 0xeb3d0344)
 ROM_END
 
-ROM_START( archriv2 )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "archrivl.4",  0x00000, 0x10000, 0x3c545740 )
-	ROM_LOAD_ODD ( "archrivl.2",  0x00000, 0x10000, 0xbc4df2b9 )
-	ROM_LOAD_EVEN( "archrivl.3",  0x20000, 0x10000, 0xd6d08ff7 )
-	ROM_LOAD_ODD ( "archrivl.1",  0x20000, 0x10000, 0x92f3a43d )
+ROM_START(archriv2)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("archrivl.4",  0x00000, 0x10000, 0x3c545740)
+ROM_LOAD_ODD("archrivl.2",  0x00000, 0x10000, 0xbc4df2b9)
+ROM_LOAD_EVEN("archrivl.3",  0x20000, 0x10000, 0xd6d08ff7)
+ROM_LOAD_ODD("archrivl.1",  0x20000, 0x10000, 0x92f3a43d)
 
-	ROM_REGION( 0x70000, REGION_CPU2 )  /* Audio System board */
-	ROM_LOAD( "u4.snd",  0x10000, 0x08000, 0x96b3c652 )
-	ROM_LOAD( "u19.snd", 0x30000, 0x08000, 0xc4b3dc23 )
-	ROM_LOAD( "u20.snd", 0x50000, 0x08000, 0xf7907a02 )
+ROM_REGION(0x70000, REGION_CPU2)    /* Audio System board */
+ROM_LOAD("u4.snd",  0x10000, 0x08000, 0x96b3c652)
+ROM_LOAD("u19.snd", 0x30000, 0x08000, 0xc4b3dc23)
+ROM_LOAD("u20.snd", 0x50000, 0x08000, 0xf7907a02)
 
-	ROM_REGION( 0x20000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "11d-rev1",  0x00000, 0x10000, 0x7eb3d7c6 )
-	ROM_LOAD( "12d-rev1",  0x10000, 0x10000, 0x31e68050 )
+ROM_REGION(0x20000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("11d-rev1",  0x00000, 0x10000, 0x7eb3d7c6)
+ROM_LOAD("12d-rev1",  0x10000, 0x10000, 0x31e68050)
 
-	ROM_REGION( 0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "7j-rev1",   0x00000, 0x20000, 0x148ce28c )
-	ROM_LOAD( "8j-rev1",   0x20000, 0x20000, 0x58187ac2 )
-	ROM_LOAD( "9j-rev1",   0x40000, 0x20000, 0x0dd1204e )
-	ROM_LOAD( "10j-rev1",  0x60000, 0x20000, 0xeb3d0344 )
+ROM_REGION(0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("7j-rev1",   0x00000, 0x20000, 0x148ce28c)
+ROM_LOAD("8j-rev1",   0x20000, 0x20000, 0x58187ac2)
+ROM_LOAD("9j-rev1",   0x40000, 0x20000, 0x0dd1204e)
+ROM_LOAD("10j-rev1",  0x60000, 0x20000, 0xeb3d0344)
 ROM_END
 
-ROM_START( pigskin )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "pigskin.a5",  0x00000, 0x10000, 0xab61c29b )
-	ROM_LOAD_ODD ( "pigskin.b5",  0x00000, 0x10000, 0x55a802aa )
-	ROM_LOAD_EVEN( "pigskin.a6",  0x20000, 0x10000, 0x4d8b7e50 )
-	ROM_LOAD_ODD ( "pigskin.b6",  0x20000, 0x10000, 0x1194f187 )
+ROM_START(pigskin)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("pigskin.a5",  0x00000, 0x10000, 0xab61c29b)
+ROM_LOAD_ODD("pigskin.b5",  0x00000, 0x10000, 0x55a802aa)
+ROM_LOAD_EVEN("pigskin.a6",  0x20000, 0x10000, 0x4d8b7e50)
+ROM_LOAD_ODD("pigskin.b6",  0x20000, 0x10000, 0x1194f187)
 
-	ROM_REGION( 0x70000, REGION_CPU2 )  /* Audio System board */
-	ROM_LOAD( "pigskin.u4",  0x10000, 0x10000, 0x6daf2d37 )
-	ROM_LOAD( "pigskin.u19", 0x30000, 0x10000, 0x56fd16a3 )
-	ROM_LOAD( "pigskin.u20", 0x50000, 0x10000, 0x5d032fb8 )
+ROM_REGION(0x70000, REGION_CPU2)    /* Audio System board */
+ROM_LOAD("pigskin.u4",  0x10000, 0x10000, 0x6daf2d37)
+ROM_LOAD("pigskin.u19", 0x30000, 0x10000, 0x56fd16a3)
+ROM_LOAD("pigskin.u20", 0x50000, 0x10000, 0x5d032fb8)
 
-	ROM_REGION( 0x20000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "pigskin.e2",  0x00000, 0x10000, 0x12d5737b )
-	ROM_LOAD( "pigskin.e1",  0x10000, 0x10000, 0x460202a9 )
+ROM_REGION(0x20000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("pigskin.e2",  0x00000, 0x10000, 0x12d5737b)
+ROM_LOAD("pigskin.e1",  0x10000, 0x10000, 0x460202a9)
 
-	ROM_REGION( 0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "pigskin.h15", 0x00000, 0x20000, 0x2655d03f )
-	ROM_LOAD( "pigskin.h17", 0x20000, 0x20000, 0x31c52ea7 )
-	ROM_LOAD( "pigskin.h18", 0x40000, 0x20000, 0xb36c4109 )
-	ROM_LOAD( "pigskin.h14", 0x60000, 0x20000, 0x09c87104 )
+ROM_REGION(0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("pigskin.h15", 0x00000, 0x20000, 0x2655d03f)
+ROM_LOAD("pigskin.h17", 0x20000, 0x20000, 0x31c52ea7)
+ROM_LOAD("pigskin.h18", 0x40000, 0x20000, 0xb36c4109)
+ROM_LOAD("pigskin.h14", 0x60000, 0x20000, 0x09c87104)
 ROM_END
 
-ROM_START( trisport )
-	ROM_REGION( 0x40000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "la3.a5",  0x00000, 0x10000, 0xfe1e9e37 )
-	ROM_LOAD_ODD ( "la3.b5",  0x00000, 0x10000, 0xf352ec81 )
-	ROM_LOAD_EVEN( "la3.a6",  0x20000, 0x10000, 0x9c6a1398 )
-	ROM_LOAD_ODD ( "la3.b6",  0x20000, 0x10000, 0x597b564c )
+ROM_START(trisport)
+ROM_REGION(0x40000, REGION_CPU1)
+ROM_LOAD_EVEN("la3.a5",  0x00000, 0x10000, 0xfe1e9e37)
+ROM_LOAD_ODD("la3.b5",  0x00000, 0x10000, 0xf352ec81)
+ROM_LOAD_EVEN("la3.a6",  0x20000, 0x10000, 0x9c6a1398)
+ROM_LOAD_ODD("la3.b6",  0x20000, 0x10000, 0x597b564c)
 
-	ROM_REGION( 0x70000, REGION_CPU2 )  /* Audio System board */
-	ROM_LOAD( "sl1-snd.u4",  0x10000, 0x10000, 0x0ed8c904 )
-	ROM_LOAD( "sl1-snd.u19", 0x30000, 0x10000, 0xb57d7d7e )
-	ROM_LOAD( "sl1-snd.u20", 0x50000, 0x08000, 0x3ae15c08 )
+ROM_REGION(0x70000, REGION_CPU2)    /* Audio System board */
+ROM_LOAD("sl1-snd.u4",  0x10000, 0x10000, 0x0ed8c904)
+ROM_LOAD("sl1-snd.u19", 0x30000, 0x10000, 0xb57d7d7e)
+ROM_LOAD("sl1-snd.u20", 0x50000, 0x08000, 0x3ae15c08)
 
-	ROM_REGION( 0x20000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "la2.e2",  0x00000, 0x10000, 0xf61149a0 )
-	ROM_LOAD( "la2.e1",  0x10000, 0x10000, 0xcf753497 )
+ROM_REGION(0x20000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("la2.e2",  0x00000, 0x10000, 0xf61149a0)
+ROM_LOAD("la2.e1",  0x10000, 0x10000, 0xcf753497)
 
-	ROM_REGION( 0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "la2.h15", 0x00000, 0x20000, 0x18a44d43 )
-	ROM_LOAD( "la2.h17", 0x20000, 0x20000, 0x874cd237 )
-	ROM_LOAD( "la2.h18", 0x40000, 0x20000, 0xf7637a18 )
-	ROM_LOAD( "la2.h14", 0x60000, 0x20000, 0x403f9401 )
+ROM_REGION(0x80000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("la2.h15", 0x00000, 0x20000, 0x18a44d43)
+ROM_LOAD("la2.h17", 0x20000, 0x20000, 0x874cd237)
+ROM_LOAD("la2.h18", 0x40000, 0x20000, 0xf7637a18)
+ROM_LOAD("la2.h14", 0x60000, 0x20000, 0x403f9401)
 ROM_END
 
 
@@ -1308,150 +1300,150 @@ ROM_END
 
 static void init_zwackery(void)
 {
-	MCR_CONFIGURE_SOUND(MCR_CHIP_SQUEAK_DELUXE);
+    MCR_CONFIGURE_SOUND(MCR_CHIP_SQUEAK_DELUXE);
 
-	/* Zwackery doesn't care too much about this value; currently taken from Blasted */
-	mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
+    /* Zwackery doesn't care too much about this value; currently taken from Blasted */
+    mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
 
-	rom_decode();
+    rom_decode();
 }
 
 
 static void init_xenophob(void)
 {
-	MCR_CONFIGURE_SOUND(MCR_SOUNDS_GOOD);
+    MCR_CONFIGURE_SOUND(MCR_SOUNDS_GOOD);
 
-	mcr68_sprite_clip = 0;
-	mcr68_sprite_xoffset = 0;
+    mcr68_sprite_clip = 0;
+    mcr68_sprite_xoffset = 0;
 
-	/* Xenophobe doesn't care too much about this value; currently taken from Blasted */
-	mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
+    /* Xenophobe doesn't care too much about this value; currently taken from Blasted */
+    mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
 
-	/* install control port handler */
-	install_mem_write_handler(0, 0x0c0000, 0x0cffff, xenophobe_control_w);
+    /* install control port handler */
+    install_mem_write_handler(0, 0x0c0000, 0x0cffff, xenophobe_control_w);
 
-	rom_decode();
+    rom_decode();
 }
 
 
 static void init_spyhunt2(void)
 {
-	MCR_CONFIGURE_SOUND(MCR_TURBO_CHIP_SQUEAK | MCR_SOUNDS_GOOD);
+    MCR_CONFIGURE_SOUND(MCR_TURBO_CHIP_SQUEAK | MCR_SOUNDS_GOOD);
 
-	mcr68_sprite_clip = 0;
-	mcr68_sprite_xoffset = -6;
+    mcr68_sprite_clip = 0;
+    mcr68_sprite_xoffset = -6;
 
-	/* Spy Hunter 2 doesn't care too much about this value; currently taken from Blasted */
-	mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
+    /* Spy Hunter 2 doesn't care too much about this value; currently taken from Blasted */
+    mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
 
-	/* analog port handling is a bit tricky */
-	install_mem_write_handler(0, 0x0c0000, 0x0cffff, spyhunt2_control_w);
-	install_mem_read_handler(0, 0x0d0000, 0x0dffff, spyhunt2_port_0_r);
-	install_mem_read_handler(0, 0x0e0000, 0x0effff, spyhunt2_port_1_r);
+    /* analog port handling is a bit tricky */
+    install_mem_write_handler(0, 0x0c0000, 0x0cffff, spyhunt2_control_w);
+    install_mem_read_handler(0, 0x0d0000, 0x0dffff, spyhunt2_port_0_r);
+    install_mem_read_handler(0, 0x0e0000, 0x0effff, spyhunt2_port_1_r);
 
-	rom_decode();
+    rom_decode();
 }
 
 
 static void init_blasted(void)
 {
-	MCR_CONFIGURE_SOUND(MCR_SOUNDS_GOOD);
+    MCR_CONFIGURE_SOUND(MCR_SOUNDS_GOOD);
 
-	mcr68_sprite_clip = 0;
-	mcr68_sprite_xoffset = 0;
+    mcr68_sprite_clip = 0;
+    mcr68_sprite_xoffset = 0;
 
-	/* Blasted checks the timing of VBLANK relative to the 493 interrupt */
-	/* VBLANK is required to come within 220-256 E clocks (i.e., 2200-2560 CPU clocks) */
-	/* after the 493; we also allow 16 E clocks for latency  */
-	mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
+    /* Blasted checks the timing of VBLANK relative to the 493 interrupt */
+    /* VBLANK is required to come within 220-256 E clocks (i.e., 2200-2560 CPU clocks) */
+    /* after the 493; we also allow 16 E clocks for latency  */
+    mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
 
-	/* handle control writes */
-	install_mem_write_handler(0, 0x0c0000, 0x0cffff, blasted_control_w);
+    /* handle control writes */
+    install_mem_write_handler(0, 0x0c0000, 0x0cffff, blasted_control_w);
 
-	/* 6840 is mapped to the lower 8 bits */
-	install_mem_write_handler(0, 0x0a0000, 0x0a000f, mcr68_6840_lower_w);
-	install_mem_read_handler(0, 0x0a0000, 0x0a000f, mcr68_6840_lower_r);
+    /* 6840 is mapped to the lower 8 bits */
+    install_mem_write_handler(0, 0x0a0000, 0x0a000f, mcr68_6840_lower_w);
+    install_mem_read_handler(0, 0x0a0000, 0x0a000f, mcr68_6840_lower_r);
 
-	rom_decode();
+    rom_decode();
 }
 
 
 static void init_archrivl(void)
 {
-	MCR_CONFIGURE_SOUND(MCR_WILLIAMS_SOUND);
+    MCR_CONFIGURE_SOUND(MCR_WILLIAMS_SOUND);
 
-	mcr68_sprite_clip = 16;
-	mcr68_sprite_xoffset = 0;
+    mcr68_sprite_clip = 16;
+    mcr68_sprite_xoffset = 0;
 
-	/* Arch Rivals doesn't care too much about this value; currently taken from Blasted */
-	mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
+    /* Arch Rivals doesn't care too much about this value; currently taken from Blasted */
+    mcr68_timing_factor = TIME_IN_SEC((256.0 + 16.0) / (float)(Machine->drv->cpu[0].cpu_clock / 10));
 
-	/* handle control writes */
-	install_mem_write_handler(0, 0x0c0000, 0x0cffff, archrivl_control_w);
+    /* handle control writes */
+    install_mem_write_handler(0, 0x0c0000, 0x0cffff, archrivl_control_w);
 
-	/* 49-way joystick handling is a bit tricky */
-	install_mem_read_handler(0, 0x0e0000, 0x0effff, archrivl_port_1_r);
+    /* 49-way joystick handling is a bit tricky */
+    install_mem_read_handler(0, 0x0e0000, 0x0effff, archrivl_port_1_r);
 
-	/* 6840 is mapped to the lower 8 bits */
-	install_mem_write_handler(0, 0x0a0000, 0x0a000f, mcr68_6840_lower_w);
-	install_mem_read_handler(0, 0x0a0000, 0x0a000f, mcr68_6840_lower_r);
+    /* 6840 is mapped to the lower 8 bits */
+    install_mem_write_handler(0, 0x0a0000, 0x0a000f, mcr68_6840_lower_w);
+    install_mem_read_handler(0, 0x0a0000, 0x0a000f, mcr68_6840_lower_r);
 
-	/* expand the sound ROMs */
-	memcpy(&memory_region(REGION_CPU2)[0x18000], &memory_region(REGION_CPU2)[0x10000], 0x08000);
-	memcpy(&memory_region(REGION_CPU2)[0x20000], &memory_region(REGION_CPU2)[0x10000], 0x10000);
-	memcpy(&memory_region(REGION_CPU2)[0x38000], &memory_region(REGION_CPU2)[0x30000], 0x08000);
-	memcpy(&memory_region(REGION_CPU2)[0x40000], &memory_region(REGION_CPU2)[0x30000], 0x10000);
-	memcpy(&memory_region(REGION_CPU2)[0x58000], &memory_region(REGION_CPU2)[0x50000], 0x08000);
-	memcpy(&memory_region(REGION_CPU2)[0x60000], &memory_region(REGION_CPU2)[0x50000], 0x10000);
+    /* expand the sound ROMs */
+    memcpy(&memory_region(REGION_CPU2) [0x18000], &memory_region(REGION_CPU2) [0x10000], 0x08000);
+    memcpy(&memory_region(REGION_CPU2) [0x20000], &memory_region(REGION_CPU2) [0x10000], 0x10000);
+    memcpy(&memory_region(REGION_CPU2) [0x38000], &memory_region(REGION_CPU2) [0x30000], 0x08000);
+    memcpy(&memory_region(REGION_CPU2) [0x40000], &memory_region(REGION_CPU2) [0x30000], 0x10000);
+    memcpy(&memory_region(REGION_CPU2) [0x58000], &memory_region(REGION_CPU2) [0x50000], 0x08000);
+    memcpy(&memory_region(REGION_CPU2) [0x60000], &memory_region(REGION_CPU2) [0x50000], 0x10000);
 
-	rom_decode();
+    rom_decode();
 }
 
 
 static void init_pigskin(void)
 {
-	MCR_CONFIGURE_SOUND(MCR_WILLIAMS_SOUND);
+    MCR_CONFIGURE_SOUND(MCR_WILLIAMS_SOUND);
 
-	/* handle control writes */
-	install_mem_write_handler(0, 0x1a0000, 0x1affff, archrivl_control_w);
+    /* handle control writes */
+    install_mem_write_handler(0, 0x1a0000, 0x1affff, archrivl_control_w);
 
-	/* Pigskin doesn't care too much about this value; currently taken from Tri-Sports */
-	mcr68_timing_factor = TIME_IN_SEC(115.0 / (float)(Machine->drv->cpu[0].cpu_clock / 10));
+    /* Pigskin doesn't care too much about this value; currently taken from Tri-Sports */
+    mcr68_timing_factor = TIME_IN_SEC(115.0 / (float)(Machine->drv->cpu[0].cpu_clock / 10));
 
-	mcr68_sprite_clip = 16;
-	mcr68_sprite_xoffset = 0;
+    mcr68_sprite_clip = 16;
+    mcr68_sprite_xoffset = 0;
 
-	/* expand the sound ROMs */
-	memcpy(&memory_region(REGION_CPU2)[0x20000], &memory_region(REGION_CPU2)[0x10000], 0x10000);
-	memcpy(&memory_region(REGION_CPU2)[0x40000], &memory_region(REGION_CPU2)[0x30000], 0x10000);
-	memcpy(&memory_region(REGION_CPU2)[0x60000], &memory_region(REGION_CPU2)[0x50000], 0x10000);
+    /* expand the sound ROMs */
+    memcpy(&memory_region(REGION_CPU2) [0x20000], &memory_region(REGION_CPU2) [0x10000], 0x10000);
+    memcpy(&memory_region(REGION_CPU2) [0x40000], &memory_region(REGION_CPU2) [0x30000], 0x10000);
+    memcpy(&memory_region(REGION_CPU2) [0x60000], &memory_region(REGION_CPU2) [0x50000], 0x10000);
 
-	rom_decode();
+    rom_decode();
 }
 
 
 static void init_trisport(void)
 {
-	MCR_CONFIGURE_SOUND(MCR_WILLIAMS_SOUND);
+    MCR_CONFIGURE_SOUND(MCR_WILLIAMS_SOUND);
 
-	/* Tri-Sports checks the timing of VBLANK relative to the 493 interrupt */
-	/* VBLANK is required to come within 87-119 E clocks (i.e., 870-1190 CPU clocks) */
-	/* after the 493 */
-	mcr68_timing_factor = TIME_IN_SEC(115.0 / (float)(Machine->drv->cpu[0].cpu_clock / 10));
+    /* Tri-Sports checks the timing of VBLANK relative to the 493 interrupt */
+    /* VBLANK is required to come within 87-119 E clocks (i.e., 870-1190 CPU clocks) */
+    /* after the 493 */
+    mcr68_timing_factor = TIME_IN_SEC(115.0 / (float)(Machine->drv->cpu[0].cpu_clock / 10));
 
-	/* handle control writes */
-	install_mem_write_handler(0, 0x1a0000, 0x1affff, archrivl_control_w);
+    /* handle control writes */
+    install_mem_write_handler(0, 0x1a0000, 0x1affff, archrivl_control_w);
 
-	mcr68_sprite_clip = 0;
-	mcr68_sprite_xoffset = 0;
+    mcr68_sprite_clip = 0;
+    mcr68_sprite_xoffset = 0;
 
-	/* expand the sound ROMs */
-	memcpy(&memory_region(REGION_CPU2)[0x20000], &memory_region(REGION_CPU2)[0x10000], 0x10000);
-	memcpy(&memory_region(REGION_CPU2)[0x40000], &memory_region(REGION_CPU2)[0x30000], 0x10000);
-	memcpy(&memory_region(REGION_CPU2)[0x58000], &memory_region(REGION_CPU2)[0x50000], 0x08000);
-	memcpy(&memory_region(REGION_CPU2)[0x60000], &memory_region(REGION_CPU2)[0x50000], 0x10000);
+    /* expand the sound ROMs */
+    memcpy(&memory_region(REGION_CPU2) [0x20000], &memory_region(REGION_CPU2) [0x10000], 0x10000);
+    memcpy(&memory_region(REGION_CPU2) [0x40000], &memory_region(REGION_CPU2) [0x30000], 0x10000);
+    memcpy(&memory_region(REGION_CPU2) [0x58000], &memory_region(REGION_CPU2) [0x50000], 0x08000);
+    memcpy(&memory_region(REGION_CPU2) [0x60000], &memory_region(REGION_CPU2) [0x50000], 0x10000);
 
-	rom_decode();
+    rom_decode();
 }
 
 
@@ -1462,12 +1454,12 @@ static void init_trisport(void)
  *
  *************************************/
 
-GAME( 1984, zwackery, 0,        zwackery, zwackery, zwackery, ROT0,   "Bally Midway", "Zwackery" )
-GAME( 1987, xenophob, 0,        xenophob, xenophob, xenophob, ROT0,   "Bally Midway", "Xenophobe" )
-GAME( 1987, spyhunt2, 0,        spyhunt2, spyhunt2, spyhunt2, ROT0,   "Bally Midway", "Spy Hunter 2 (rev 2)" )
-GAME( 1987, spyhnt2a, spyhunt2, spyhunt2, spyhunt2, spyhunt2, ROT0,   "Bally Midway", "Spy Hunter 2 (rev 1)" )
-GAME( 1988, blasted,  0,        xenophob, blasted,  blasted,  ROT0,   "Bally Midway", "Blasted" )
-GAME( 1989, archrivl, 0,        archrivl, archrivl, archrivl, ROT0,   "Bally Midway", "Arch Rivals (rev 4.0)" )
-GAME( 1989, archriv2, archrivl, archrivl, archrivl, archrivl, ROT0,   "Bally Midway", "Arch Rivals (rev 2.0)" )
-GAME( 1989, trisport, 0,        trisport, trisport, trisport, ROT270, "Bally Midway", "Tri-Sports" )
-GAME( 1990, pigskin,  0,        pigskin,  pigskin,  pigskin,  ROT0,   "Bally Midway", "Pigskin 621AD" )
+GAME(1984, zwackery, 0,        zwackery, zwackery, zwackery, ROT0,   "Bally Midway", "Zwackery")
+GAME(1987, xenophob, 0,        xenophob, xenophob, xenophob, ROT0,   "Bally Midway", "Xenophobe")
+GAME(1987, spyhunt2, 0,        spyhunt2, spyhunt2, spyhunt2, ROT0,   "Bally Midway", "Spy Hunter 2 (rev 2)")
+GAME(1987, spyhnt2a, spyhunt2, spyhunt2, spyhunt2, spyhunt2, ROT0,   "Bally Midway", "Spy Hunter 2 (rev 1)")
+GAME(1988, blasted,  0,        xenophob, blasted,  blasted,  ROT0,   "Bally Midway", "Blasted")
+GAME(1989, archrivl, 0,        archrivl, archrivl, archrivl, ROT0,   "Bally Midway", "Arch Rivals (rev 4.0)")
+GAME(1989, archriv2, archrivl, archrivl, archrivl, archrivl, ROT0,   "Bally Midway", "Arch Rivals (rev 2.0)")
+GAME(1989, trisport, 0,        trisport, trisport, trisport, ROT270, "Bally Midway", "Tri-Sports")
+GAME(1990, pigskin,  0,        pigskin,  pigskin,  pigskin,  ROT0,   "Bally Midway", "Pigskin 621AD")

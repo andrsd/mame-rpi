@@ -4,8 +4,7 @@
 #define TIMER_RATE (4096/4)
 
 
-struct VLM5030interface konami_vlm5030_interface =
-{
+struct VLM5030interface konami_vlm5030_interface = {
     3580000,    /* master clock  */
     255,        /* volume        */
     4,         /* memory region  */
@@ -13,21 +12,18 @@ struct VLM5030interface konami_vlm5030_interface =
     0,         /* VCU            */
 };
 
-struct SN76496interface konami_sn76496_interface =
-{
+struct SN76496interface konami_sn76496_interface = {
     1,  /* 1 chip */
-    { 14318180/8 }, /*  1.7897725 Mhz */
+    { 14318180 / 8 }, /*  1.7897725 Mhz */
     { 0x2064 }
 };
 
-struct DACinterface konami_dac_interface =
-{
+struct DACinterface konami_dac_interface = {
     1,
     { 80 }
 };
 
-struct ADPCMinterface hyprolyb_adpcm_interface =
-{
+struct ADPCMinterface hyprolyb_adpcm_interface = {
     1,          /* 1 channel */
     4000,       /* 4000Hz playback */
     4,          /* memory region 4 */
@@ -49,49 +45,48 @@ static int SN76496_latch;
     the no of cycles by 4 to undo the 14.318/4 operation
 */
 
-READ_HANDLER( trackfld_sh_timer_r )
+READ_HANDLER(trackfld_sh_timer_r)
 {
     int clock = cpu_gettotalcycles() / TIMER_RATE;
 
     return clock & 0xF;
 }
 
-READ_HANDLER( trackfld_speech_r )
+READ_HANDLER(trackfld_speech_r)
 {
     return VLM5030_BSY() ? 0x10 : 0;
 }
 
 static int last_addr = 0;
 
-WRITE_HANDLER( trackfld_sound_w )
+WRITE_HANDLER(trackfld_sound_w)
 {
-    if( (offset & 0x07) == 0x03 )
-    {
-        int changes = offset^last_addr;
+    if ((offset & 0x07) == 0x03) {
+        int changes = offset ^ last_addr;
         /* A7 = data enable for VLM5030 (don't care )          */
         /* A8 = STA pin (1->0 data data  , 0->1 start speech   */
         /* A9 = RST pin 1=reset                                */
 
         /* A8 VLM5030 ST pin */
-        if( changes & 0x100 )
-            VLM5030_ST( offset&0x100 );
+        if (changes & 0x100)
+            VLM5030_ST(offset & 0x100);
         /* A9 VLM5030 RST pin */
-        if( changes & 0x200 )
-            VLM5030_RST( offset&0x200 );
+        if (changes & 0x200)
+            VLM5030_RST(offset & 0x200);
     }
     last_addr = offset;
 }
 
-READ_HANDLER( hyperspt_sh_timer_r )
+READ_HANDLER(hyperspt_sh_timer_r)
 {
     int clock = cpu_gettotalcycles() / TIMER_RATE;
 
-    return (clock & 0x3) | (VLM5030_BSY()? 0x04 : 0);
+    return (clock & 0x3) | (VLM5030_BSY() ? 0x04 : 0);
 }
 
-WRITE_HANDLER( hyperspt_sound_w )
+WRITE_HANDLER(hyperspt_sound_w)
 {
-    int changes = offset^last_addr;
+    int changes = offset ^ last_addr;
     /* A3 = data enable for VLM5030 (don't care )          */
     /* A4 = STA pin (1->0 data data  , 0->1 start speech   */
     /* A5 = RST pin 1=reset                                */
@@ -100,38 +95,37 @@ WRITE_HANDLER( hyperspt_sound_w )
     /* A8 = SN76489    output disable (don't care ) */
 
     /* A4 VLM5030 ST pin */
-    if( changes & 0x10 )
-        VLM5030_ST( offset&0x10 );
+    if (changes & 0x10)
+        VLM5030_ST(offset & 0x10);
     /* A5 VLM5030 RST pin */
-    if( changes & 0x20 )
-        VLM5030_RST( offset&0x20 );
+    if (changes & 0x20)
+        VLM5030_RST(offset & 0x20);
 
     last_addr = offset;
 }
 
 
 
-WRITE_HANDLER( konami_sh_irqtrigger_w )
+WRITE_HANDLER(konami_sh_irqtrigger_w)
 {
     static int last;
 
-    if (last == 0 && data)
-    {
+    if (last == 0 && data) {
         /* setting bit 0 low then high triggers IRQ on the sound CPU */
-        cpu_cause_interrupt(1,0xff);
+        cpu_cause_interrupt(1, 0xff);
     }
 
     last = data;
 }
 
 
-WRITE_HANDLER( konami_SN76496_latch_w )
+WRITE_HANDLER(konami_SN76496_latch_w)
 {
     SN76496_latch = data;
 }
 
 
-WRITE_HANDLER( konami_SN76496_0_w )
+WRITE_HANDLER(konami_SN76496_0_w)
 {
     SN76496_0_w(offset, SN76496_latch);
 }
@@ -139,14 +133,14 @@ WRITE_HANDLER( konami_SN76496_0_w )
 
 
 
-READ_HANDLER( hyprolyb_speech_r )
+READ_HANDLER(hyprolyb_speech_r)
 {
     return ADPCM_playing(0) ? 0x10 : 0x00;
 }
 
-WRITE_HANDLER( hyprolyb_ADPCM_data_w )
+WRITE_HANDLER(hyprolyb_ADPCM_data_w)
 {
-    int cmd,start,end;
+    int cmd, start, end;
     unsigned char *RAM = memory_region(REGION_CPU3);
 
 
@@ -155,5 +149,5 @@ WRITE_HANDLER( hyprolyb_ADPCM_data_w )
     start = RAM[cmd + 1] + 256 * RAM[cmd];
     end = RAM[cmd + 3] + 256 * RAM[cmd + 2];
     if (end > start)
-        ADPCM_play(0,start,(end - start)*2);
+        ADPCM_play(0, start, (end - start) * 2);
 }

@@ -10,7 +10,7 @@
 
 static int sound_command, sound_status;
 
-READ_HANDLER( aztarac_sound_r )
+READ_HANDLER(aztarac_sound_r)
 {
     if (Machine->sample_rate)
         return sound_status & 0x01;
@@ -18,32 +18,32 @@ READ_HANDLER( aztarac_sound_r )
         return 1;
 }
 
-WRITE_HANDLER( aztarac_sound_w )
+WRITE_HANDLER(aztarac_sound_w)
 {
     sound_command = data;
     sound_status ^= 0x21;
     if (sound_status & 0x20)
-        cpu_cause_interrupt( 1, Z80_IRQ_INT );
+        cpu_cause_interrupt(1, Z80_IRQ_INT);
 }
 
-READ_HANDLER( aztarac_snd_command_r )
+READ_HANDLER(aztarac_snd_command_r)
 {
     sound_status |= 0x01;
     sound_status &= ~0x20;
     return sound_command;
 }
 
-READ_HANDLER( aztarac_snd_status_r )
+READ_HANDLER(aztarac_snd_status_r)
 {
     return sound_status & ~0x01;
 }
 
-WRITE_HANDLER( aztarac_snd_status_w )
+WRITE_HANDLER(aztarac_snd_status_w)
 {
     sound_status &= ~0x10;
 }
 
-int aztarac_snd_timed_irq (void)
+int aztarac_snd_timed_irq(void)
 {
     sound_status ^= 0x10;
 

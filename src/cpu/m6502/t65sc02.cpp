@@ -98,7 +98,11 @@
 #define m65sc02_03 m6502_03 								/* 2 ILL */
 #define m65sc02_23 m6502_23 								/* 2 ILL */
 #define m65sc02_43 m6502_43 								/* 2 ILL */
-OP(63) {		  m6502_ICount -= 6;		 BSR;		  } /* ? BSR */
+OP(63)
+{
+    m6502_ICount -= 6;		    /* ? BSR */
+    BSR;
+}
 #define m65sc02_83 m6502_83 								/* 2 ILL */
 #define m65sc02_a3 m6502_a3 								/* 2 ILL */
 #define m65sc02_c3 m6502_c3 								/* 2 ILL */
@@ -331,37 +335,37 @@ OP(63) {		  m6502_ICount -= 6;		 BSR;		  } /* ? BSR */
 #define m65sc02_ff m65c02_ff								/* 5 BBS7 ZPG */
 
 static void (*insn65sc02[0x100])(void) = {
-	m65sc02_00,m65sc02_01,m65sc02_02,m65sc02_03,m65sc02_04,m65sc02_05,m65sc02_06,m65sc02_07,
-	m65sc02_08,m65sc02_09,m65sc02_0a,m65sc02_0b,m65sc02_0c,m65sc02_0d,m65sc02_0e,m65sc02_0f,
-	m65sc02_10,m65sc02_11,m65sc02_12,m65sc02_13,m65sc02_14,m65sc02_15,m65sc02_16,m65sc02_17,
-	m65sc02_18,m65sc02_19,m65sc02_1a,m65sc02_1b,m65sc02_1c,m65sc02_1d,m65sc02_1e,m65sc02_1f,
-	m65sc02_20,m65sc02_21,m65sc02_22,m65sc02_23,m65sc02_24,m65sc02_25,m65sc02_26,m65sc02_27,
-	m65sc02_28,m65sc02_29,m65sc02_2a,m65sc02_2b,m65sc02_2c,m65sc02_2d,m65sc02_2e,m65sc02_2f,
-	m65sc02_30,m65sc02_31,m65sc02_32,m65sc02_33,m65sc02_34,m65sc02_35,m65sc02_36,m65sc02_37,
-	m65sc02_38,m65sc02_39,m65sc02_3a,m65sc02_3b,m65sc02_3c,m65sc02_3d,m65sc02_3e,m65sc02_3f,
-	m65sc02_40,m65sc02_41,m65sc02_42,m65sc02_43,m65sc02_44,m65sc02_45,m65sc02_46,m65sc02_47,
-	m65sc02_48,m65sc02_49,m65sc02_4a,m65sc02_4b,m65sc02_4c,m65sc02_4d,m65sc02_4e,m65sc02_4f,
-	m65sc02_50,m65sc02_51,m65sc02_52,m65sc02_53,m65sc02_54,m65sc02_55,m65sc02_56,m65sc02_57,
-	m65sc02_58,m65sc02_59,m65sc02_5a,m65sc02_5b,m65sc02_5c,m65sc02_5d,m65sc02_5e,m65sc02_5f,
-	m65sc02_60,m65sc02_61,m65sc02_62,m65sc02_63,m65sc02_64,m65sc02_65,m65sc02_66,m65sc02_67,
-	m65sc02_68,m65sc02_69,m65sc02_6a,m65sc02_6b,m65sc02_6c,m65sc02_6d,m65sc02_6e,m65sc02_6f,
-	m65sc02_70,m65sc02_71,m65sc02_72,m65sc02_73,m65sc02_74,m65sc02_75,m65sc02_76,m65sc02_77,
-	m65sc02_78,m65sc02_79,m65sc02_7a,m65sc02_7b,m65sc02_7c,m65sc02_7d,m65sc02_7e,m65sc02_7f,
-	m65sc02_80,m65sc02_81,m65sc02_82,m65sc02_83,m65sc02_84,m65sc02_85,m65sc02_86,m65sc02_87,
-	m65sc02_88,m65sc02_89,m65sc02_8a,m65sc02_8b,m65sc02_8c,m65sc02_8d,m65sc02_8e,m65sc02_8f,
-	m65sc02_90,m65sc02_91,m65sc02_92,m65sc02_93,m65sc02_94,m65sc02_95,m65sc02_96,m65sc02_97,
-	m65sc02_98,m65sc02_99,m65sc02_9a,m65sc02_9b,m65sc02_9c,m65sc02_9d,m65sc02_9e,m65sc02_9f,
-	m65sc02_a0,m65sc02_a1,m65sc02_a2,m65sc02_a3,m65sc02_a4,m65sc02_a5,m65sc02_a6,m65sc02_a7,
-	m65sc02_a8,m65sc02_a9,m65sc02_aa,m65sc02_ab,m65sc02_ac,m65sc02_ad,m65sc02_ae,m65sc02_af,
-	m65sc02_b0,m65sc02_b1,m65sc02_b2,m65sc02_b3,m65sc02_b4,m65sc02_b5,m65sc02_b6,m65sc02_b7,
-	m65sc02_b8,m65sc02_b9,m65sc02_ba,m65sc02_bb,m65sc02_bc,m65sc02_bd,m65sc02_be,m65sc02_bf,
-	m65sc02_c0,m65sc02_c1,m65sc02_c2,m65sc02_c3,m65sc02_c4,m65sc02_c5,m65sc02_c6,m65sc02_c7,
-	m65sc02_c8,m65sc02_c9,m65sc02_ca,m65sc02_cb,m65sc02_cc,m65sc02_cd,m65sc02_ce,m65sc02_cf,
-	m65sc02_d0,m65sc02_d1,m65sc02_d2,m65sc02_d3,m65sc02_d4,m65sc02_d5,m65sc02_d6,m65sc02_d7,
-	m65sc02_d8,m65sc02_d9,m65sc02_da,m65sc02_db,m65sc02_dc,m65sc02_dd,m65sc02_de,m65sc02_df,
-	m65sc02_e0,m65sc02_e1,m65sc02_e2,m65sc02_e3,m65sc02_e4,m65sc02_e5,m65sc02_e6,m65sc02_e7,
-	m65sc02_e8,m65sc02_e9,m65sc02_ea,m65sc02_eb,m65sc02_ec,m65sc02_ed,m65sc02_ee,m65sc02_ef,
-	m65sc02_f0,m65sc02_f1,m65sc02_f2,m65sc02_f3,m65sc02_f4,m65sc02_f5,m65sc02_f6,m65sc02_f7,
-	m65sc02_f8,m65sc02_f9,m65sc02_fa,m65sc02_fb,m65sc02_fc,m65sc02_fd,m65sc02_fe,m65sc02_ff
+    m65sc02_00, m65sc02_01, m65sc02_02, m65sc02_03, m65sc02_04, m65sc02_05, m65sc02_06, m65sc02_07,
+    m65sc02_08, m65sc02_09, m65sc02_0a, m65sc02_0b, m65sc02_0c, m65sc02_0d, m65sc02_0e, m65sc02_0f,
+    m65sc02_10, m65sc02_11, m65sc02_12, m65sc02_13, m65sc02_14, m65sc02_15, m65sc02_16, m65sc02_17,
+    m65sc02_18, m65sc02_19, m65sc02_1a, m65sc02_1b, m65sc02_1c, m65sc02_1d, m65sc02_1e, m65sc02_1f,
+    m65sc02_20, m65sc02_21, m65sc02_22, m65sc02_23, m65sc02_24, m65sc02_25, m65sc02_26, m65sc02_27,
+    m65sc02_28, m65sc02_29, m65sc02_2a, m65sc02_2b, m65sc02_2c, m65sc02_2d, m65sc02_2e, m65sc02_2f,
+    m65sc02_30, m65sc02_31, m65sc02_32, m65sc02_33, m65sc02_34, m65sc02_35, m65sc02_36, m65sc02_37,
+    m65sc02_38, m65sc02_39, m65sc02_3a, m65sc02_3b, m65sc02_3c, m65sc02_3d, m65sc02_3e, m65sc02_3f,
+    m65sc02_40, m65sc02_41, m65sc02_42, m65sc02_43, m65sc02_44, m65sc02_45, m65sc02_46, m65sc02_47,
+    m65sc02_48, m65sc02_49, m65sc02_4a, m65sc02_4b, m65sc02_4c, m65sc02_4d, m65sc02_4e, m65sc02_4f,
+    m65sc02_50, m65sc02_51, m65sc02_52, m65sc02_53, m65sc02_54, m65sc02_55, m65sc02_56, m65sc02_57,
+    m65sc02_58, m65sc02_59, m65sc02_5a, m65sc02_5b, m65sc02_5c, m65sc02_5d, m65sc02_5e, m65sc02_5f,
+    m65sc02_60, m65sc02_61, m65sc02_62, m65sc02_63, m65sc02_64, m65sc02_65, m65sc02_66, m65sc02_67,
+    m65sc02_68, m65sc02_69, m65sc02_6a, m65sc02_6b, m65sc02_6c, m65sc02_6d, m65sc02_6e, m65sc02_6f,
+    m65sc02_70, m65sc02_71, m65sc02_72, m65sc02_73, m65sc02_74, m65sc02_75, m65sc02_76, m65sc02_77,
+    m65sc02_78, m65sc02_79, m65sc02_7a, m65sc02_7b, m65sc02_7c, m65sc02_7d, m65sc02_7e, m65sc02_7f,
+    m65sc02_80, m65sc02_81, m65sc02_82, m65sc02_83, m65sc02_84, m65sc02_85, m65sc02_86, m65sc02_87,
+    m65sc02_88, m65sc02_89, m65sc02_8a, m65sc02_8b, m65sc02_8c, m65sc02_8d, m65sc02_8e, m65sc02_8f,
+    m65sc02_90, m65sc02_91, m65sc02_92, m65sc02_93, m65sc02_94, m65sc02_95, m65sc02_96, m65sc02_97,
+    m65sc02_98, m65sc02_99, m65sc02_9a, m65sc02_9b, m65sc02_9c, m65sc02_9d, m65sc02_9e, m65sc02_9f,
+    m65sc02_a0, m65sc02_a1, m65sc02_a2, m65sc02_a3, m65sc02_a4, m65sc02_a5, m65sc02_a6, m65sc02_a7,
+    m65sc02_a8, m65sc02_a9, m65sc02_aa, m65sc02_ab, m65sc02_ac, m65sc02_ad, m65sc02_ae, m65sc02_af,
+    m65sc02_b0, m65sc02_b1, m65sc02_b2, m65sc02_b3, m65sc02_b4, m65sc02_b5, m65sc02_b6, m65sc02_b7,
+    m65sc02_b8, m65sc02_b9, m65sc02_ba, m65sc02_bb, m65sc02_bc, m65sc02_bd, m65sc02_be, m65sc02_bf,
+    m65sc02_c0, m65sc02_c1, m65sc02_c2, m65sc02_c3, m65sc02_c4, m65sc02_c5, m65sc02_c6, m65sc02_c7,
+    m65sc02_c8, m65sc02_c9, m65sc02_ca, m65sc02_cb, m65sc02_cc, m65sc02_cd, m65sc02_ce, m65sc02_cf,
+    m65sc02_d0, m65sc02_d1, m65sc02_d2, m65sc02_d3, m65sc02_d4, m65sc02_d5, m65sc02_d6, m65sc02_d7,
+    m65sc02_d8, m65sc02_d9, m65sc02_da, m65sc02_db, m65sc02_dc, m65sc02_dd, m65sc02_de, m65sc02_df,
+    m65sc02_e0, m65sc02_e1, m65sc02_e2, m65sc02_e3, m65sc02_e4, m65sc02_e5, m65sc02_e6, m65sc02_e7,
+    m65sc02_e8, m65sc02_e9, m65sc02_ea, m65sc02_eb, m65sc02_ec, m65sc02_ed, m65sc02_ee, m65sc02_ef,
+    m65sc02_f0, m65sc02_f1, m65sc02_f2, m65sc02_f3, m65sc02_f4, m65sc02_f5, m65sc02_f6, m65sc02_f7,
+    m65sc02_f8, m65sc02_f9, m65sc02_fa, m65sc02_fb, m65sc02_fc, m65sc02_fd, m65sc02_fe, m65sc02_ff
 };
 

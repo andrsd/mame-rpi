@@ -25,26 +25,25 @@ static int *screenbuffer;
 ***************************************************************************/
 int spiders_vh_start(void)
 {
-	int loop;
+    int loop;
 
-	if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0) return 1;
+    if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0) return 1;
 
-	for(loop=0;loop<256;loop++)
-	{
-		bitflip[loop]=(loop&0x01)?0x80:0x00;
-		bitflip[loop]|=(loop&0x02)?0x40:0x00;
-		bitflip[loop]|=(loop&0x04)?0x20:0x00;
-		bitflip[loop]|=(loop&0x08)?0x10:0x00;
-		bitflip[loop]|=(loop&0x10)?0x08:0x00;
-		bitflip[loop]|=(loop&0x20)?0x04:0x00;
-		bitflip[loop]|=(loop&0x40)?0x02:0x00;
-		bitflip[loop]|=(loop&0x80)?0x01:0x00;
-	}
+    for (loop = 0; loop < 256; loop++) {
+        bitflip[loop] = (loop & 0x01) ? 0x80 : 0x00;
+        bitflip[loop] |= (loop & 0x02) ? 0x40 : 0x00;
+        bitflip[loop] |= (loop & 0x04) ? 0x20 : 0x00;
+        bitflip[loop] |= (loop & 0x08) ? 0x10 : 0x00;
+        bitflip[loop] |= (loop & 0x10) ? 0x08 : 0x00;
+        bitflip[loop] |= (loop & 0x20) ? 0x04 : 0x00;
+        bitflip[loop] |= (loop & 0x40) ? 0x02 : 0x00;
+        bitflip[loop] |= (loop & 0x80) ? 0x01 : 0x00;
+    }
 
-	if ((screenbuffer = (int*)malloc(SCREENBUFFER_SIZE*sizeof(int))) == 0) return 1;
-	memset(screenbuffer,1,SCREENBUFFER_SIZE*sizeof(int));
+    if ((screenbuffer = (int*) malloc(SCREENBUFFER_SIZE * sizeof(int))) == 0) return 1;
+    memset(screenbuffer, 1, SCREENBUFFER_SIZE * sizeof(int));
 
-	return 0;
+    return 0;
 }
 
 
@@ -55,8 +54,8 @@ int spiders_vh_start(void)
 ***************************************************************************/
 void spiders_vh_stop(void)
 {
-	bitmap_free(tmpbitmap);
-	free(screenbuffer);
+    bitmap_free(tmpbitmap);
+    free(screenbuffer);
 }
 
 
@@ -67,80 +66,70 @@ void spiders_vh_stop(void)
   the main emulation engine.
 
 ***************************************************************************/
-void spiders_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void spiders_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int loop,data0,data1,data2,col;
+    int loop, data0, data1, data2, col;
 
-	size_t crtc6845_mem_size;
-	int video_addr,increment;
+    size_t crtc6845_mem_size;
+    int video_addr, increment;
 
-	unsigned char *RAM = memory_region(REGION_CPU1);
+    unsigned char *RAM = memory_region(REGION_CPU1);
 
 
-	crtc6845_mem_size=crtc6845_horiz_disp*crtc6845_vert_disp*8;
+    crtc6845_mem_size = crtc6845_horiz_disp * crtc6845_vert_disp * 8;
 
-	if(spiders_video_flip)
-	{
-		video_addr=crtc6845_start_addr+(crtc6845_mem_size-1);
-		if((video_addr&0xff)==0x80) video_addr-=0x80;	/* Fudge factor!!! */
-		increment=-1;
-	}
-	else
-	{
-		video_addr=crtc6845_start_addr;
-		increment=1;
-	}
+    if (spiders_video_flip) {
+        video_addr = crtc6845_start_addr + (crtc6845_mem_size - 1);
+        if ((video_addr & 0xff) == 0x80) video_addr -= 0x80;	/* Fudge factor!!! */
+        increment = -1;
+    } else {
+        video_addr = crtc6845_start_addr;
+        increment = 1;
+    }
 
-	video_addr&=0xfbff;	/* Fudge factor: sometimes this bit gets set and */
-				/* I've no idea how it maps to the hardware but  */
-				/* everything works OK if we do this             */
+    video_addr &= 0xfbff;	/* Fudge factor: sometimes this bit gets set and */
+    /* I've no idea how it maps to the hardware but  */
+    /* everything works OK if we do this             */
 
-	if(crtc6845_page_flip) video_addr+=0x2000;
+    if (crtc6845_page_flip) video_addr += 0x2000;
 
-	for(loop=0;loop<crtc6845_mem_size;loop++)
-	{
-		int i,x,y,combo;
+    for (loop = 0; loop < crtc6845_mem_size; loop++) {
+        int i, x, y, combo;
 
-		if(spiders_video_flip)
-		{
-			data0=bitflip[RAM[0x0000+video_addr]];
-			data1=bitflip[RAM[0x4000+video_addr]];
-			data2=bitflip[RAM[0x8000+video_addr]];
-		}
-		else
-		{
-			data0=RAM[0x0000+video_addr];
-			data1=RAM[0x4000+video_addr];
-			data2=RAM[0x8000+video_addr];
-		}
+        if (spiders_video_flip) {
+            data0 = bitflip[RAM[0x0000 + video_addr]];
+            data1 = bitflip[RAM[0x4000 + video_addr]];
+            data2 = bitflip[RAM[0x8000 + video_addr]];
+        } else {
+            data0 = RAM[0x0000 + video_addr];
+            data1 = RAM[0x4000 + video_addr];
+            data2 = RAM[0x8000 + video_addr];
+        }
 
-		combo=data0|(data1<<8)|(data2<<16);
+        combo = data0 | (data1 << 8) | (data2 << 16);
 
-		if(screenbuffer[video_addr&SCREENBUFFER_MASK]!=combo)
-		{
+        if (screenbuffer[video_addr & SCREENBUFFER_MASK] != combo) {
 
-			y=loop/0x20;
+            y = loop / 0x20;
 
-			for(i=0;i<8;i++)
-			{
-				x=((loop%0x20)<<3)+i;
-				col=((data2&0x01)<<2)+((data1&0x01)<<1)+(data0&0x01);
+            for (i = 0; i < 8; i++) {
+                x = ((loop % 0x20) << 3) + i;
+                col = ((data2 & 0x01) << 2) + ((data1 & 0x01) << 1) + (data0 & 0x01);
 
-				plot_pixel2(bitmap, tmpbitmap, x, y, Machine->pens[col]);
+                plot_pixel2(bitmap, tmpbitmap, x, y, Machine->pens[col]);
 
-				data0 >>= 1;
-				data1 >>= 1;
-				data2 >>= 1;
-			}
-			screenbuffer[video_addr&SCREENBUFFER_MASK]=combo;
-		}
-		video_addr+=increment;
-		video_addr&=0x3fff;
-	}
+                data0 >>= 1;
+                data1 >>= 1;
+                data2 >>= 1;
+            }
+            screenbuffer[video_addr & SCREENBUFFER_MASK] = combo;
+        }
+        video_addr += increment;
+        video_addr &= 0x3fff;
+    }
 
-	if (full_refresh)
-	{
-		/* Now copy the temp bitmap to the screen */
-		copybitmap(bitmap,tmpbitmap,0,0,0,0,&Machine->visible_area,TRANSPARENCY_NONE,0);
-	}
+    if (full_refresh) {
+        /* Now copy the temp bitmap to the screen */
+        copybitmap(bitmap, tmpbitmap, 0, 0, 0, 0, &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    }
 }

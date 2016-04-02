@@ -62,26 +62,35 @@ int skyfox_bg_pos, skyfox_bg_ctrl;
 
 ***************************************************************************/
 
-READ_HANDLER( skyfox_vregs_r )	// for debug
+READ_HANDLER(skyfox_vregs_r)	// for debug
 {
-	return vreg[offset];
+    return vreg[offset];
 }
 
-WRITE_HANDLER( skyfox_vregs_w )
+WRITE_HANDLER(skyfox_vregs_w)
 {
-	vreg[offset] = data;
+    vreg[offset] = data;
 
-	switch (offset)
-	{
-		case 0:	skyfox_bg_ctrl = data;	break;
-		case 1:	soundlatch_w(0,data);	break;
-		case 2:	break;
-		case 3:	break;
-		case 4:	break;
-		case 5:	break;
-		case 6:	break;
-		case 7:	break;
-	}
+    switch (offset) {
+    case 0:
+        skyfox_bg_ctrl = data;
+        break;
+    case 1:
+        soundlatch_w(0, data);
+        break;
+    case 2:
+        break;
+    case 3:
+        break;
+    case 4:
+        break;
+    case 5:
+        break;
+    case 6:
+        break;
+    case 7:
+        break;
+    }
 }
 
 
@@ -101,43 +110,41 @@ WRITE_HANDLER( skyfox_vregs_w )
 
 ***************************************************************************/
 
-void skyfox_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void skyfox_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	int i;
+    int i;
 
-	for (i = 0;i < 256;i++)
-	{
-		int bit0,bit1,bit2,bit3;
+    for (i = 0; i < 256; i++) {
+        int bit0, bit1, bit2, bit3;
 
-		/* red component */
-		bit0 = (color_prom[256*0] >> 0) & 0x01;
-		bit1 = (color_prom[256*0] >> 1) & 0x01;
-		bit2 = (color_prom[256*0] >> 2) & 0x01;
-		bit3 = (color_prom[256*0] >> 3) & 0x01;
-		*(palette++) =  0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
-		/* green component */
-		bit0 = (color_prom[256*1] >> 0) & 0x01;
-		bit1 = (color_prom[256*1] >> 1) & 0x01;
-		bit2 = (color_prom[256*1] >> 2) & 0x01;
-		bit3 = (color_prom[256*1] >> 3) & 0x01;
-		*(palette++) =  0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
-		/* blue component */
-		bit0 = (color_prom[256*2] >> 0) & 0x01;
-		bit1 = (color_prom[256*2] >> 1) & 0x01;
-		bit2 = (color_prom[256*2] >> 2) & 0x01;
-		bit3 = (color_prom[256*2] >> 3) & 0x01;
-		*(palette++) =  0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+        /* red component */
+        bit0 = (color_prom[256 * 0] >> 0) & 0x01;
+        bit1 = (color_prom[256 * 0] >> 1) & 0x01;
+        bit2 = (color_prom[256 * 0] >> 2) & 0x01;
+        bit3 = (color_prom[256 * 0] >> 3) & 0x01;
+        * (palette++) =  0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+        /* green component */
+        bit0 = (color_prom[256 * 1] >> 0) & 0x01;
+        bit1 = (color_prom[256 * 1] >> 1) & 0x01;
+        bit2 = (color_prom[256 * 1] >> 2) & 0x01;
+        bit3 = (color_prom[256 * 1] >> 3) & 0x01;
+        * (palette++) =  0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+        /* blue component */
+        bit0 = (color_prom[256 * 2] >> 0) & 0x01;
+        bit1 = (color_prom[256 * 2] >> 1) & 0x01;
+        bit2 = (color_prom[256 * 2] >> 2) & 0x01;
+        bit3 = (color_prom[256 * 2] >> 3) & 0x01;
+        * (palette++) =  0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
 
-		color_prom++;
-	}
+        color_prom++;
+    }
 
-	/* Grey scale for the background??? */
-	for (i = 0; i < 256; i++)
-	{
-		(*palette++) = i;
-		(*palette++) = i;
-		(*palette++) = i;
-	}
+    /* Grey scale for the background??? */
+    for (i = 0; i < 256; i++) {
+        (*palette++) = i;
+        (*palette++) = i;
+        (*palette++) = i;
+    }
 }
 
 
@@ -175,37 +182,43 @@ Offset:			Value:
 
 void skyfox_draw_sprites(struct osd_bitmap *bitmap)
 {
-	int offs;
+    int offs;
 
-	int width	=	Machine->drv->screen_width;
-	int height	=	Machine->drv->screen_height;
+    int width	=	Machine->drv->screen_width;
+    int height	=	Machine->drv->screen_height;
 
-	/* The 32x32 tiles in the 80-ff range are bankswitched */
-	int shift	=	(skyfox_bg_ctrl & 0x80) ? (4-1) : 4;
+    /* The 32x32 tiles in the 80-ff range are bankswitched */
+    int shift	=	(skyfox_bg_ctrl & 0x80) ? (4 - 1) : 4;
 
-	for (offs = 0; offs < spriteram_size; offs += 4)
-	{
-		int xstart, ystart, xend, yend;
-		int xinc, yinc, dx, dy;
-		int low_code, high_code, n;
+    for (offs = 0; offs < spriteram_size; offs += 4) {
+        int xstart, ystart, xend, yend;
+        int xinc, yinc, dx, dy;
+        int low_code, high_code, n;
 
-		int y		=		spriteram[offs+0];
-		int x		=		spriteram[offs+1];
-		int code	=		spriteram[offs+2] + spriteram[offs+3] * 256;
-		int flipx	=		code & 0x2;
-		int flipy	=		code & 0x4;
+        int y		=		spriteram[offs + 0];
+        int x		=		spriteram[offs + 1];
+        int code	=		spriteram[offs + 2] + spriteram[offs + 3] * 256;
+        int flipx	=		code & 0x2;
+        int flipy	=		code & 0x4;
 
-		x = x * 2 + (code & 1);	// add the least significant bit
+        x = x * 2 + (code & 1);	// add the least significant bit
 
-		high_code = ((code >> 4) & 0x7f0) +
-					((code & 0x8000) >> shift);
+        high_code = ((code >> 4) & 0x7f0) +
+                    ((code & 0x8000) >> shift);
 
-		switch( code & 0x88 )
-		{
-			case 0x88:	n = 4;	low_code = 0;										break;
-			case 0x08:	n = 2;	low_code = ((code&0x20)?8:0) + ((code&0x10)?2:0);	break;
-			default:	n = 1;	low_code = (code >> 4) & 0xf;
-		}
+        switch (code & 0x88) {
+        case 0x88:
+            n = 4;
+            low_code = 0;
+            break;
+        case 0x08:
+            n = 2;
+            low_code = ((code & 0x20) ? 8 : 0) + ((code & 0x10) ? 2 : 0);
+            break;
+        default:
+            n = 1;
+            low_code = (code >> 4) & 0xf;
+        }
 
 #define DRAW_SPRITE(DX,DY,CODE) \
 		drawgfx(bitmap,Machine->gfx[0], \
@@ -215,31 +228,43 @@ void skyfox_draw_sprites(struct osd_bitmap *bitmap)
 				x + (DX),y + (DY), \
 				&Machine->visible_area,TRANSPARENCY_PEN, 0xff); \
 
-		if (skyfox_bg_ctrl & 1)	// flipscreen
-		{
-			x = width  - x - (n-1)*8;
-			y = height - y - (n-1)*8;
-			flipx = !flipx;
-			flipy = !flipy;
-		}
+        if (skyfox_bg_ctrl & 1) {	// flipscreen
+            x = width  - x - (n - 1) * 8;
+            y = height - y - (n - 1) * 8;
+            flipx = !flipx;
+            flipy = !flipy;
+        }
 
-		if (flipx)	{ xstart = n-1;  xend = -1;  xinc = -1; }
-		else		{ xstart = 0;    xend = n;   xinc = +1; }
+        if (flipx)	{
+            xstart = n - 1;
+            xend = -1;
+            xinc = -1;
+        } else		{
+            xstart = 0;
+            xend = n;
+            xinc = +1;
+        }
 
-		if (flipy)	{ ystart = n-1;  yend = -1;  yinc = -1; }
-		else		{ ystart = 0;    yend = n;   yinc = +1; }
+        if (flipy)	{
+            ystart = n - 1;
+            yend = -1;
+            yinc = -1;
+        } else		{
+            ystart = 0;
+            yend = n;
+            yinc = +1;
+        }
 
 
-		code = low_code + high_code;
+        code = low_code + high_code;
 
-		for (dy = ystart; dy != yend; dy += yinc)
-		{
-			for (dx = xstart; dx != xend; dx += xinc)
-				DRAW_SPRITE( dx*8, dy*8, code++);
+        for (dy = ystart; dy != yend; dy += yinc) {
+            for (dx = xstart; dx != xend; dx += xinc)
+                DRAW_SPRITE(dx * 8, dy * 8, code++);
 
-			if (n==2)	code+=2;
-		}
-	}
+            if (n == 2)	code += 2;
+        }
+    }
 }
 
 
@@ -254,35 +279,33 @@ void skyfox_draw_sprites(struct osd_bitmap *bitmap)
 
 void skyfox_draw_background(struct osd_bitmap *bitmap)
 {
-	unsigned char *RAM	=	memory_region(REGION_GFX2);
-	int x,y,i;
+    unsigned char *RAM	=	memory_region(REGION_GFX2);
+    int x, y, i;
 
-	/* The foreground stars (sprites) move at twice this speed when
-	   the bg scroll rate [e.g. (skyfox_bg_reg >> 1) & 7] is 4 */
-	int pos = (skyfox_bg_pos >> 4) & (512*2-1);
+    /* The foreground stars (sprites) move at twice this speed when
+       the bg scroll rate [e.g. (skyfox_bg_reg >> 1) & 7] is 4 */
+    int pos = (skyfox_bg_pos >> 4) & (512 * 2 - 1);
 
-	for (i = 0 ; i < 0x1000; i++)
-	{
-		int pen,offs,j;
+    for (i = 0 ; i < 0x1000; i++) {
+        int pen, offs, j;
 
-		offs	=	(i*2+((skyfox_bg_ctrl>>4)&0x3)*0x2000) % 0x8000;
+        offs	=	(i * 2 + ((skyfox_bg_ctrl >> 4) & 0x3) * 0x2000) % 0x8000;
 
-		pen		=	RAM[offs];
-		x		=	RAM[offs+1]*2 + (i&1) + pos + ((i & 8)?512:0);
-		y		=	((i/8)/2)*8 + (i%8);
+        pen		=	RAM[offs];
+        x		=	RAM[offs + 1] * 2 + (i & 1) + pos + ((i & 8) ? 512 : 0);
+        y		=	((i / 8) / 2) * 8 + (i % 8);
 
-		if (skyfox_bg_ctrl & 1)	// flipscreen
-		{
-			x = 512 * 2 - (x%(512*2));
-			y = 256     - (y%256);
-		}
+        if (skyfox_bg_ctrl & 1) {	// flipscreen
+            x = 512 * 2 - (x % (512 * 2));
+            y = 256     - (y % 256);
+        }
 
-		for (j = 0 ; j <= ((pen&0x80)?0:3); j++)
-			plot_pixel(	bitmap,
-						( (j&1)     + x ) % 512,
-						( ((j/2)&1) + y ) % 256,
-						Machine->pens[256+(pen&0x7f)] );
-	}
+        for (j = 0 ; j <= ((pen & 0x80) ? 0 : 3); j++)
+            plot_pixel(bitmap,
+                       ((j & 1)     + x) % 512,
+                       (((j / 2) & 1) + y) % 256,
+                       Machine->pens[256 + (pen & 0x7f)]);
+    }
 }
 
 
@@ -295,11 +318,11 @@ void skyfox_draw_background(struct osd_bitmap *bitmap)
 ***************************************************************************/
 
 
-void skyfox_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void skyfox_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int layers_ctrl = -1;
+    int layers_ctrl = -1;
 
-	osd_clearbitmap(bitmap);	// the bg is black
-	if (layers_ctrl&1)	skyfox_draw_background(bitmap);
-	if (layers_ctrl&2)	skyfox_draw_sprites(bitmap);
+    osd_clearbitmap(bitmap);	// the bg is black
+    if (layers_ctrl & 1)	skyfox_draw_background(bitmap);
+    if (layers_ctrl & 2)	skyfox_draw_sprites(bitmap);
 }

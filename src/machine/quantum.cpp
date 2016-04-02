@@ -15,7 +15,7 @@
 **************************/
 int quantum_interrupt(void)
 {
-	return 1; /* ipl0' == ivector 1 */
+    return 1; /* ipl0' == ivector 1 */
 }
 
 /*** quantum_switches_r
@@ -27,25 +27,25 @@ int quantum_interrupt(void)
 * History: 11/20/97 PF Created
 *
 **************************/
-READ_HANDLER( quantum_switches_r )
+READ_HANDLER(quantum_switches_r)
 {
-	return (input_port_0_r(0) |
-		(avgdvg_done() ? 1 : 0));
+    return (input_port_0_r(0) |
+            (avgdvg_done() ? 1 : 0));
 }
 
 
 
-WRITE_HANDLER( quantum_led_w )
+WRITE_HANDLER(quantum_led_w)
 {
-	/* bits 0 and 1 are coin counters */
-	coin_counter_w(0,data & 2);
-	coin_counter_w(1,data & 1);
+    /* bits 0 and 1 are coin counters */
+    coin_counter_w(0, data & 2);
+    coin_counter_w(1, data & 1);
 
-	/* bits 4 and 5 are LED controls */
-	osd_led_w(0,(data & 0x10) >> 4);
-	osd_led_w(1,(data & 0x20) >> 5);
+    /* bits 4 and 5 are LED controls */
+    osd_led_w(0, (data & 0x10) >> 4);
+    osd_led_w(1, (data & 0x20) >> 5);
 
-	/* other bits unknown */
+    /* other bits unknown */
 }
 
 
@@ -60,20 +60,20 @@ WRITE_HANDLER( quantum_led_w )
 * History: 11/19/97 PF Created
 *
 **************************/
-WRITE_HANDLER( quantum_snd_w )
+WRITE_HANDLER(quantum_snd_w)
 {
-	if (offset & 0x20) /* A5 selects chip */
-		pokey2_w((offset >> 1) % 0x10,data);
-	else
-		pokey1_w((offset >> 1) % 0x10,data);
+    if (offset & 0x20)   /* A5 selects chip */
+        pokey2_w((offset >> 1) % 0x10, data);
+    else
+        pokey1_w((offset >> 1) % 0x10, data);
 }
 
-READ_HANDLER( quantum_snd_r )
+READ_HANDLER(quantum_snd_r)
 {
-	if (offset & 0x20)
-		return pokey2_r((offset >> 1) % 0x10);
-	else
-		return pokey1_r((offset >> 1) % 0x10);
+    if (offset & 0x20)
+        return pokey2_r((offset >> 1) % 0x10);
+    else
+        return pokey1_r((offset >> 1) % 0x10);
 }
 
 
@@ -90,14 +90,14 @@ READ_HANDLER( quantum_snd_r )
 * History: 11/19/97 PF Created
 *
 **************************/
-READ_HANDLER( quantum_trackball_r )
+READ_HANDLER(quantum_trackball_r)
 {
-	int x, y;
+    int x, y;
 
-	x = input_port_4_r (offset);
-	y = input_port_3_r (offset);
+    x = input_port_4_r(offset);
+    y = input_port_3_r(offset);
 
-	return (x << 4) + y;
+    return (x << 4) + y;
 }
 
 
@@ -110,12 +110,12 @@ READ_HANDLER( quantum_trackball_r )
 * History: 12/2/97 ASG Created
 *
 **************************/
-READ_HANDLER( quantum_input_1_r )
+READ_HANDLER(quantum_input_1_r)
 {
-	return (input_port_1_r (0) << (7 - (offset - POT0_C))) & 0x80;
+    return (input_port_1_r(0) << (7 - (offset - POT0_C))) & 0x80;
 }
 
-READ_HANDLER( quantum_input_2_r )
+READ_HANDLER(quantum_input_2_r)
 {
-	return (input_port_2_r (0) << (7 - (offset - POT0_C))) & 0x80;
+    return (input_port_2_r(0) << (7 - (offset - POT0_C))) & 0x80;
 }

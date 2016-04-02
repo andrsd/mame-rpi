@@ -25,99 +25,97 @@
 static struct osd_bitmap *tmpbitmap1, *tmpbitmap2;
 unsigned char *exterm_master_videoram, *exterm_slave_videoram;
 
-void exterm_init_palette(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void exterm_init_palette(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	int i;
+    int i;
 
-	palette += 3*4096;	/* first 4096 colors are dynamic */
+    palette += 3 * 4096;	/* first 4096 colors are dynamic */
 
-	/* initialize 555 RGB lookup */
-	for (i = 0;i < 32768;i++)
-	{
-		int r,g,b;
+    /* initialize 555 RGB lookup */
+    for (i = 0; i < 32768; i++) {
+        int r, g, b;
 
-		r = (i >> 10) & 0x1f;
-		g = (i >>  5) & 0x1f;
-		b = (i >>  0) & 0x1f;
+        r = (i >> 10) & 0x1f;
+        g = (i >>  5) & 0x1f;
+        b = (i >>  0) & 0x1f;
 
-		(*palette++) = (r << 3) | (r >> 2);
-		(*palette++) = (g << 3) | (g >> 2);
-		(*palette++) = (b << 3) | (b >> 2);
-	}
+        (*palette++) = (r << 3) | (r >> 2);
+        (*palette++) = (g << 3) | (g >> 2);
+        (*palette++) = (b << 3) | (b >> 2);
+    }
 }
 
 
-READ_HANDLER( exterm_master_videoram_r )
+READ_HANDLER(exterm_master_videoram_r)
 {
     return READ_WORD(&exterm_master_videoram[offset]);
 }
 
-static WRITE_HANDLER( exterm_master_videoram_16_w )
+static WRITE_HANDLER(exterm_master_videoram_16_w)
 {
-	COMBINE_WORD_MEM(&exterm_master_videoram[offset], data);
+    COMBINE_WORD_MEM(&exterm_master_videoram[offset], data);
 
-	FORCOL_TO_PEN(data);
+    FORCOL_TO_PEN(data);
 
-	((unsigned short *)tmpbitmap->line[offset >> 9])[(offset >> 1) & 0xff] = Machine->pens[data];
+    ((unsigned short *) tmpbitmap->line[offset >> 9]) [(offset >> 1) & 0xff] = Machine->pens[data];
 }
 
-static WRITE_HANDLER( exterm_master_videoram_8_w )
+static WRITE_HANDLER(exterm_master_videoram_8_w)
 {
-	COMBINE_WORD_MEM(&exterm_master_videoram[offset], data);
+    COMBINE_WORD_MEM(&exterm_master_videoram[offset], data);
 
-	FORCOL_TO_PEN(data);
+    FORCOL_TO_PEN(data);
 
-	tmpbitmap->line[offset >> 9][(offset >> 1) & 0xff] = Machine->pens[data];
+    tmpbitmap->line[offset >> 9][(offset >> 1) & 0xff] = Machine->pens[data];
 }
 
-READ_HANDLER( exterm_slave_videoram_r )
+READ_HANDLER(exterm_slave_videoram_r)
 {
     return READ_WORD(&exterm_slave_videoram[offset]);
 }
 
-static WRITE_HANDLER( exterm_slave_videoram_16_w )
+static WRITE_HANDLER(exterm_slave_videoram_16_w)
 {
-	int x,y;
-	unsigned short *pens = Machine->pens;
-	struct osd_bitmap *foreground;
+    int x, y;
+    unsigned short *pens = Machine->pens;
+    struct osd_bitmap *foreground;
 
-	COMBINE_WORD_MEM(&exterm_slave_videoram[offset], data);
+    COMBINE_WORD_MEM(&exterm_slave_videoram[offset], data);
 
-	x = offset & 0xff;
-	y = (offset >> 8) & 0xff;
+    x = offset & 0xff;
+    y = (offset >> 8) & 0xff;
 
-	foreground = (offset & 0x10000) ? tmpbitmap2 : tmpbitmap1;
+    foreground = (offset & 0x10000) ? tmpbitmap2 : tmpbitmap1;
 
-	((unsigned short *)foreground->line[y])[x  ] = pens[ (data       & 0xff)];
-	((unsigned short *)foreground->line[y])[x+1] = pens[((data >> 8) & 0xff)];
+    ((unsigned short *) foreground->line[y]) [x  ] = pens[(data       & 0xff)];
+    ((unsigned short *) foreground->line[y]) [x + 1] = pens[((data >> 8) & 0xff)];
 }
 
-static WRITE_HANDLER( exterm_slave_videoram_8_w )
+static WRITE_HANDLER(exterm_slave_videoram_8_w)
 {
-	int x,y;
-	unsigned short *pens = Machine->pens;
-	struct osd_bitmap *foreground;
+    int x, y;
+    unsigned short *pens = Machine->pens;
+    struct osd_bitmap *foreground;
 
-	COMBINE_WORD_MEM(&exterm_slave_videoram[offset], data);
+    COMBINE_WORD_MEM(&exterm_slave_videoram[offset], data);
 
-	x = offset & 0xff;
-	y = (offset >> 8) & 0xff;
+    x = offset & 0xff;
+    y = (offset >> 8) & 0xff;
 
-	foreground = (offset & 0x10000) ? tmpbitmap2 : tmpbitmap1;
+    foreground = (offset & 0x10000) ? tmpbitmap2 : tmpbitmap1;
 
-	foreground->line[y][x  ] = pens[ (data       & 0xff)];
-	foreground->line[y][x+1] = pens[((data >> 8) & 0xff)];
+    foreground->line[y][x  ] = pens[(data       & 0xff)];
+    foreground->line[y][x + 1] = pens[((data >> 8) & 0xff)];
 }
 
-WRITE_HANDLER( exterm_paletteram_w )
+WRITE_HANDLER(exterm_paletteram_w)
 {
-	if ((offset == 0xff*2) && (data == 0))
-	{
-		/* Turn shadow color into dark red */
-		data = 0x400;
-	}
+    if ((offset == 0xff * 2) && (data == 0)) {
+        /* Turn shadow color into dark red */
+        data = 0x400;
+    }
 
-	paletteram_xRRRRRGGGGGBBBBB_word_w(offset, data);
+    paletteram_xRRRRRGGGGGBBBBB_word_w(offset, data);
 }
 
 
@@ -140,19 +138,16 @@ WRITE_HANDLER( exterm_paletteram_w )
 
 void exterm_to_shiftreg_master(unsigned int address, unsigned short* shiftreg)
 {
-	memcpy(shiftreg, &exterm_master_videoram[address>>3], 256*sizeof(unsigned short));
+    memcpy(shiftreg, &exterm_master_videoram[address >> 3], 256 * sizeof(unsigned short));
 }
 
 void exterm_from_shiftreg_master(unsigned int address, unsigned short* shiftreg)
 {
-	if (Machine->scrbitmap->depth == 16)
-	{
-		FROM_SHIFTREG_MASTER(short);
-	}
-	else
-	{
-		FROM_SHIFTREG_MASTER(char);
-	}
+    if (Machine->scrbitmap->depth == 16) {
+        FROM_SHIFTREG_MASTER(short);
+    } else {
+        FROM_SHIFTREG_MASTER(char);
+    }
 }
 
 #define FROM_SHIFTREG_SLAVE(TYPE)										\
@@ -183,70 +178,60 @@ void exterm_from_shiftreg_master(unsigned int address, unsigned short* shiftreg)
 
 void exterm_to_shiftreg_slave(unsigned int address, unsigned short* shiftreg)
 {
-	memcpy(shiftreg, &exterm_slave_videoram[address>>3], 256*2*sizeof(unsigned char));
+    memcpy(shiftreg, &exterm_slave_videoram[address >> 3], 256 * 2 * sizeof(unsigned char));
 }
 
 void exterm_from_shiftreg_slave(unsigned int address, unsigned short* shiftreg)
 {
-	if (Machine->scrbitmap->depth == 16)
-	{
-		FROM_SHIFTREG_SLAVE(short);
-	}
-	else
-	{
-		FROM_SHIFTREG_SLAVE(char);
-	}
+    if (Machine->scrbitmap->depth == 16) {
+        FROM_SHIFTREG_SLAVE(short);
+    } else {
+        FROM_SHIFTREG_SLAVE(char);
+    }
 }
 
 
 int exterm_vh_start(void)
 {
-	if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)
-	{
-		return 1;
-	}
+    if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0) {
+        return 1;
+    }
 
-	if ((tmpbitmap1 = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)
-	{
-		bitmap_free(tmpbitmap);
-		return 1;
-	}
+    if ((tmpbitmap1 = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0) {
+        bitmap_free(tmpbitmap);
+        return 1;
+    }
 
-	if ((tmpbitmap2 = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)
-	{
-		bitmap_free(tmpbitmap);
-		bitmap_free(tmpbitmap1);
-		return 1;
-	}
+    if ((tmpbitmap2 = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0) {
+        bitmap_free(tmpbitmap);
+        bitmap_free(tmpbitmap1);
+        return 1;
+    }
 
-	/* Install depth specific handler */
-	if (Machine->scrbitmap->depth == 16)
-	{
-		install_mem_write_handler(0, TOBYTE(0x00000000), TOBYTE(0x000fffff), exterm_master_videoram_16_w);
-		install_mem_write_handler(1, TOBYTE(0x00000000), TOBYTE(0x000fffff), exterm_slave_videoram_16_w);
-	}
-	else
-	{
-		install_mem_write_handler(0, TOBYTE(0x00000000), TOBYTE(0x000fffff), exterm_master_videoram_8_w);
-		install_mem_write_handler(1, TOBYTE(0x00000000), TOBYTE(0x000fffff), exterm_slave_videoram_8_w);
-	}
+    /* Install depth specific handler */
+    if (Machine->scrbitmap->depth == 16) {
+        install_mem_write_handler(0, TOBYTE(0x00000000), TOBYTE(0x000fffff), exterm_master_videoram_16_w);
+        install_mem_write_handler(1, TOBYTE(0x00000000), TOBYTE(0x000fffff), exterm_slave_videoram_16_w);
+    } else {
+        install_mem_write_handler(0, TOBYTE(0x00000000), TOBYTE(0x000fffff), exterm_master_videoram_8_w);
+        install_mem_write_handler(1, TOBYTE(0x00000000), TOBYTE(0x000fffff), exterm_slave_videoram_8_w);
+    }
 
-	palette_used_colors[0] = PALETTE_COLOR_TRANSPARENT;
+    palette_used_colors[0] = PALETTE_COLOR_TRANSPARENT;
 
-	return 0;
+    return 0;
 }
 
-void exterm_vh_stop (void)
+void exterm_vh_stop(void)
 {
-	bitmap_free(tmpbitmap);
-	bitmap_free(tmpbitmap1);
-	bitmap_free(tmpbitmap2);
+    bitmap_free(tmpbitmap);
+    bitmap_free(tmpbitmap1);
+    bitmap_free(tmpbitmap2);
 }
 
 
-static struct rectangle foregroundvisiblearea =
-{
-	0, 255, 40, 238
+static struct rectangle foregroundvisiblearea = {
+    0, 255, 40, 238
 };
 
 
@@ -278,42 +263,32 @@ static struct rectangle foregroundvisiblearea =
 		}													\
 	}
 
-void exterm_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void exterm_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	if (tms34010_io_display_blanked(0))
-	{
-		fillbitmap(bitmap,palette_transparent_pen,&Machine->visible_area);
-		return;
-	}
+    if (tms34010_io_display_blanked(0)) {
+        fillbitmap(bitmap, palette_transparent_pen, &Machine->visible_area);
+        return;
+    }
 
-	if (palette_recalc() != 0)
-	{
-		/* Redraw screen */
-		int x,y;
-		unsigned short *bgsrc  = (unsigned short *)&exterm_master_videoram[0];
-		unsigned short *fgsrc1 = (unsigned short *)&exterm_slave_videoram[0];
-		unsigned short *fgsrc2 = (unsigned short *)&exterm_slave_videoram[256*256];
+    if (palette_recalc() != 0) {
+        /* Redraw screen */
+        int x, y;
+        unsigned short *bgsrc  = (unsigned short *) &exterm_master_videoram[0];
+        unsigned short *fgsrc1 = (unsigned short *) &exterm_slave_videoram[0];
+        unsigned short *fgsrc2 = (unsigned short *) &exterm_slave_videoram[256 * 256];
 
-		if (tmpbitmap1->depth == 16)
-		{
-			REFRESH(short);
-		}
-		else
-		{
-			REFRESH(char);
-		}
-	}
-	else
-	{
-		copybitmap(bitmap,tmpbitmap, 0,0,0,0,&Machine->visible_area,TRANSPARENCY_NONE,0);
-	}
+        if (tmpbitmap1->depth == 16) {
+            REFRESH(short);
+        } else {
+            REFRESH(char);
+        }
+    } else {
+        copybitmap(bitmap, tmpbitmap, 0, 0, 0, 0, &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    }
 
-    if (tms34010_get_DPYSTRT(1) & 0x800)
-	{
-		copybitmap(bitmap,tmpbitmap2,0,0,0,0,&foregroundvisiblearea,TRANSPARENCY_PEN, palette_transparent_pen);
-	}
-	else
-	{
-		copybitmap(bitmap,tmpbitmap1,0,0,0,0,&foregroundvisiblearea,TRANSPARENCY_PEN, palette_transparent_pen);
-	}
+    if (tms34010_get_DPYSTRT(1) & 0x800) {
+        copybitmap(bitmap, tmpbitmap2, 0, 0, 0, 0, &foregroundvisiblearea, TRANSPARENCY_PEN, palette_transparent_pen);
+    } else {
+        copybitmap(bitmap, tmpbitmap1, 0, 0, 0, 0, &foregroundvisiblearea, TRANSPARENCY_PEN, palette_transparent_pen);
+    }
 }

@@ -33,36 +33,27 @@ static int slapstic_last75xx = 0;
 // BANK0 gets selected, there are 3.
 
 
-READ_HANDLER( atetris_slapstic_r )
+READ_HANDLER(atetris_slapstic_r)
 {
-    if (slapstic_nextbank != -1)
-    {
+    if (slapstic_nextbank != -1) {
         slapstic_bank = slapstic_nextbank;
         slapstic_nextbank = -1;
     }
 
     if ((offset & 0xff00) == 0x2000 ||
-        (offset & 0xff00) == 0x3500)
-    {
-        if (offset == 0x2000)
-        {
+        (offset & 0xff00) == 0x3500) {
+        if (offset == 0x2000) {
             // Reset
             slapstic_75xxcnt  = 0;
             slapstic_last60xx = 0;
             slapstic_primed   = 1;
-        }
-        else if (offset >= 0x3500)
-        {
+        } else if (offset >= 0x3500) {
             slapstic_75xxcnt++;
             slapstic_last75xx = (offset & 0xff);
-        }
-        else
-        {
+        } else {
             if (slapstic_primed)
-            switch (offset & 0xff)
-            {
-            case 0x80:
-                {
+                switch (offset & 0xff) {
+                case 0x80: {
                     slapstic_nextbank = BANK0;
 #ifdef LOG_SLAPSTICK
                     logerror("Selecting Bank 0 at %04X\n", cpu_get_pc());
@@ -70,73 +61,62 @@ READ_HANDLER( atetris_slapstic_r )
                 }
                 break;
 
-            case 0x90:
-                if ((slapstic_75xxcnt == 0) ||
-                    (slapstic_75xxcnt == 2 && slapstic_last60xx == 0x90))
-                {
-                    slapstic_nextbank = BANK1;
+                case 0x90:
+                    if ((slapstic_75xxcnt == 0) ||
+                        (slapstic_75xxcnt == 2 && slapstic_last60xx == 0x90)) {
+                        slapstic_nextbank = BANK1;
 #ifdef LOG_SLAPSTICK
-                    logerror("Selecting Bank 1 at %04X\n", cpu_get_pc());
+                        logerror("Selecting Bank 1 at %04X\n", cpu_get_pc());
 #endif
-                }
-                else
-                {
-                    slapstic_nextbank = BANK0;
+                    } else {
+                        slapstic_nextbank = BANK0;
 #ifdef LOG_SLAPSTICK
-                    logerror("Selecting Bank 0 at %04X\n", cpu_get_pc());
+                        logerror("Selecting Bank 0 at %04X\n", cpu_get_pc());
 #endif
-                }
-                break;
+                    }
+                    break;
 
-            case 0xa0:
-                if (slapstic_last60xx == 0xb0)
-                {
-                    slapstic_nextbank = BANK1;
+                case 0xa0:
+                    if (slapstic_last60xx == 0xb0) {
+                        slapstic_nextbank = BANK1;
 #ifdef LOG_SLAPSTICK
-                    logerror("Selecting Bank 1 at %04X\n", cpu_get_pc());
+                        logerror("Selecting Bank 1 at %04X\n", cpu_get_pc());
 #endif
-                }
-                else
-                {
-                    slapstic_nextbank = BANK0;
+                    } else {
+                        slapstic_nextbank = BANK0;
 #ifdef LOG_SLAPSTICK
-                    logerror("Selecting Bank 0 at %04X\n", cpu_get_pc());
+                        logerror("Selecting Bank 0 at %04X\n", cpu_get_pc());
 #endif
-                }
-                break;
+                    }
+                    break;
 
-            case 0xb0:
-                if (slapstic_75xxcnt == 6 && slapstic_last60xx == 0xb0 &&
-                    slapstic_last75xx == 0x53)
-                {
-                    slapstic_nextbank = BANK1;
+                case 0xb0:
+                    if (slapstic_75xxcnt == 6 && slapstic_last60xx == 0xb0 &&
+                        slapstic_last75xx == 0x53) {
+                        slapstic_nextbank = BANK1;
 #ifdef LOG_SLAPSTICK
-                    logerror("Selecting Bank 1 at %04X\n", cpu_get_pc());
+                        logerror("Selecting Bank 1 at %04X\n", cpu_get_pc());
 #endif
-                }
-                else
-                {
-                    slapstic_nextbank = BANK0;
+                    } else {
+                        slapstic_nextbank = BANK0;
 #ifdef LOG_SLAPSTICK
-                    logerror("Selecting Bank 0 at %04X\n", cpu_get_pc());
+                        logerror("Selecting Bank 0 at %04X\n", cpu_get_pc());
 #endif
-                }
-                break;
+                    }
+                    break;
 
-            default:
-                slapstic_primed = 0;
-            }
+                default:
+                    slapstic_primed = 0;
+                }
 
             slapstic_last60xx = (offset & 0xff);
             slapstic_75xxcnt = 0;
         }
-    }
-    else
-    {
+    } else {
         slapstic_primed = 0;
     }
 
-    return memory_region(REGION_CPU1)[slapstic_bank + offset];
+    return memory_region(REGION_CPU1) [slapstic_bank + offset];
 }
 
 
@@ -148,42 +128,41 @@ READ_HANDLER( atetris_slapstic_r )
   the main emulation engine.
 
 ***************************************************************************/
-void atetris_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void atetris_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int offs;
+    int offs;
 
 
-	/* recalc the palette if necessary */
-	if (palette_recalc ())
-		memset (dirtybuffer,1,videoram_size);
+    /* recalc the palette if necessary */
+    if (palette_recalc())
+        memset(dirtybuffer, 1, videoram_size);
 
 
-	/* for every character in the backround RAM, check if it has been modified */
-	/* since last time and update it accordingly. */
-	for (offs = 0; offs < videoram_size; offs += 2)
-	{
-		int charcode,sx,sy,color;
+    /* for every character in the backround RAM, check if it has been modified */
+    /* since last time and update it accordingly. */
+    for (offs = 0; offs < videoram_size; offs += 2) {
+        int charcode, sx, sy, color;
 
-		if (!dirtybuffer[offs] && !dirtybuffer[offs + 1]) continue;
+        if (!dirtybuffer[offs] && !dirtybuffer[offs + 1]) continue;
 
-		dirtybuffer[offs] = dirtybuffer[offs + 1] = 0;
+        dirtybuffer[offs] = dirtybuffer[offs + 1] = 0;
 
-		sy = 8 * (offs / 128);
-		sx = 4 * (offs % 128);
+        sy = 8 * (offs / 128);
+        sx = 4 * (offs % 128);
 
-		if (sx >= 42*8) continue;
+        if (sx >= 42 * 8) continue;
 
-		charcode = videoram[offs] | ((videoram[offs + 1] & 0x07) << 8);
+        charcode = videoram[offs] | ((videoram[offs + 1] & 0x07) << 8);
 
-		color = ((videoram[offs + 1] & 0xf0) >> 4);
+        color = ((videoram[offs + 1] & 0xf0) >> 4);
 
-		drawgfx(tmpbitmap,Machine->gfx[0],
-				charcode,
-				color,
-				0,0,
-				sx,sy,
-				&Machine->visible_area,TRANSPARENCY_NONE,0);
-	}
+        drawgfx(tmpbitmap, Machine->gfx[0],
+                charcode,
+                color,
+                0, 0,
+                sx, sy,
+                &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    }
 
-	copybitmap(bitmap,tmpbitmap,0,0,0,0,&Machine->visible_area,TRANSPARENCY_NONE,0);
+    copybitmap(bitmap, tmpbitmap, 0, 0, 0, 0, &Machine->visible_area, TRANSPARENCY_NONE, 0);
 }

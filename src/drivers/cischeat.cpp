@@ -149,17 +149,17 @@ static unsigned char *sharedram1, *sharedram2;
 extern unsigned char *cischeat_roadram[2];
 
 /* Functions defined in vidhrdw: */
-READ_HANDLER( cischeat_vregs_r );
-READ_HANDLER( f1gpstar_vregs_r );
+READ_HANDLER(cischeat_vregs_r);
+READ_HANDLER(f1gpstar_vregs_r);
 
-WRITE_HANDLER( cischeat_vregs_w );
-WRITE_HANDLER( f1gpstar_vregs_w );
+WRITE_HANDLER(cischeat_vregs_w);
+WRITE_HANDLER(f1gpstar_vregs_w);
 
 int cischeat_vh_start(void);
 int f1gpstar_vh_start(void);
 
-void cischeat_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh);
-void f1gpstar_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh);
+void cischeat_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh);
+void f1gpstar_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh);
 
 
 /*
@@ -168,15 +168,36 @@ void f1gpstar_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh);
 **
 */
 
-READ_HANDLER( sharedram1_r )			{return READ_WORD(&sharedram1[offset]);	}
-READ_HANDLER( sharedram2_r )			{return READ_WORD(&sharedram2[offset]);	}
+READ_HANDLER(sharedram1_r)
+{
+    return READ_WORD(&sharedram1[offset]);
+}
+READ_HANDLER(sharedram2_r)
+{
+    return READ_WORD(&sharedram2[offset]);
+}
 
-WRITE_HANDLER( sharedram1_w ) {WRITE_WORD(&sharedram1[offset],data);	}
-WRITE_HANDLER( sharedram2_w ) {WRITE_WORD(&sharedram2[offset],data);	}
+WRITE_HANDLER(sharedram1_w)
+{
+    WRITE_WORD(&sharedram1[offset], data);
+}
+WRITE_HANDLER(sharedram2_w)
+{
+    WRITE_WORD(&sharedram2[offset], data);
+}
 
-static READ_HANDLER( rom_1_r ) {return READ_WORD(&rom_1[offset]);}
-static READ_HANDLER( rom_2_r ) {return READ_WORD(&rom_2[offset]);}
-static READ_HANDLER( rom_3_r ) {return READ_WORD(&rom_3[offset]);}
+static READ_HANDLER(rom_1_r)
+{
+    return READ_WORD(&rom_1[offset]);
+}
+static READ_HANDLER(rom_2_r)
+{
+    return READ_WORD(&rom_2[offset]);
+}
+static READ_HANDLER(rom_3_r)
+{
+    return READ_WORD(&rom_3[offset]);
+}
 
 
 /**************************************************************************
@@ -193,83 +214,99 @@ static READ_HANDLER( rom_3_r ) {return READ_WORD(&rom_3[offset]);}
 	bd000-bd3ff		bd000-bdfff		sprites
 	bec00-befff		<				text		*/
 
-READ_HANDLER( cischeat_palette_r )
+READ_HANDLER(cischeat_palette_r)
 {
-	return READ_WORD(&paletteram[offset]);
+    return READ_WORD(&paletteram[offset]);
 }
 
-WRITE_HANDLER( cischeat_palette_w )
+WRITE_HANDLER(cischeat_palette_w)
 {
-int newword,r,g,b;
+    int newword, r, g, b;
 
-	COMBINE_WORD_MEM(&paletteram[offset],data);
-	newword = READ_WORD(&paletteram[offset]);
-	r = ((newword >> 8) & 0xF0 ) | ((newword << 0) & 0x08);
-	g = ((newword >> 4) & 0xF0 ) | ((newword << 1) & 0x08);
-	b = ((newword >> 0) & 0xF0 ) | ((newword << 2) & 0x08);
+    COMBINE_WORD_MEM(&paletteram[offset], data);
+    newword = READ_WORD(&paletteram[offset]);
+    r = ((newword >> 8) & 0xF0) | ((newword << 0) & 0x08);
+    g = ((newword >> 4) & 0xF0) | ((newword << 1) & 0x08);
+    b = ((newword >> 0) & 0xF0) | ((newword << 2) & 0x08);
 
-	// Scroll 0
-	if ( (offset >= 0x1c00) && (offset <= 0x1fff) ) { palette_change_color(0x000 + (offset - 0x1c00)/2, r,g,b ); return;}
-	// Scroll 1
-	if ( (offset >= 0x2c00) && (offset <= 0x2fff) ) { palette_change_color(0x200 + (offset - 0x2c00)/2, r,g,b ); return;}
-	// Scroll 2
-	if ( (offset >= 0x6c00) && (offset <= 0x6fff) ) { palette_change_color(0x400 + (offset - 0x6c00)/2, r,g,b ); return;}
-	// Road 0
-	if ( (offset >= 0x3800) && (offset <= 0x3fff) ) { palette_change_color(0x600 + (offset - 0x3800)/2, r,g,b ); return;}
-	// Road 1
-	if ( (offset >= 0x4800) && (offset <= 0x4fff) ) { palette_change_color(0xa00 + (offset - 0x4800)/2, r,g,b ); return;}
-	// Sprites
-	if ( (offset >= 0x5000) && (offset <= 0x5fff) ) { palette_change_color(0xe00 + (offset - 0x5000)/2, r,g,b ); return;}
+    // Scroll 0
+    if ((offset >= 0x1c00) && (offset <= 0x1fff)) {
+        palette_change_color(0x000 + (offset - 0x1c00) / 2, r, g, b);
+        return;
+    }
+    // Scroll 1
+    if ((offset >= 0x2c00) && (offset <= 0x2fff)) {
+        palette_change_color(0x200 + (offset - 0x2c00) / 2, r, g, b);
+        return;
+    }
+    // Scroll 2
+    if ((offset >= 0x6c00) && (offset <= 0x6fff)) {
+        palette_change_color(0x400 + (offset - 0x6c00) / 2, r, g, b);
+        return;
+    }
+    // Road 0
+    if ((offset >= 0x3800) && (offset <= 0x3fff)) {
+        palette_change_color(0x600 + (offset - 0x3800) / 2, r, g, b);
+        return;
+    }
+    // Road 1
+    if ((offset >= 0x4800) && (offset <= 0x4fff)) {
+        palette_change_color(0xa00 + (offset - 0x4800) / 2, r, g, b);
+        return;
+    }
+    // Sprites
+    if ((offset >= 0x5000) && (offset <= 0x5fff)) {
+        palette_change_color(0xe00 + (offset - 0x5000) / 2, r, g, b);
+        return;
+    }
 }
 
 
 
-static struct MemoryReadAddress cischeat_readmem[] =
-{
-	{ 0x000000, 0x07ffff, MRA_ROM			},	// ROM
-	{ 0x100000, 0x17ffff, rom_1_r			},	// ROM
-	{ 0x0f0000, 0x0fffff, MRA_BANK1			},	// RAM
-	{ 0x080000, 0x087fff, cischeat_vregs_r	},	// Vregs
-	{ 0x088000, 0x088fff, MRA_BANK2			},	// Linking with other units
+static struct MemoryReadAddress cischeat_readmem[] = {
+    { 0x000000, 0x07ffff, MRA_ROM			},	// ROM
+    { 0x100000, 0x17ffff, rom_1_r			},	// ROM
+    { 0x0f0000, 0x0fffff, MRA_BANK1			},	// RAM
+    { 0x080000, 0x087fff, cischeat_vregs_r	},	// Vregs
+    { 0x088000, 0x088fff, MRA_BANK2			},	// Linking with other units
 
-/* 	Only the first 0x800 bytes are tested but:
-	CPU #0 PC 0000278c: warning - write 68c0 to unmapped memory address 0009c7fe
-	CPU #0 PC 0000dd58: warning - read unmapped memory address 000945ac
-	No mem access error from the other CPU's, though.. */
+    /* 	Only the first 0x800 bytes are tested but:
+    	CPU #0 PC 0000278c: warning - write 68c0 to unmapped memory address 0009c7fe
+    	CPU #0 PC 0000dd58: warning - read unmapped memory address 000945ac
+    	No mem access error from the other CPU's, though.. */
 
-	/* this is the right order of sharedram's */
-	{ 0x090000, 0x097fff, sharedram2_r		},	// Sharedram with sub CPU#2
-	{ 0x098000, 0x09ffff, sharedram1_r		},	// Sharedram with sub CPU#1
+    /* this is the right order of sharedram's */
+    { 0x090000, 0x097fff, sharedram2_r		},	// Sharedram with sub CPU#2
+    { 0x098000, 0x09ffff, sharedram1_r		},	// Sharedram with sub CPU#1
 
-	{ 0x0a0000, 0x0a7fff, megasys1_scrollram_0_r	},	// Scroll ram 0
-	{ 0x0a8000, 0x0affff, megasys1_scrollram_1_r	},	// Scroll ram 1
-	{ 0x0b0000, 0x0b7fff, megasys1_scrollram_2_r	},	// Scroll ram 2
+    { 0x0a0000, 0x0a7fff, megasys1_scrollram_0_r	},	// Scroll ram 0
+    { 0x0a8000, 0x0affff, megasys1_scrollram_1_r	},	// Scroll ram 1
+    { 0x0b0000, 0x0b7fff, megasys1_scrollram_2_r	},	// Scroll ram 2
 
-	{ 0x0b8000, 0x0bffff, cischeat_palette_r	},	// Palettes
+    { 0x0b8000, 0x0bffff, cischeat_palette_r	},	// Palettes
 
-	{ -1 }
+    { -1 }
 };
 
-static struct MemoryWriteAddress cischeat_writemem[] =
-{
-	{ 0x000000, 0x07ffff, MWA_ROM							},	// ROM
-	{ 0x100000, 0x17ffff, MWA_ROM							},	// ROM
-	{ 0x0f0000, 0x0fffff, MWA_BANK1, &megasys1_ram			},	// RAM
-	{ 0x080000, 0x087fff, cischeat_vregs_w, &megasys1_vregs	},	// Vregs
-	{ 0x088000, 0x088fff, MWA_BANK2							},	// Linking with other units
+static struct MemoryWriteAddress cischeat_writemem[] = {
+    { 0x000000, 0x07ffff, MWA_ROM							},	// ROM
+    { 0x100000, 0x17ffff, MWA_ROM							},	// ROM
+    { 0x0f0000, 0x0fffff, MWA_BANK1, &megasys1_ram			},	// RAM
+    { 0x080000, 0x087fff, cischeat_vregs_w, &megasys1_vregs	},	// Vregs
+    { 0x088000, 0x088fff, MWA_BANK2							},	// Linking with other units
 
-	{ 0x090000, 0x097fff, sharedram2_w, &sharedram2			},	// Sharedram with sub CPU#2
-	{ 0x098000, 0x09ffff, sharedram1_w, &sharedram1			},	// Sharedram with sub CPU#1
+    { 0x090000, 0x097fff, sharedram2_w, &sharedram2			},	// Sharedram with sub CPU#2
+    { 0x098000, 0x09ffff, sharedram1_w, &sharedram1			},	// Sharedram with sub CPU#1
 
-	/* Only writes to the first 0x40000 bytes affect the tilemaps:             */
-	/* either these games support larger tilemaps or have more ram than needed */
-	{ 0x0a0000, 0x0a7fff, megasys1_scrollram_0_w, &megasys1_scrollram_0	},	// Scroll ram 0
-	{ 0x0a8000, 0x0affff, megasys1_scrollram_1_w, &megasys1_scrollram_1	},	// Scroll ram 1
-	{ 0x0b0000, 0x0b7fff, megasys1_scrollram_2_w, &megasys1_scrollram_2	},	// Scroll ram 2
+    /* Only writes to the first 0x40000 bytes affect the tilemaps:             */
+    /* either these games support larger tilemaps or have more ram than needed */
+    { 0x0a0000, 0x0a7fff, megasys1_scrollram_0_w, &megasys1_scrollram_0	},	// Scroll ram 0
+    { 0x0a8000, 0x0affff, megasys1_scrollram_1_w, &megasys1_scrollram_1	},	// Scroll ram 1
+    { 0x0b0000, 0x0b7fff, megasys1_scrollram_2_w, &megasys1_scrollram_2	},	// Scroll ram 2
 
-	{ 0x0b8000, 0x0bffff, cischeat_palette_w, &paletteram	},	// Palettes
+    { 0x0b8000, 0x0bffff, cischeat_palette_w, &paletteram	},	// Palettes
 
-	{ -1 }
+    { -1 }
 };
 
 
@@ -281,32 +318,50 @@ static struct MemoryWriteAddress cischeat_writemem[] =
 **************************************************************************/
 
 
-READ_HANDLER( f1gpstar_palette_r )
+READ_HANDLER(f1gpstar_palette_r)
 {
-	return READ_WORD(&paletteram[offset]);
+    return READ_WORD(&paletteram[offset]);
 }
-WRITE_HANDLER( f1gpstar_palette_w )
+WRITE_HANDLER(f1gpstar_palette_w)
 {
-int newword,r,g,b;
+    int newword, r, g, b;
 
-	COMBINE_WORD_MEM(&paletteram[offset],data);
-	newword = READ_WORD(&paletteram[offset]);
-	r = ((newword >> 8) & 0xF0 ) | ((newword << 0) & 0x08);
-	g = ((newword >> 4) & 0xF0 ) | ((newword << 1) & 0x08);
-	b = ((newword >> 0) & 0xF0 ) | ((newword << 2) & 0x08);
+    COMBINE_WORD_MEM(&paletteram[offset], data);
+    newword = READ_WORD(&paletteram[offset]);
+    r = ((newword >> 8) & 0xF0) | ((newword << 0) & 0x08);
+    g = ((newword >> 4) & 0xF0) | ((newword << 1) & 0x08);
+    b = ((newword >> 0) & 0xF0) | ((newword << 2) & 0x08);
 
-	// Scroll 0
-	if ( (offset >= 0x1e00) && (offset <= 0x1fff) ) { palette_change_color(0x000 + (offset - 0x1e00)/2, r,g,b ); return;}
-	// Scroll 1
-	if ( (offset >= 0x2e00) && (offset <= 0x2fff) ) { palette_change_color(0x100 + (offset - 0x2e00)/2, r,g,b ); return;}
-	// Scroll 2
-	if ( (offset >= 0x6e00) && (offset <= 0x6fff) ) { palette_change_color(0x200 + (offset - 0x6e00)/2, r,g,b ); return;}
-	// Road 0
-	if ( (offset >= 0x3800) && (offset <= 0x3fff) ) { palette_change_color(0x300 + (offset - 0x3800)/2, r,g,b ); return;}
-	// Road 1
-	if ( (offset >= 0x4800) && (offset <= 0x4fff) ) { palette_change_color(0x700 + (offset - 0x4800)/2, r,g,b ); return;}
-	// Sprites
-	if ( (offset >= 0x5000) && (offset <= 0x5fff) ) { palette_change_color(0xb00 + (offset - 0x5000)/2, r,g,b ); return;}
+    // Scroll 0
+    if ((offset >= 0x1e00) && (offset <= 0x1fff)) {
+        palette_change_color(0x000 + (offset - 0x1e00) / 2, r, g, b);
+        return;
+    }
+    // Scroll 1
+    if ((offset >= 0x2e00) && (offset <= 0x2fff)) {
+        palette_change_color(0x100 + (offset - 0x2e00) / 2, r, g, b);
+        return;
+    }
+    // Scroll 2
+    if ((offset >= 0x6e00) && (offset <= 0x6fff)) {
+        palette_change_color(0x200 + (offset - 0x6e00) / 2, r, g, b);
+        return;
+    }
+    // Road 0
+    if ((offset >= 0x3800) && (offset <= 0x3fff)) {
+        palette_change_color(0x300 + (offset - 0x3800) / 2, r, g, b);
+        return;
+    }
+    // Road 1
+    if ((offset >= 0x4800) && (offset <= 0x4fff)) {
+        palette_change_color(0x700 + (offset - 0x4800) / 2, r, g, b);
+        return;
+    }
+    // Sprites
+    if ((offset >= 0x5000) && (offset <= 0x5fff)) {
+        palette_change_color(0xb00 + (offset - 0x5000) / 2, r, g, b);
+        return;
+    }
 }
 
 /*	F1 GP Star tests:
@@ -317,45 +372,43 @@ int newword,r,g,b;
 	098800-099000
 	0F8000-0F9000	*/
 
-static struct MemoryReadAddress f1gpstar_readmem[] =
-{
-	{ 0x000000, 0x07ffff, MRA_ROM			},	// ROM
-	{ 0x100000, 0x17ffff, rom_1_r			},	// ROM
-	{ 0x0f0000, 0x0fffff, MRA_BANK1			},	// RAM
-	{ 0x080000, 0x087fff, f1gpstar_vregs_r	},	// Vregs
-	{ 0x088000, 0x088fff, MRA_BANK2			},	// Linking with other units
+static struct MemoryReadAddress f1gpstar_readmem[] = {
+    { 0x000000, 0x07ffff, MRA_ROM			},	// ROM
+    { 0x100000, 0x17ffff, rom_1_r			},	// ROM
+    { 0x0f0000, 0x0fffff, MRA_BANK1			},	// RAM
+    { 0x080000, 0x087fff, f1gpstar_vregs_r	},	// Vregs
+    { 0x088000, 0x088fff, MRA_BANK2			},	// Linking with other units
 
-	{ 0x090000, 0x097fff, sharedram2_r		},	// Sharedram with sub CPU#2
-	{ 0x098000, 0x09ffff, sharedram1_r		},	// Sharedram with sub CPU#1
+    { 0x090000, 0x097fff, sharedram2_r		},	// Sharedram with sub CPU#2
+    { 0x098000, 0x09ffff, sharedram1_r		},	// Sharedram with sub CPU#1
 
-	{ 0x0a0000, 0x0a7fff, megasys1_scrollram_0_r	},	// Scroll ram 0
-	{ 0x0a8000, 0x0affff, megasys1_scrollram_1_r	},	// Scroll ram 1
-	{ 0x0b0000, 0x0b7fff, megasys1_scrollram_2_r	},	// Scroll ram 2
+    { 0x0a0000, 0x0a7fff, megasys1_scrollram_0_r	},	// Scroll ram 0
+    { 0x0a8000, 0x0affff, megasys1_scrollram_1_r	},	// Scroll ram 1
+    { 0x0b0000, 0x0b7fff, megasys1_scrollram_2_r	},	// Scroll ram 2
 
-	{ 0x0b8000, 0x0bffff, f1gpstar_palette_r	},	// Palettes
-	{ -1 }
+    { 0x0b8000, 0x0bffff, f1gpstar_palette_r	},	// Palettes
+    { -1 }
 };
 
-static struct MemoryWriteAddress f1gpstar_writemem[] =
-{
-	{ 0x000000, 0x07ffff, MWA_ROM							},
-	{ 0x100000, 0x17ffff, MWA_ROM							},
-	{ 0x0f0000, 0x0fffff, MWA_BANK1, &megasys1_ram			},	// RAM
-	{ 0x080000, 0x087fff, f1gpstar_vregs_w, &megasys1_vregs	},	// Vregs
-	{ 0x088000, 0x088fff, MWA_BANK2							},	// Linking with other units
+static struct MemoryWriteAddress f1gpstar_writemem[] = {
+    { 0x000000, 0x07ffff, MWA_ROM							},
+    { 0x100000, 0x17ffff, MWA_ROM							},
+    { 0x0f0000, 0x0fffff, MWA_BANK1, &megasys1_ram			},	// RAM
+    { 0x080000, 0x087fff, f1gpstar_vregs_w, &megasys1_vregs	},	// Vregs
+    { 0x088000, 0x088fff, MWA_BANK2							},	// Linking with other units
 
-	{ 0x090000, 0x097fff, sharedram2_w, &sharedram2			},	// Sharedram with sub CPU#2
-	{ 0x098000, 0x09ffff, sharedram1_w, &sharedram1			},	// Sharedram with sub CPU#1
+    { 0x090000, 0x097fff, sharedram2_w, &sharedram2			},	// Sharedram with sub CPU#2
+    { 0x098000, 0x09ffff, sharedram1_w, &sharedram1			},	// Sharedram with sub CPU#1
 
-	/* Only writes to the first 0x40000 bytes affect the tilemaps:             */
-	/* either these games support larger tilemaps or have more ram than needed */
-	{ 0x0a0000, 0x0a7fff, megasys1_scrollram_0_w, &megasys1_scrollram_0	},	// Scroll ram 0
-	{ 0x0a8000, 0x0affff, megasys1_scrollram_1_w, &megasys1_scrollram_1	},	// Scroll ram 1
-	{ 0x0b0000, 0x0b7fff, megasys1_scrollram_2_w, &megasys1_scrollram_2	},	// Scroll ram 2
+    /* Only writes to the first 0x40000 bytes affect the tilemaps:             */
+    /* either these games support larger tilemaps or have more ram than needed */
+    { 0x0a0000, 0x0a7fff, megasys1_scrollram_0_w, &megasys1_scrollram_0	},	// Scroll ram 0
+    { 0x0a8000, 0x0affff, megasys1_scrollram_1_w, &megasys1_scrollram_1	},	// Scroll ram 1
+    { 0x0b0000, 0x0b7fff, megasys1_scrollram_2_w, &megasys1_scrollram_2	},	// Scroll ram 2
 
-	{ 0x0b8000, 0x0bffff, f1gpstar_palette_w, &paletteram	},	// Palettes
+    { 0x0b8000, 0x0bffff, f1gpstar_palette_w, &paletteram	},	// Palettes
 
-	{ -1 }
+    { -1 }
 };
 
 
@@ -372,24 +425,22 @@ static struct MemoryWriteAddress f1gpstar_writemem[] =
 								[ Cisco Heat ]
 **************************************************************************/
 
-static struct MemoryReadAddress cischeat_readmem2[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM		},	// ROM
-	{ 0x200000, 0x23ffff, rom_2_r		},	// ROM
-	{ 0x0c0000, 0x0c3fff, MRA_BANK3		},	// RAM
-	{ 0x040000, 0x047fff, sharedram1_r	},	// Shared RAM (with Main CPU)
-	{ 0x080000, 0x0807ff, MRA_BANK4		},	// Road RAM
-	{ -1 }
+static struct MemoryReadAddress cischeat_readmem2[] = {
+    { 0x000000, 0x03ffff, MRA_ROM		},	// ROM
+    { 0x200000, 0x23ffff, rom_2_r		},	// ROM
+    { 0x0c0000, 0x0c3fff, MRA_BANK3		},	// RAM
+    { 0x040000, 0x047fff, sharedram1_r	},	// Shared RAM (with Main CPU)
+    { 0x080000, 0x0807ff, MRA_BANK4		},	// Road RAM
+    { -1 }
 };
-static struct MemoryWriteAddress cischeat_writemem2[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM							},	// ROM
-	{ 0x200000, 0x23ffff, MWA_ROM							},	// ROM
-	{ 0x0c0000, 0x0c3fff, MWA_BANK3							},	// RAM
-	{ 0x040000, 0x047fff, sharedram1_w						},	// Shared RAM (with Main CPU)
-	{ 0x080000, 0x0807ff, MWA_BANK4, &cischeat_roadram[0]	},	// Road RAM
-	{ 0x100000, 0x100001, MWA_NOP							},	// watchdog
-	{ -1 }
+static struct MemoryWriteAddress cischeat_writemem2[] = {
+    { 0x000000, 0x03ffff, MWA_ROM							},	// ROM
+    { 0x200000, 0x23ffff, MWA_ROM							},	// ROM
+    { 0x0c0000, 0x0c3fff, MWA_BANK3							},	// RAM
+    { 0x040000, 0x047fff, sharedram1_w						},	// Shared RAM (with Main CPU)
+    { 0x080000, 0x0807ff, MWA_BANK4, &cischeat_roadram[0]	},	// Road RAM
+    { 0x100000, 0x100001, MWA_NOP							},	// watchdog
+    { -1 }
 };
 
 
@@ -399,22 +450,20 @@ static struct MemoryWriteAddress cischeat_writemem2[] =
 							[ F1 GrandPrix Star ]
 **************************************************************************/
 
-static struct MemoryReadAddress f1gpstar_readmem2[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM		},	// ROM
-	{ 0x180000, 0x183fff, MRA_BANK3		},	// RAM
-	{ 0x080000, 0x0807ff, sharedram1_r	},	// Shared RAM (with Main CPU)
-	{ 0x100000, 0x1007ff, MRA_BANK4		},	// Road RAM
-	{ -1 }
+static struct MemoryReadAddress f1gpstar_readmem2[] = {
+    { 0x000000, 0x03ffff, MRA_ROM		},	// ROM
+    { 0x180000, 0x183fff, MRA_BANK3		},	// RAM
+    { 0x080000, 0x0807ff, sharedram1_r	},	// Shared RAM (with Main CPU)
+    { 0x100000, 0x1007ff, MRA_BANK4		},	// Road RAM
+    { -1 }
 };
-static struct MemoryWriteAddress f1gpstar_writemem2[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM							},	// ROM
-	{ 0x180000, 0x183fff, MWA_BANK3							},	// RAM
-	{ 0x080000, 0x0807ff, sharedram1_w						},	// Shared RAM (with Main CPU)
-	{ 0x100000, 0x1007ff, MWA_BANK4, &cischeat_roadram[0]	},	// Road RAM
-	{ 0x200000, 0x200001, MWA_NOP							},	// watchdog
-	{ -1 }
+static struct MemoryWriteAddress f1gpstar_writemem2[] = {
+    { 0x000000, 0x03ffff, MWA_ROM							},	// ROM
+    { 0x180000, 0x183fff, MWA_BANK3							},	// RAM
+    { 0x080000, 0x0807ff, sharedram1_w						},	// Shared RAM (with Main CPU)
+    { 0x100000, 0x1007ff, MWA_BANK4, &cischeat_roadram[0]	},	// Road RAM
+    { 0x200000, 0x200001, MWA_NOP							},	// watchdog
+    { -1 }
 };
 
 
@@ -428,24 +477,22 @@ static struct MemoryWriteAddress f1gpstar_writemem2[] =
 								[ Cisco Heat ]
 **************************************************************************/
 
-static struct MemoryReadAddress cischeat_readmem3[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM		},	// ROM
-	{ 0x200000, 0x23ffff, rom_3_r		},	// ROM
-	{ 0x0c0000, 0x0c3fff, MRA_BANK5		},	// RAM
-	{ 0x040000, 0x047fff, sharedram2_r	},	// Shared RAM (with Main CPU)
-	{ 0x080000, 0x0807ff, MRA_BANK6		},	// Road RAM
-	{ -1 }
+static struct MemoryReadAddress cischeat_readmem3[] = {
+    { 0x000000, 0x03ffff, MRA_ROM		},	// ROM
+    { 0x200000, 0x23ffff, rom_3_r		},	// ROM
+    { 0x0c0000, 0x0c3fff, MRA_BANK5		},	// RAM
+    { 0x040000, 0x047fff, sharedram2_r	},	// Shared RAM (with Main CPU)
+    { 0x080000, 0x0807ff, MRA_BANK6		},	// Road RAM
+    { -1 }
 };
-static struct MemoryWriteAddress cischeat_writemem3[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM							},	// ROM
-	{ 0x200000, 0x23ffff, MWA_ROM							},	// ROM
-	{ 0x0c0000, 0x0c3fff, MWA_BANK5							},	// RAM
-	{ 0x040000, 0x047fff, sharedram2_w						},	// Shared RAM (with Main CPU)
-	{ 0x080000, 0x0807ff, MWA_BANK6, &cischeat_roadram[1]	},	// Road RAM
-	{ 0x100000, 0x100001, MWA_NOP							},	// watchdog
-	{ -1 }
+static struct MemoryWriteAddress cischeat_writemem3[] = {
+    { 0x000000, 0x03ffff, MWA_ROM							},	// ROM
+    { 0x200000, 0x23ffff, MWA_ROM							},	// ROM
+    { 0x0c0000, 0x0c3fff, MWA_BANK5							},	// RAM
+    { 0x040000, 0x047fff, sharedram2_w						},	// Shared RAM (with Main CPU)
+    { 0x080000, 0x0807ff, MWA_BANK6, &cischeat_roadram[1]	},	// Road RAM
+    { 0x100000, 0x100001, MWA_NOP							},	// watchdog
+    { -1 }
 };
 
 
@@ -456,22 +503,20 @@ static struct MemoryWriteAddress cischeat_writemem3[] =
 							[ F1 GrandPrix Star ]
 **************************************************************************/
 
-static struct MemoryReadAddress f1gpstar_readmem3[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM		},	// ROM
-	{ 0x180000, 0x183fff, MRA_BANK5		},	// RAM
-	{ 0x080000, 0x0807ff, sharedram2_r	},	// Shared RAM (with Main CPU)
-	{ 0x100000, 0x1007ff, MRA_BANK6		},	// Road RAM
-	{ -1 }
+static struct MemoryReadAddress f1gpstar_readmem3[] = {
+    { 0x000000, 0x03ffff, MRA_ROM		},	// ROM
+    { 0x180000, 0x183fff, MRA_BANK5		},	// RAM
+    { 0x080000, 0x0807ff, sharedram2_r	},	// Shared RAM (with Main CPU)
+    { 0x100000, 0x1007ff, MRA_BANK6		},	// Road RAM
+    { -1 }
 };
-static struct MemoryWriteAddress f1gpstar_writemem3[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM							},	// ROM
-	{ 0x180000, 0x183fff, MWA_BANK5							},	// RAM
-	{ 0x080000, 0x0807ff, sharedram2_w						},	// Shared RAM (with Main CPU)
-	{ 0x100000, 0x1007ff, MWA_BANK6, &cischeat_roadram[1]	},	// Road RAM
-	{ 0x200000, 0x200001, MWA_NOP							},	// watchdog
-	{ -1 }
+static struct MemoryWriteAddress f1gpstar_writemem3[] = {
+    { 0x000000, 0x03ffff, MWA_ROM							},	// ROM
+    { 0x180000, 0x183fff, MWA_BANK5							},	// RAM
+    { 0x080000, 0x0807ff, sharedram2_w						},	// Shared RAM (with Main CPU)
+    { 0x100000, 0x1007ff, MWA_BANK6, &cischeat_roadram[1]	},	// Road RAM
+    { 0x200000, 0x200001, MWA_NOP							},	// watchdog
+    { -1 }
 };
 
 
@@ -498,28 +543,26 @@ WRITE_HANDLER( cischeat_soundbank_##_n_##_w ) \
 SOUNDBANK_W(0)
 SOUNDBANK_W(1)
 
-static struct MemoryReadAddress cischeat_sound_readmem[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM					},	// ROM
-	{ 0x0f0000, 0x0fffff, MRA_BANK7					},	// RAM
-	{ 0x060004, 0x060005, soundlatch_r				},	// From Main CPU
-	{ 0x080002, 0x080003, YM2151_status_port_0_r	},
-	{ 0x0a0000, 0x0a0001, OKIM6295_status_0_r		},
-	{ 0x0c0000, 0x0c0001, OKIM6295_status_1_r		},
-	{ -1 }
+static struct MemoryReadAddress cischeat_sound_readmem[] = {
+    { 0x000000, 0x03ffff, MRA_ROM					},	// ROM
+    { 0x0f0000, 0x0fffff, MRA_BANK7					},	// RAM
+    { 0x060004, 0x060005, soundlatch_r				},	// From Main CPU
+    { 0x080002, 0x080003, YM2151_status_port_0_r	},
+    { 0x0a0000, 0x0a0001, OKIM6295_status_0_r		},
+    { 0x0c0000, 0x0c0001, OKIM6295_status_1_r		},
+    { -1 }
 };
-static struct MemoryWriteAddress cischeat_sound_writemem[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM						},	// ROM
-	{ 0x0f0000, 0x0fffff, MWA_BANK7						},	// RAM
-	{ 0x040002, 0x040003, cischeat_soundbank_0_w		},	// Sample Banking
-	{ 0x040004, 0x040005, cischeat_soundbank_1_w		},	// Sample Banking
-	{ 0x060002, 0x060003, ms_soundlatch2_w				},	// To Main CPU
-	{ 0x080000, 0x080001, ms_YM2151_register_port_0_w	},
-	{ 0x080002, 0x080003, ms_YM2151_data_port_0_w		},
-	{ 0x0a0000, 0x0a0003, ms_OKIM6295_data_0_w			},
-	{ 0x0c0000, 0x0c0003, ms_OKIM6295_data_1_w			},
-	{ -1 }
+static struct MemoryWriteAddress cischeat_sound_writemem[] = {
+    { 0x000000, 0x03ffff, MWA_ROM						},	// ROM
+    { 0x0f0000, 0x0fffff, MWA_BANK7						},	// RAM
+    { 0x040002, 0x040003, cischeat_soundbank_0_w		},	// Sample Banking
+    { 0x040004, 0x040005, cischeat_soundbank_1_w		},	// Sample Banking
+    { 0x060002, 0x060003, ms_soundlatch2_w				},	// To Main CPU
+    { 0x080000, 0x080001, ms_YM2151_register_port_0_w	},
+    { 0x080002, 0x080003, ms_YM2151_data_port_0_w		},
+    { 0x0a0000, 0x0a0003, ms_OKIM6295_data_0_w			},
+    { 0x0c0000, 0x0c0003, ms_OKIM6295_data_1_w			},
+    { -1 }
 };
 
 
@@ -530,28 +573,26 @@ static struct MemoryWriteAddress cischeat_sound_writemem[] =
 							[ F1 GrandPrix Star ]
 **************************************************************************/
 
-static struct MemoryReadAddress f1gpstar_sound_readmem[] =
-{
-	{ 0x000000, 0x03ffff, MRA_ROM					},	// ROM
-	{ 0x0e0000, 0x0fffff, MRA_BANK7					},	// RAM				(cischeat: f0000-fffff)
-	{ 0x060000, 0x060001, soundlatch_r				},	// From Main CPU	(cischeat: 60004)
-	{ 0x080002, 0x080003, YM2151_status_port_0_r	},
-	{ 0x0a0000, 0x0a0001, OKIM6295_status_0_r		},
-	{ 0x0c0000, 0x0c0001, OKIM6295_status_1_r		},
-	{ -1 }
+static struct MemoryReadAddress f1gpstar_sound_readmem[] = {
+    { 0x000000, 0x03ffff, MRA_ROM					},	// ROM
+    { 0x0e0000, 0x0fffff, MRA_BANK7					},	// RAM				(cischeat: f0000-fffff)
+    { 0x060000, 0x060001, soundlatch_r				},	// From Main CPU	(cischeat: 60004)
+    { 0x080002, 0x080003, YM2151_status_port_0_r	},
+    { 0x0a0000, 0x0a0001, OKIM6295_status_0_r		},
+    { 0x0c0000, 0x0c0001, OKIM6295_status_1_r		},
+    { -1 }
 };
-static struct MemoryWriteAddress f1gpstar_sound_writemem[] =
-{
-	{ 0x000000, 0x03ffff, MWA_ROM						},	// ROM
-	{ 0x0e0000, 0x0fffff, MWA_BANK7						},	// RAM				(cischeat: f0000-fffff)
-	{ 0x040004, 0x040005, cischeat_soundbank_0_w		},	// Sample Banking	(cischeat: 40002)
-	{ 0x040008, 0x040009, cischeat_soundbank_1_w		},	// Sample Banking	(cischeat: 40004)
-	{ 0x060000, 0x060001, ms_soundlatch2_w				},	// To Main CPU		(cischeat: 60002)
-	{ 0x080000, 0x080001, ms_YM2151_register_port_0_w	},
-	{ 0x080002, 0x080003, ms_YM2151_data_port_0_w		},
-	{ 0x0a0000, 0x0a0003, ms_OKIM6295_data_0_w			},
-	{ 0x0c0000, 0x0c0003, ms_OKIM6295_data_1_w			},
-	{ -1 }
+static struct MemoryWriteAddress f1gpstar_sound_writemem[] = {
+    { 0x000000, 0x03ffff, MWA_ROM						},	// ROM
+    { 0x0e0000, 0x0fffff, MWA_BANK7						},	// RAM				(cischeat: f0000-fffff)
+    { 0x040004, 0x040005, cischeat_soundbank_0_w		},	// Sample Banking	(cischeat: 40002)
+    { 0x040008, 0x040009, cischeat_soundbank_1_w		},	// Sample Banking	(cischeat: 40004)
+    { 0x060000, 0x060001, ms_soundlatch2_w				},	// To Main CPU		(cischeat: 60002)
+    { 0x080000, 0x080001, ms_YM2151_register_port_0_w	},
+    { 0x080002, 0x080003, ms_YM2151_data_port_0_w		},
+    { 0x0a0000, 0x0a0003, ms_OKIM6295_data_0_w			},
+    { 0x0c0000, 0x0c0003, ms_OKIM6295_data_1_w			},
+    { -1 }
 };
 
 
@@ -588,101 +629,101 @@ static struct MemoryWriteAddress f1gpstar_sound_writemem[] =
 //					[1] Coins		[2] Controls	[3] Unknown
 //					[4]	DSW 1 & 2	[5] DSW 3		[6] Driving Wheel
 
-INPUT_PORTS_START( cischeat )
+INPUT_PORTS_START(cischeat)
 
-	PORT_START	// IN0 - Fake input port - Buttons status
-	BUTTONS_STATUS
-
-
-	PORT_START	// IN1 - Coins - $80000.w
-	PORT_BIT(  0x01, IP_ACTIVE_LOW, IPT_COIN1   )
-	PORT_BIT(  0x02, IP_ACTIVE_LOW, IPT_COIN2   )
-	PORT_BIT(  0x04, IP_ACTIVE_LOW, IPT_COIN3   )	// operator's facility
-	PORT_BITX( 0x08, IP_ACTIVE_LOW, IPT_SERVICE, DEF_STR( Service_Mode ), KEYCODE_F2, IP_JOY_NONE ) 	// called "Test"
-	PORT_BIT(  0x10, IP_ACTIVE_LOW, IPT_START1  )
-	PORT_BIT(  0x20, IP_ACTIVE_LOW, IPT_START2  )
-	PORT_BIT(  0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
+PORT_START	// IN0 - Fake input port - Buttons status
+BUTTONS_STATUS
 
 
-	PORT_START	// IN2 - Controls - $80002.w
-	PORT_BIT(  0x01, IP_ACTIVE_LOW, IPT_BUTTON2 )	// Brake
+PORT_START	// IN1 - Coins - $80000.w
+PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x02, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_BIT(0x04, IP_ACTIVE_LOW, IPT_COIN3)	// operator's facility
+PORT_BITX(0x08, IP_ACTIVE_LOW, IPT_SERVICE, DEF_STR(Service_Mode), KEYCODE_F2, IP_JOY_NONE) 	// called "Test"
+PORT_BIT(0x10, IP_ACTIVE_LOW, IPT_START1)
+PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_START2)
+PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_UNKNOWN)
+
+
+PORT_START	// IN2 - Controls - $80002.w
+PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_BUTTON2)	// Brake
 //	PORT_BIT(  0x02, IP_ACTIVE_LOW, IPT_BUTTON4 )	// Shift - We handle it using buttons 3&4
-	PORT_BIT(  0x04, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x08, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x10, IP_ACTIVE_LOW, IPT_BUTTON1 )	// Accel
-	PORT_BIT(  0x20, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x80, IP_ACTIVE_LOW, IPT_BUTTON5 )	// Horn
+PORT_BIT(0x04, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x08, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x10, IP_ACTIVE_LOW, IPT_BUTTON1)	// Accel
+PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_BUTTON5)	// Horn
 
 
-	PORT_START	// IN3 - Motor Control? - $80004.w
-	PORT_DIPNAME( 0x01, 0x01, "Up Limit SW"  	)	// Limit the Cockpit movements?
-	PORT_DIPSETTING(    0x01, DEF_STR( Off ) )
-	PORT_DIPSETTING(    0x00, DEF_STR( On )  )
-	PORT_DIPNAME( 0x02, 0x02, "Down Limit SW"	)
-	PORT_DIPSETTING(    0x02, DEF_STR( Off ) )
-	PORT_DIPSETTING(    0x00, DEF_STR( On )  )
-	PORT_BIT(  0x04, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x08, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_DIPNAME( 0x10, 0x10, "Right Limit SW"	)
-	PORT_DIPSETTING(    0x10, DEF_STR( Off ) )
-	PORT_DIPSETTING(    0x00, DEF_STR( On )  )
-	PORT_DIPNAME( 0x20, 0x20, "Left Limit SW"	)
-	PORT_DIPSETTING(    0x20, DEF_STR( Off ) )
-	PORT_DIPSETTING(    0x00, DEF_STR( On )  )
-	PORT_BIT(  0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
+PORT_START	// IN3 - Motor Control? - $80004.w
+PORT_DIPNAME(0x01, 0x01, "Up Limit SW")	// Limit the Cockpit movements?
+PORT_DIPSETTING(0x01, DEF_STR(Off))
+PORT_DIPSETTING(0x00, DEF_STR(On))
+PORT_DIPNAME(0x02, 0x02, "Down Limit SW")
+PORT_DIPSETTING(0x02, DEF_STR(Off))
+PORT_DIPSETTING(0x00, DEF_STR(On))
+PORT_BIT(0x04, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x08, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_DIPNAME(0x10, 0x10, "Right Limit SW")
+PORT_DIPSETTING(0x10, DEF_STR(Off))
+PORT_DIPSETTING(0x00, DEF_STR(On))
+PORT_DIPNAME(0x20, 0x20, "Left Limit SW")
+PORT_DIPSETTING(0x20, DEF_STR(Off))
+PORT_DIPSETTING(0x00, DEF_STR(On))
+PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_UNKNOWN)
 
 
-	PORT_START	// IN4 - DSW 1 & 2 - $80006.w -> !f000a.w(hi byte) !f0008.w(low byte)
-	COINAGE_6BITS_2
-	PORT_DIPNAME( 0x0040, 0x0040, DEF_STR( Unknown ) )	// unused?
-	PORT_DIPSETTING(      0x0040, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On )  )
-	PORT_DIPNAME( 0x0080, 0x0080, DEF_STR( Unknown ) )	// unused?
-	PORT_DIPSETTING(      0x0080, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On )  )
-	// DSW 2
-	PORT_DIPNAME( 0x0300, 0x0300, "Unit ID"			)		// -> !f0020 (ID of this unit, when linked)
-	PORT_DIPSETTING(      0x0300, "0 (Red Car)"    )
-	PORT_DIPSETTING(      0x0200, "1 (Blue Car)"   )
-	PORT_DIPSETTING(      0x0100, "2 (Yellow Car)" )
-	PORT_DIPSETTING(      0x0000, "3 (Green Car)"  )
-	PORT_DIPNAME( 0x0c00, 0x0c00, DEF_STR( Difficulty ) )	// -> !f0026
-	PORT_DIPSETTING(      0x0000, "Easy"    )
-	PORT_DIPSETTING(      0x0c00, "Normal"  )
-	PORT_DIPSETTING(      0x0800, "Hard"    )
-	PORT_DIPSETTING(      0x0400, "Hardest" )
-	PORT_BITX(    0x1000, 0x1000, IPT_DIPSWITCH_NAME | IPF_CHEAT, "Infinite Time", IP_KEY_NONE, IP_JOY_NONE ) // -> !f0028
-	PORT_DIPSETTING(      0x1000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On )  )
-	PORT_DIPNAME( 0x2000, 0x2000, DEF_STR( Demo_Sounds ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x2000, DEF_STR( On )  )
-	PORT_DIPNAME( 0x4000, 0x4000, "Country" )
-	PORT_DIPSETTING(      0x4000, "Japan" )
-	PORT_DIPSETTING(      0x0000, "USA"   )
-	PORT_DIPNAME( 0x8000, 0x8000, "Allow Continue" )		// -> !f00c0
-	PORT_DIPSETTING(      0x8000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On )  )
+PORT_START	// IN4 - DSW 1 & 2 - $80006.w -> !f000a.w(hi byte) !f0008.w(low byte)
+COINAGE_6BITS_2
+PORT_DIPNAME(0x0040, 0x0040, DEF_STR(Unknown))	// unused?
+PORT_DIPSETTING(0x0040, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_DIPNAME(0x0080, 0x0080, DEF_STR(Unknown))	// unused?
+PORT_DIPSETTING(0x0080, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+// DSW 2
+PORT_DIPNAME(0x0300, 0x0300, "Unit ID")		// -> !f0020 (ID of this unit, when linked)
+PORT_DIPSETTING(0x0300, "0 (Red Car)")
+PORT_DIPSETTING(0x0200, "1 (Blue Car)")
+PORT_DIPSETTING(0x0100, "2 (Yellow Car)")
+PORT_DIPSETTING(0x0000, "3 (Green Car)")
+PORT_DIPNAME(0x0c00, 0x0c00, DEF_STR(Difficulty))	// -> !f0026
+PORT_DIPSETTING(0x0000, "Easy")
+PORT_DIPSETTING(0x0c00, "Normal")
+PORT_DIPSETTING(0x0800, "Hard")
+PORT_DIPSETTING(0x0400, "Hardest")
+PORT_BITX(0x1000, 0x1000, IPT_DIPSWITCH_NAME | IPF_CHEAT, "Infinite Time", IP_KEY_NONE, IP_JOY_NONE)      // -> !f0028
+PORT_DIPSETTING(0x1000, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_DIPNAME(0x2000, 0x2000, DEF_STR(Demo_Sounds))
+PORT_DIPSETTING(0x0000, DEF_STR(Off))
+PORT_DIPSETTING(0x2000, DEF_STR(On))
+PORT_DIPNAME(0x4000, 0x4000, "Country")
+PORT_DIPSETTING(0x4000, "Japan")
+PORT_DIPSETTING(0x0000, "USA")
+PORT_DIPNAME(0x8000, 0x8000, "Allow Continue")		// -> !f00c0
+PORT_DIPSETTING(0x8000, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
 
 
-	PORT_START	// IN5 - DSW 3 (4 bits, Cabinet Linking) - $82200.w
-	PORT_BIT(  0x01, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_DIPNAME( 0x06, 0x06, "Unit ID (2)" )	// -> f0020 (like DSW2 !!)
-	PORT_DIPSETTING(    0x06, "Use other"      )
-	PORT_DIPSETTING(    0x00, "0 (Red Car)"    )
-	PORT_DIPSETTING(    0x02, "1 (Blue Car)"   )
-	PORT_DIPSETTING(    0x04, "2 (Yellow Car)" )
-	PORT_BIT(  0x08, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x10, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x20, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
+PORT_START	// IN5 - DSW 3 (4 bits, Cabinet Linking) - $82200.w
+PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_DIPNAME(0x06, 0x06, "Unit ID (2)")	// -> f0020 (like DSW2 !!)
+PORT_DIPSETTING(0x06, "Use other")
+PORT_DIPSETTING(0x00, "0 (Red Car)")
+PORT_DIPSETTING(0x02, "1 (Blue Car)")
+PORT_DIPSETTING(0x04, "2 (Yellow Car)")
+PORT_BIT(0x08, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x10, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_UNKNOWN)
 
-	PORT_START	// IN6 - Driving Wheel - $80010.w(0)
-	DRIVING_WHEEL
+PORT_START	// IN6 - Driving Wheel - $80010.w(0)
+DRIVING_WHEEL
 
 INPUT_PORTS_END
 
@@ -701,11 +742,11 @@ INPUT_PORTS_END
 //					[4]	DSW 3			[5] Driving Wheel
 //					[6]	Coinage JP&USA	[7] Coinage UK&FR
 
-INPUT_PORTS_START( f1gpstar )
+INPUT_PORTS_START(f1gpstar)
 
 
-	PORT_START	// IN0 - Fake input port - Buttons status
-	BUTTONS_STATUS
+PORT_START	// IN0 - Fake input port - Buttons status
+BUTTONS_STATUS
 
 /*	[Country]
 	Japan		"race together" in Test Mode, Always Choose Race
@@ -714,67 +755,67 @@ INPUT_PORTS_START( f1gpstar )
 	England		English,  Mph , "steering shock", "(c)1992"
 	France		French,   Km/h, "steering shock", "(c)1992"	*/
 
-	PORT_START	// IN1 - DSW 1 & 2 - $80000.w	-> !f9012
-	// DSW 1 ( Coinage - it changes with Country: we use IN6 & IN7 )
-	PORT_DIPNAME( 0x0040, 0x0040, "Free Play (UK FR)" )
-	PORT_DIPSETTING(      0x0040, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On )  )
-	PORT_DIPNAME( 0x0080, 0x0080, DEF_STR( Unknown ) )	// unused?
-	PORT_DIPSETTING(      0x0080, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On )  )
-	// DSW 2
-	PORT_DIPNAME( 0x0300, 0x0300, "Country"  )	// -> !f901e
-	PORT_DIPSETTING(      0x0300, "Japan"   )
-	PORT_DIPSETTING(      0x0200, "USA"     )
-	PORT_DIPSETTING(      0x0100, "UK"      )
-	PORT_DIPSETTING(      0x0000, "France"  )
-	PORT_DIPNAME( 0x0c00, 0x0c00, DEF_STR( Difficulty ) )	// -> !f9026
-	PORT_DIPSETTING(      0x0000, "Easy"      )	// 58 <- Initial Time (seconds, Germany)
-	PORT_DIPSETTING(      0x0c00, "Normal"    )	// 51
-	PORT_DIPSETTING(      0x0800, "Hard"      )	// 48
-	PORT_DIPSETTING(      0x0400, "Very Hard" )	// 46
-	PORT_BITX(    0x1000, 0x1000, IPT_DIPSWITCH_NAME | IPF_CHEAT, "Infinite Time", IP_KEY_NONE, IP_JOY_NONE )
-	PORT_DIPSETTING(      0x1000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( On )  )
-	PORT_DIPNAME( 0x2000, 0x2000, DEF_STR( Unknown ) )	// ?
-	PORT_DIPSETTING(      0x0000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x2000, DEF_STR( On )  )
-	PORT_DIPNAME( 0x4000, 0x4000, "Choose Race (US UK FR)"  )	// -> f0020
-	PORT_DIPSETTING(      0x0000, DEF_STR( Off ) )
-	PORT_DIPSETTING(      0x4000, DEF_STR( On )  )
-	PORT_DIPNAME( 0x8000, 0x8000, "Vibrations" )
-	PORT_DIPSETTING(      0x8000, "High?" )
-	PORT_DIPSETTING(      0x0000, "Low?"  )
+PORT_START	// IN1 - DSW 1 & 2 - $80000.w	-> !f9012
+// DSW 1 ( Coinage - it changes with Country: we use IN6 & IN7 )
+PORT_DIPNAME(0x0040, 0x0040, "Free Play (UK FR)")
+PORT_DIPSETTING(0x0040, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_DIPNAME(0x0080, 0x0080, DEF_STR(Unknown))	// unused?
+PORT_DIPSETTING(0x0080, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+// DSW 2
+PORT_DIPNAME(0x0300, 0x0300, "Country")	// -> !f901e
+PORT_DIPSETTING(0x0300, "Japan")
+PORT_DIPSETTING(0x0200, "USA")
+PORT_DIPSETTING(0x0100, "UK")
+PORT_DIPSETTING(0x0000, "France")
+PORT_DIPNAME(0x0c00, 0x0c00, DEF_STR(Difficulty))	// -> !f9026
+PORT_DIPSETTING(0x0000, "Easy")	// 58 <- Initial Time (seconds, Germany)
+PORT_DIPSETTING(0x0c00, "Normal")	// 51
+PORT_DIPSETTING(0x0800, "Hard")	// 48
+PORT_DIPSETTING(0x0400, "Very Hard")	// 46
+PORT_BITX(0x1000, 0x1000, IPT_DIPSWITCH_NAME | IPF_CHEAT, "Infinite Time", IP_KEY_NONE, IP_JOY_NONE)
+PORT_DIPSETTING(0x1000, DEF_STR(Off))
+PORT_DIPSETTING(0x0000, DEF_STR(On))
+PORT_DIPNAME(0x2000, 0x2000, DEF_STR(Unknown))	// ?
+PORT_DIPSETTING(0x0000, DEF_STR(Off))
+PORT_DIPSETTING(0x2000, DEF_STR(On))
+PORT_DIPNAME(0x4000, 0x4000, "Choose Race (US UK FR)")	// -> f0020
+PORT_DIPSETTING(0x0000, DEF_STR(Off))
+PORT_DIPSETTING(0x4000, DEF_STR(On))
+PORT_DIPNAME(0x8000, 0x8000, "Vibrations")
+PORT_DIPSETTING(0x8000, "High?")
+PORT_DIPSETTING(0x0000, "Low?")
 
 
-	PORT_START	// IN2 - Controls - $80004.w -> !f9016
-	PORT_BIT(  0x0001, IP_ACTIVE_LOW, IPT_COIN1   )
-	PORT_BIT(  0x0002, IP_ACTIVE_LOW, IPT_COIN2   )
-	PORT_BIT(  0x0004, IP_ACTIVE_LOW, IPT_COIN3   )	// operator's facility
-	PORT_BITX( 0x0008, IP_ACTIVE_LOW, IPT_SERVICE, DEF_STR( Service_Mode ), KEYCODE_F2, IP_JOY_NONE ) 	// -> f0100 (called "Test")
-	PORT_BIT(  0x0010, IP_ACTIVE_LOW, IPT_START1  )
+PORT_START	// IN2 - Controls - $80004.w -> !f9016
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_COIN1)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_COIN2)
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_COIN3)	// operator's facility
+PORT_BITX(0x0008, IP_ACTIVE_LOW, IPT_SERVICE, DEF_STR(Service_Mode), KEYCODE_F2, IP_JOY_NONE) 	// -> f0100 (called "Test")
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_START1)
 //	PORT_BIT(  0x0020, IP_ACTIVE_LOW, IPT_BUTTON4 )	// Shift -> !f900e - We handle it with 2 buttons
-	PORT_BIT(  0x0040, IP_ACTIVE_LOW, IPT_BUTTON2 )	// Brake -> !f9010
-	PORT_BIT(  0x0080, IP_ACTIVE_LOW, IPT_START2  )	// "Race Together"
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_BUTTON2)	// Brake -> !f9010
+PORT_BIT(0x0080, IP_ACTIVE_LOW, IPT_START2)	// "Race Together"
 
 
-	PORT_START	// IN3 - ? Read at boot only - $80006.w
-	PORT_BIT(  0x0001, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0002, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0004, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0008, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0010, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0020, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0040, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0100, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0200, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0400, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x0800, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x1000, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x2000, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x4000, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x8000, IP_ACTIVE_LOW, IPT_UNKNOWN )
+PORT_START	// IN3 - ? Read at boot only - $80006.w
+PORT_BIT(0x0001, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0002, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0004, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0008, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0010, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0020, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0040, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0100, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0200, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0400, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x0800, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x1000, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x2000, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x4000, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x8000, IP_ACTIVE_LOW, IPT_UNKNOWN)
 
 /*	DSW3-2&1 (Country: JP)	Effect
 	OFF-OFF					Red-White Car
@@ -782,64 +823,64 @@ INPUT_PORTS_START( f1gpstar )
 	ON-OFF					Blue-White Car
 	ON- ON					Blue Car, "equipped with communication link"	*/
 
-	PORT_START	// IN4 - DSW 3 (4 bits, Cabinet Linking) - $8000c.w -> !f9014
-	PORT_DIPNAME( 0x01, 0x01, "This Unit Is" )
-	PORT_DIPSETTING(    0x01, "Slave" )
-	PORT_DIPSETTING(    0x00, "Master" )
-	PORT_DIPNAME( 0x06, 0x06, "Unit ID" )			// -> !f901c
-	PORT_DIPSETTING(    0x06, "0 (Red-White Car)" )
-	PORT_DIPSETTING(    0x04, "1 (Red Car)" )
-	PORT_DIPSETTING(    0x02, "2 (Blue-White Car)" )
-	PORT_DIPSETTING(    0x00, "3 (Blue Car)" )
-	PORT_BIT(  0x08, IP_ACTIVE_LOW, IPT_UNKNOWN )	// Redundant: Invert Unit ID
-	PORT_BIT(  0x10, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x20, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT(  0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
+PORT_START	// IN4 - DSW 3 (4 bits, Cabinet Linking) - $8000c.w -> !f9014
+PORT_DIPNAME(0x01, 0x01, "This Unit Is")
+PORT_DIPSETTING(0x01, "Slave")
+PORT_DIPSETTING(0x00, "Master")
+PORT_DIPNAME(0x06, 0x06, "Unit ID")			// -> !f901c
+PORT_DIPSETTING(0x06, "0 (Red-White Car)")
+PORT_DIPSETTING(0x04, "1 (Red Car)")
+PORT_DIPSETTING(0x02, "2 (Blue-White Car)")
+PORT_DIPSETTING(0x00, "3 (Blue Car)")
+PORT_BIT(0x08, IP_ACTIVE_LOW, IPT_UNKNOWN)	// Redundant: Invert Unit ID
+PORT_BIT(0x10, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_UNKNOWN)
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_UNKNOWN)
 
 
-				// 		 Accelerator   - $80010.b ->  !f9004.w
-	PORT_START	// IN5 - Driving Wheel - $80011.b ->  !f9008.w
-	DRIVING_WHEEL
+// 		 Accelerator   - $80010.b ->  !f9004.w
+PORT_START	// IN5 - Driving Wheel - $80011.b ->  !f9008.w
+DRIVING_WHEEL
 
-	PORT_START	// IN6 - Coinage Japan & USA (it changes with Country)
-	PORT_DIPNAME( 0x0007, 0x0007, "Coin A (JP US)" )
-	PORT_DIPSETTING(      0x0001, DEF_STR( 4C_1C ) )
-	PORT_DIPSETTING(      0x0002, DEF_STR( 3C_1C ) )
-	PORT_DIPSETTING(      0x0003, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(      0x0007, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0006, DEF_STR( 1C_2C ) )
-	PORT_DIPSETTING(      0x0005, DEF_STR( 1C_3C ) )
-	PORT_DIPSETTING(      0x0004, DEF_STR( 1C_4C ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( Free_Play ) )
-	PORT_DIPNAME( 0x0038, 0x0038, "Coin B (JP US)" )
-	PORT_DIPSETTING(      0x0008, DEF_STR( 4C_1C ) )
-	PORT_DIPSETTING(      0x0010, DEF_STR( 3C_1C ) )
-	PORT_DIPSETTING(      0x0018, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(      0x0038, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0030, DEF_STR( 1C_2C ) )
-	PORT_DIPSETTING(      0x0028, DEF_STR( 1C_3C ) )
-	PORT_DIPSETTING(      0x0020, DEF_STR( 1C_4C ) )
+PORT_START	// IN6 - Coinage Japan & USA (it changes with Country)
+PORT_DIPNAME(0x0007, 0x0007, "Coin A (JP US)")
+PORT_DIPSETTING(0x0001, DEF_STR(4C_1C))
+PORT_DIPSETTING(0x0002, DEF_STR(3C_1C))
+PORT_DIPSETTING(0x0003, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x0007, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0006, DEF_STR(1C_2C))
+PORT_DIPSETTING(0x0005, DEF_STR(1C_3C))
+PORT_DIPSETTING(0x0004, DEF_STR(1C_4C))
+PORT_DIPSETTING(0x0000, DEF_STR(Free_Play))
+PORT_DIPNAME(0x0038, 0x0038, "Coin B (JP US)")
+PORT_DIPSETTING(0x0008, DEF_STR(4C_1C))
+PORT_DIPSETTING(0x0010, DEF_STR(3C_1C))
+PORT_DIPSETTING(0x0018, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x0038, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0030, DEF_STR(1C_2C))
+PORT_DIPSETTING(0x0028, DEF_STR(1C_3C))
+PORT_DIPSETTING(0x0020, DEF_STR(1C_4C))
 
-	PORT_START	// IN7 - Coinage UK & France (it changes with Country)
-	PORT_DIPNAME( 0x0007, 0x0007, "Coin A (UK FR)" )
-	PORT_DIPSETTING(      0x0007, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0000, DEF_STR( 2C_3C ) )
-	PORT_DIPSETTING(      0x0006, DEF_STR( 1C_2C ) )
-	PORT_DIPSETTING(      0x0005, DEF_STR( 1C_3C ) )
-	PORT_DIPSETTING(      0x0004, DEF_STR( 1C_4C ) )
-	PORT_DIPSETTING(      0x0003, DEF_STR( 1C_5C ) )
-	PORT_DIPSETTING(      0x0002, DEF_STR( 1C_6C ) )
-	PORT_DIPSETTING(      0x0001, DEF_STR( 1C_7C ) )
-	PORT_DIPNAME( 0x0038, 0x0038, "Coin B (UK FR)" )
-	PORT_DIPSETTING(      0x0000, DEF_STR( 5C_1C ) )
-	PORT_DIPSETTING(      0x0008, DEF_STR( 4C_1C ) )
-	PORT_DIPSETTING(      0x0010, DEF_STR( 3C_1C ) )
-	PORT_DIPSETTING(      0x0018, DEF_STR( 2C_1C ) )
-	PORT_DIPSETTING(      0x0038, DEF_STR( 1C_1C ) )
-	PORT_DIPSETTING(      0x0030, DEF_STR( 1C_2C ) )
-	PORT_DIPSETTING(      0x0028, DEF_STR( 1C_3C ) )
-	PORT_DIPSETTING(      0x0020, DEF_STR( 1C_4C ) )
+PORT_START	// IN7 - Coinage UK & France (it changes with Country)
+PORT_DIPNAME(0x0007, 0x0007, "Coin A (UK FR)")
+PORT_DIPSETTING(0x0007, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0000, DEF_STR(2C_3C))
+PORT_DIPSETTING(0x0006, DEF_STR(1C_2C))
+PORT_DIPSETTING(0x0005, DEF_STR(1C_3C))
+PORT_DIPSETTING(0x0004, DEF_STR(1C_4C))
+PORT_DIPSETTING(0x0003, DEF_STR(1C_5C))
+PORT_DIPSETTING(0x0002, DEF_STR(1C_6C))
+PORT_DIPSETTING(0x0001, DEF_STR(1C_7C))
+PORT_DIPNAME(0x0038, 0x0038, "Coin B (UK FR)")
+PORT_DIPSETTING(0x0000, DEF_STR(5C_1C))
+PORT_DIPSETTING(0x0008, DEF_STR(4C_1C))
+PORT_DIPSETTING(0x0010, DEF_STR(3C_1C))
+PORT_DIPSETTING(0x0018, DEF_STR(2C_1C))
+PORT_DIPSETTING(0x0038, DEF_STR(1C_1C))
+PORT_DIPSETTING(0x0030, DEF_STR(1C_2C))
+PORT_DIPSETTING(0x0028, DEF_STR(1C_3C))
+PORT_DIPSETTING(0x0020, DEF_STR(1C_4C))
 
 INPUT_PORTS_END
 
@@ -888,23 +929,22 @@ static struct GfxLayout _name_ = \
 	64*1*4 \
 };
 
-ROAD_LAYOUT( road_layout_1M, 0x100000 )
-ROAD_LAYOUT( road_layout_2M, 0x200000 )
+ROAD_LAYOUT(road_layout_1M, 0x100000)
+ROAD_LAYOUT(road_layout_2M, 0x200000)
 
 
 /**************************************************************************
 								[ Cisco Heat ]
 **************************************************************************/
 
-static struct GfxDecodeInfo cischeat_gfxdecodeinfo[] =
-{
-	{ REGION_GFX1, 0, &tiles_8x8_04,	32*16*0, 32  }, // [0] Scroll 0
-	{ REGION_GFX2, 0, &tiles_8x8_04,	32*16*1, 32  }, // [1] Scroll 1
-	{ REGION_GFX3, 0, &tiles_8x8_01,	32*16*2, 32  }, // [2] Scroll 2
-	{ REGION_GFX4, 0, &road_layout_1M,	32*16*3, 64  }, // [3] Road 0
-	{ REGION_GFX4, 0, &road_layout_1M,	32*16*5, 64  }, // [4] Road 1
-	{ REGION_GFX5, 0, &tiles_16x16_4M,	32*16*7, 128 }, // [5] Sprites
-	{ -1 }
+static struct GfxDecodeInfo cischeat_gfxdecodeinfo[] = {
+    { REGION_GFX1, 0, &tiles_8x8_04,	32 * 16 * 0, 32  }, // [0] Scroll 0
+    { REGION_GFX2, 0, &tiles_8x8_04,	32 * 16 * 1, 32  }, // [1] Scroll 1
+    { REGION_GFX3, 0, &tiles_8x8_01,	32 * 16 * 2, 32  }, // [2] Scroll 2
+    { REGION_GFX4, 0, &road_layout_1M,	32 * 16 * 3, 64  }, // [3] Road 0
+    { REGION_GFX4, 0, &road_layout_1M,	32 * 16 * 5, 64  }, // [4] Road 1
+    { REGION_GFX5, 0, &tiles_16x16_4M,	32 * 16 * 7, 128 }, // [5] Sprites
+    { -1 }
 };
 
 
@@ -912,15 +952,14 @@ static struct GfxDecodeInfo cischeat_gfxdecodeinfo[] =
 							[ F1 GrandPrix Star ]
 **************************************************************************/
 
-static struct GfxDecodeInfo f1gpstar_gfxdecodeinfo[] =
-{
-	{ REGION_GFX1, 0, &tiles_8x8_08,	0x0000, 16  }, // [0] Scroll 0
-	{ REGION_GFX2, 0, &tiles_8x8_08,	0x0100, 16  }, // [1] Scroll 1
-	{ REGION_GFX3, 0, &tiles_8x8_02,	0x0200, 16  }, // [2] Scroll 2
-	{ REGION_GFX4, 0, &road_layout_2M,	0x0300, 64  }, // [3] Road 0
-	{ REGION_GFX5, 0, &road_layout_1M,	0x0700, 64  }, // [4] Road 1
-	{ REGION_GFX6, 0, &tiles_16x16_5M,	0x0b00, 128 }, // [5] Sprites
-	{ -1 }
+static struct GfxDecodeInfo f1gpstar_gfxdecodeinfo[] = {
+    { REGION_GFX1, 0, &tiles_8x8_08,	0x0000, 16  }, // [0] Scroll 0
+    { REGION_GFX2, 0, &tiles_8x8_08,	0x0100, 16  }, // [1] Scroll 1
+    { REGION_GFX3, 0, &tiles_8x8_02,	0x0200, 16  }, // [2] Scroll 2
+    { REGION_GFX4, 0, &road_layout_2M,	0x0300, 64  }, // [3] Road 0
+    { REGION_GFX5, 0, &road_layout_1M,	0x0700, 64  }, // [4] Road 1
+    { REGION_GFX6, 0, &tiles_16x16_5M,	0x0b00, 128 }, // [5] Sprites
+    { -1 }
 };
 
 
@@ -931,12 +970,11 @@ static struct GfxDecodeInfo f1gpstar_gfxdecodeinfo[] =
 
 int cischeat_interrupt(void)
 {
-	if (cpu_getiloops()==0)	return 4; /* Once */
-	else
-	{
-		if (cpu_getiloops()%2)	return 2;
-		else 					return 1;
-	}
+    if (cpu_getiloops() == 0)	return 4;  /* Once */
+    else {
+        if (cpu_getiloops() % 2)	return 2;
+        else 					return 1;
+    }
 }
 
 
@@ -946,7 +984,7 @@ int cischeat_interrupt(void)
 #define CISCHEAT_SUB_INTERRUPT_NUM	1
 int cischeat_sub_interrupt(void)
 {
-	return 4;
+    return 4;
 }
 
 
@@ -955,7 +993,7 @@ int cischeat_sub_interrupt(void)
 #define CISCHEAT_SOUND_INTERRUPT_NUM	16
 int cischeat_sound_interrupt(void)
 {
-	return 4;
+    return 4;
 }
 
 #define STD_FM_CLOCK	3000000
@@ -1062,22 +1100,20 @@ static struct MachineDriver machine_driver_##_shortname_ = \
 */
 void cischeat_untangle_sprites(int region)
 {
-	unsigned char		*src = memory_region(region);
-	const unsigned char	*end = memory_region(region) + memory_region_length(region);
+    unsigned char		*src = memory_region(region);
+    const unsigned char	*end = memory_region(region) + memory_region_length(region);
 
-	while (src < end)
-	{
-		unsigned char sprite[16*8];
-		int i;
+    while (src < end) {
+        unsigned char sprite[16 * 8];
+        int i;
 
-		for (i = 0; i < 16 ; i++)
-		{
-			memcpy(&sprite[i*8+0], &src[i*4+0],    4);
-			memcpy(&sprite[i*8+4], &src[i*4+16*4], 4);
-		}
-		memcpy(src, sprite, 16*8);
-		src += 16*8;
-	}
+        for (i = 0; i < 16 ; i++) {
+            memcpy(&sprite[i * 8 + 0], &src[i * 4 + 0],    4);
+            memcpy(&sprite[i * 8 + 4], &src[i * 4 + 16 * 4], 4);
+        }
+        memcpy(src, sprite, 16 * 8);
+        src += 16 * 8;
+    }
 }
 
 
@@ -1133,59 +1169,59 @@ Sound:		Amplified Stereo (two channel)
 
 ***************************************************************************/
 
-ROM_START( cischeat )
-	ROM_REGION( 0x080000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "ch9071v2.03", 0x000000, 0x040000, 0xdd1bb26f )
-	ROM_LOAD_ODD(  "ch9071v2.01", 0x000000, 0x040000, 0x7b65276a )
+ROM_START(cischeat)
+ROM_REGION(0x080000, REGION_CPU1)
+ROM_LOAD_EVEN("ch9071v2.03", 0x000000, 0x040000, 0xdd1bb26f)
+ROM_LOAD_ODD("ch9071v2.01", 0x000000, 0x040000, 0x7b65276a)
 
-	ROM_REGION( 0x80000, REGION_CPU2 )
-	ROM_LOAD_EVEN( "ch9073.01",  0x000000, 0x040000, 0xba331526 )
-	ROM_LOAD_ODD(  "ch9073.02",  0x000000, 0x040000, 0xb45ff10f )
+ROM_REGION(0x80000, REGION_CPU2)
+ROM_LOAD_EVEN("ch9073.01",  0x000000, 0x040000, 0xba331526)
+ROM_LOAD_ODD("ch9073.02",  0x000000, 0x040000, 0xb45ff10f)
 
-	ROM_REGION( 0x80000, REGION_CPU3 )
-	ROM_LOAD_EVEN( "ch9073v1.03", 0x000000, 0x040000, 0xbf1d1cbf )
-	ROM_LOAD_ODD(  "ch9073v1.04", 0x000000, 0x040000, 0x1ec8a597 )
+ROM_REGION(0x80000, REGION_CPU3)
+ROM_LOAD_EVEN("ch9073v1.03", 0x000000, 0x040000, 0xbf1d1cbf)
+ROM_LOAD_ODD("ch9073v1.04", 0x000000, 0x040000, 0x1ec8a597)
 
-	ROM_REGION( 0x40000, REGION_CPU4 )
-	ROM_LOAD_EVEN( "ch9071.11", 0x000000, 0x020000, 0xbc137bea )
-	ROM_LOAD_ODD(  "ch9071.10", 0x000000, 0x020000, 0xbf7b634d )
+ROM_REGION(0x40000, REGION_CPU4)
+ROM_LOAD_EVEN("ch9071.11", 0x000000, 0x020000, 0xbc137bea)
+ROM_LOAD_ODD("ch9071.10", 0x000000, 0x020000, 0xbf7b634d)
 
-	ROM_REGION( 0x100000, REGION_USER1 )	/* second halves of program ROMs */
-	ROM_LOAD_EVEN( "ch9071.04",   0x000000, 0x040000, 0x7fb48cbc )	// cpu #1
-	ROM_LOAD_ODD(  "ch9071.02",   0x000000, 0x040000, 0xa5d0f4dc )
-	// cpu #2 (0x40000 bytes will be copied here)
-	// cpu #3 (0x40000 bytes will be copied here)
+ROM_REGION(0x100000, REGION_USER1)	/* second halves of program ROMs */
+ROM_LOAD_EVEN("ch9071.04",   0x000000, 0x040000, 0x7fb48cbc)	// cpu #1
+ROM_LOAD_ODD("ch9071.02",   0x000000, 0x040000, 0xa5d0f4dc)
+// cpu #2 (0x40000 bytes will be copied here)
+// cpu #3 (0x40000 bytes will be copied here)
 
-	ROM_REGION( 0x040000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "ch9071.a14",  0x000000, 0x040000, 0x7a6d147f ) // scroll 0
+ROM_REGION(0x040000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("ch9071.a14",  0x000000, 0x040000, 0x7a6d147f)    // scroll 0
 
-	ROM_REGION( 0x040000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "ch9071.t74",  0x000000, 0x040000, 0x735a2e25 ) // scroll 1
+ROM_REGION(0x040000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("ch9071.t74",  0x000000, 0x040000, 0x735a2e25)    // scroll 1
 
-	ROM_REGION( 0x010000, REGION_GFX3 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "ch9071.07",   0x000000, 0x010000, 0x3724ccc3 ) // scroll 2
+ROM_REGION(0x010000, REGION_GFX3 | REGIONFLAG_DISPOSE)
+ROM_LOAD("ch9071.07",   0x000000, 0x010000, 0x3724ccc3)    // scroll 2
 
-	ROM_REGION( 0x100000, REGION_GFX4 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "ch9073.r21",  0x000000, 0x080000, 0x2943d2f6 ) // Road
-	ROM_LOAD( "ch9073.r22",  0x080000, 0x080000, 0x2dd44f85 )
+ROM_REGION(0x100000, REGION_GFX4 | REGIONFLAG_DISPOSE)
+ROM_LOAD("ch9073.r21",  0x000000, 0x080000, 0x2943d2f6)    // Road
+ROM_LOAD("ch9073.r22",  0x080000, 0x080000, 0x2dd44f85)
 
-	ROM_REGION( 0x400000, REGION_GFX5 | REGIONFLAG_DISPOSE )	/* sprites */
-	ROM_LOAD_GFX_EVEN( "ch9072.r15",  0x000000, 0x080000, 0x38af4aea )
-	ROM_LOAD_GFX_ODD(  "ch9072.r16",  0x000000, 0x080000, 0x71388dad )
-	ROM_LOAD_GFX_EVEN( "ch9072.r17",  0x100000, 0x080000, 0x9d052cf3 )
-	ROM_LOAD_GFX_ODD(  "ch9072.r18",  0x100000, 0x080000, 0xfe402a56 )
-	ROM_LOAD_GFX_EVEN( "ch9072.r25",  0x200000, 0x080000, 0xbe8cca47 )
-	ROM_LOAD_GFX_ODD(  "ch9072.r26",  0x200000, 0x080000, 0x2f96f47b )
-	ROM_LOAD_GFX_EVEN( "ch9072.r19",  0x300000, 0x080000, 0x4e996fa8 )
-	ROM_LOAD_GFX_ODD(  "ch9072.r20",  0x300000, 0x080000, 0xfa70b92d )
+ROM_REGION(0x400000, REGION_GFX5 | REGIONFLAG_DISPOSE)	/* sprites */
+ROM_LOAD_GFX_EVEN("ch9072.r15",  0x000000, 0x080000, 0x38af4aea)
+ROM_LOAD_GFX_ODD("ch9072.r16",  0x000000, 0x080000, 0x71388dad)
+ROM_LOAD_GFX_EVEN("ch9072.r17",  0x100000, 0x080000, 0x9d052cf3)
+ROM_LOAD_GFX_ODD("ch9072.r18",  0x100000, 0x080000, 0xfe402a56)
+ROM_LOAD_GFX_EVEN("ch9072.r25",  0x200000, 0x080000, 0xbe8cca47)
+ROM_LOAD_GFX_ODD("ch9072.r26",  0x200000, 0x080000, 0x2f96f47b)
+ROM_LOAD_GFX_EVEN("ch9072.r19",  0x300000, 0x080000, 0x4e996fa8)
+ROM_LOAD_GFX_ODD("ch9072.r20",  0x300000, 0x080000, 0xfa70b92d)
 
-	ROM_REGION( 0x80000, REGION_SOUND1 )	/* samples */
-	ROM_LOAD( "ch9071.r23", 0x000000, 0x080000, 0xc7dbb992 ) // 2 x 0x40000
+ROM_REGION(0x80000, REGION_SOUND1)	/* samples */
+ROM_LOAD("ch9071.r23", 0x000000, 0x080000, 0xc7dbb992)    // 2 x 0x40000
 
-	ROM_REGION( 0x80000, REGION_SOUND2 )	/* samples */
-	ROM_LOAD( "ch9071.r24", 0x000000, 0x080000, BADCRC(0xe87ca4d7) ) // 2 x 0x40000 (FIRST AND SECOND HALF IDENTICAL)
+ROM_REGION(0x80000, REGION_SOUND2)	/* samples */
+ROM_LOAD("ch9071.r24", 0x000000, 0x080000, BADCRC(0xe87ca4d7))       // 2 x 0x40000 (FIRST AND SECOND HALF IDENTICAL)
 
-	/* Unused ROMs */
+/* Unused ROMs */
 //	ROM_LOAD( "ch9072.01",  0x000000, 0x080000, 0xb2efed33 ) // FIXED BITS (xxxxxxxx0xxxxxxx)
 //	ROM_LOAD( "ch9072.02",  0x000000, 0x080000, 0x536edde4 )
 //	ROM_LOAD( "ch9072.03",  0x000000, 0x080000, 0x7e79151a )
@@ -1195,31 +1231,31 @@ ROM_END
 
 void init_cischeat(void)
 {
-/* Split ROMs */
-	rom_1 = memory_region(REGION_USER1) + 0x00000;
+    /* Split ROMs */
+    rom_1 = memory_region(REGION_USER1) + 0x00000;
 
-	rom_2 = memory_region(REGION_CPU2) + 0x40000;
-	memcpy(memory_region(REGION_USER1) + 0x80000, rom_2, 0x40000);
-	memset(rom_2, 0, 0x40000);
-	rom_2 = memory_region(REGION_USER1) + 0x80000;
+    rom_2 = memory_region(REGION_CPU2) + 0x40000;
+    memcpy(memory_region(REGION_USER1) + 0x80000, rom_2, 0x40000);
+    memset(rom_2, 0, 0x40000);
+    rom_2 = memory_region(REGION_USER1) + 0x80000;
 
-	rom_3 = memory_region(REGION_CPU3) + 0x40000;
-	memcpy(memory_region(REGION_USER1) + 0xc0000, rom_3, 0x40000);
-	memset(rom_3, 0, 0x40000);
-	rom_3 = memory_region(REGION_USER1) + 0xc0000;
+    rom_3 = memory_region(REGION_CPU3) + 0x40000;
+    memcpy(memory_region(REGION_USER1) + 0xc0000, rom_3, 0x40000);
+    memset(rom_3, 0, 0x40000);
+    rom_3 = memory_region(REGION_USER1) + 0xc0000;
 
-	cischeat_untangle_sprites(REGION_GFX5);	// Untangle sprites
-	astyanax_rom_decode(3);					// Decrypt sound cpu code
+    cischeat_untangle_sprites(REGION_GFX5);	// Untangle sprites
+    astyanax_rom_decode(3);					// Decrypt sound cpu code
 }
 
 
 #define CISCHEAT_VISIBLE_AREA	{0,255,16,231}
 
-GAME_DRIVER(	cischeat,
-				10000000,10000000,10000000,7000000,
-				STD_FM_CLOCK,STD_OKI_CLOCK,STD_OKI_CLOCK,
-				CISCHEAT_VISIBLE_AREA,
-				32*16 * 3 + 64*16 * 2 + 128*16)	/* scroll 0,1,2; road 0,1; sprites */
+GAME_DRIVER(cischeat,
+            10000000, 10000000, 10000000, 7000000,
+            STD_FM_CLOCK, STD_OKI_CLOCK, STD_OKI_CLOCK,
+            CISCHEAT_VISIBLE_AREA,
+            32 * 16 * 3 + 64 * 16 * 2 + 128 * 16)	/* scroll 0,1,2; road 0,1; sprites */
 
 
 
@@ -1347,67 +1383,67 @@ GFX & Misc       - GS90015-02 (100 pin PQFP),  uses ROM 90015-31-R56
 
 ***************************************************************************/
 
-ROM_START( f1gpstar )
-	ROM_REGION( 0x100000, REGION_CPU1 )
-	ROM_LOAD_EVEN( "9188a-27.v20", 0x000000, 0x040000, 0x0a9d3896 )
-	ROM_LOAD_ODD(  "9188a-22.v20", 0x000000, 0x040000, 0xde15c9ca )
+ROM_START(f1gpstar)
+ROM_REGION(0x100000, REGION_CPU1)
+ROM_LOAD_EVEN("9188a-27.v20", 0x000000, 0x040000, 0x0a9d3896)
+ROM_LOAD_ODD("9188a-22.v20", 0x000000, 0x040000, 0xde15c9ca)
 
-	ROM_REGION( 0x80000, REGION_CPU2 )
-	/* Should Use ROMs:	90015-01.W06, 90015-02.W07, 90015-03.W08, 90015-04.W09 */
-	ROM_LOAD_EVEN( "9188a-16.v10",  0x000000, 0x020000, 0xef0f7ca9 )
-	ROM_LOAD_ODD(  "9188a-11.v10",  0x000000, 0x020000, 0xde292ea3 )
+ROM_REGION(0x80000, REGION_CPU2)
+/* Should Use ROMs:	90015-01.W06, 90015-02.W07, 90015-03.W08, 90015-04.W09 */
+ROM_LOAD_EVEN("9188a-16.v10",  0x000000, 0x020000, 0xef0f7ca9)
+ROM_LOAD_ODD("9188a-11.v10",  0x000000, 0x020000, 0xde292ea3)
 
-	ROM_REGION( 0x80000, REGION_CPU3 )
-	/* Should Use ROMs:	90015-01.W06, 90015-02.W07, 90015-03.W08, 90015-04.W09 */
-	ROM_LOAD_EVEN( "9188a-6.v10",  0x000000, 0x020000, 0x18ba0340 )
-	ROM_LOAD_ODD(  "9188a-1.v10",  0x000000, 0x020000, 0x109d2913 )
+ROM_REGION(0x80000, REGION_CPU3)
+/* Should Use ROMs:	90015-01.W06, 90015-02.W07, 90015-03.W08, 90015-04.W09 */
+ROM_LOAD_EVEN("9188a-6.v10",  0x000000, 0x020000, 0x18ba0340)
+ROM_LOAD_ODD("9188a-1.v10",  0x000000, 0x020000, 0x109d2913)
 
-	ROM_REGION( 0x40000, REGION_CPU4 )
-	ROM_LOAD_EVEN( "9190a-2.v11", 0x000000, 0x020000, 0xacb2fd80 )
-	ROM_LOAD_ODD(  "9190a-1.v11", 0x000000, 0x020000, 0x7cccadaf )
+ROM_REGION(0x40000, REGION_CPU4)
+ROM_LOAD_EVEN("9190a-2.v11", 0x000000, 0x020000, 0xacb2fd80)
+ROM_LOAD_ODD("9190a-1.v11", 0x000000, 0x020000, 0x7cccadaf)
 
-	ROM_REGION( 0x80000, REGION_USER1 )	/* second halves of program ROMs */
-	ROM_LOAD_EVEN( "9188a-26.v10", 0x000000, 0x040000, 0x0b76673f )	// cpu #1
-	ROM_LOAD_ODD(  "9188a-21.v10", 0x000000, 0x040000, 0x3e098d77 )
+ROM_REGION(0x80000, REGION_USER1)	/* second halves of program ROMs */
+ROM_LOAD_EVEN("9188a-26.v10", 0x000000, 0x040000, 0x0b76673f)	// cpu #1
+ROM_LOAD_ODD("9188a-21.v10", 0x000000, 0x040000, 0x3e098d77)
 
-	ROM_REGION( 0x080000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "90015-31.r56",  0x000000, 0x080000, 0x0c8f0e2b ) // scroll 0
+ROM_REGION(0x080000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("90015-31.r56",  0x000000, 0x080000, 0x0c8f0e2b)    // scroll 0
 
-	ROM_REGION( 0x080000, REGION_GFX2 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "90015-32.r57",  0x000000, 0x080000, 0x9c921cfb ) // scroll 1
+ROM_REGION(0x080000, REGION_GFX2 | REGIONFLAG_DISPOSE)
+ROM_LOAD("90015-32.r57",  0x000000, 0x080000, 0x9c921cfb)    // scroll 1
 
-	ROM_REGION( 0x020000, REGION_GFX3 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "9188a-30.v10",  0x000000, 0x020000, 0x0ef1fbf1 ) // scroll 2
+ROM_REGION(0x020000, REGION_GFX3 | REGIONFLAG_DISPOSE)
+ROM_LOAD("9188a-30.v10",  0x000000, 0x020000, 0x0ef1fbf1)    // scroll 2
 
-	ROM_REGION( 0x200000, REGION_GFX4 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "90015-05.w10",  0x000000, 0x080000, 0x8eb48a23 ) // Road 0
-	ROM_LOAD( "90015-06.w11",  0x080000, 0x080000, 0x32063a68 )
-	ROM_LOAD( "90015-07.w12",  0x100000, 0x080000, 0x0d0d54f3 )
-	ROM_LOAD( "90015-08.w14",  0x180000, 0x080000, 0xf48a42c5 )
+ROM_REGION(0x200000, REGION_GFX4 | REGIONFLAG_DISPOSE)
+ROM_LOAD("90015-05.w10",  0x000000, 0x080000, 0x8eb48a23)    // Road 0
+ROM_LOAD("90015-06.w11",  0x080000, 0x080000, 0x32063a68)
+ROM_LOAD("90015-07.w12",  0x100000, 0x080000, 0x0d0d54f3)
+ROM_LOAD("90015-08.w14",  0x180000, 0x080000, 0xf48a42c5)
 
-	ROM_REGION( 0x100000, REGION_GFX5 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "90015-09.w13",  0x000000, 0x080000, 0x55f49315 ) // Road 1
-	ROM_LOAD( "90015-10.w15",  0x080000, 0x080000, 0x678be0cb )
+ROM_REGION(0x100000, REGION_GFX5 | REGIONFLAG_DISPOSE)
+ROM_LOAD("90015-09.w13",  0x000000, 0x080000, 0x55f49315)    // Road 1
+ROM_LOAD("90015-10.w15",  0x080000, 0x080000, 0x678be0cb)
 
-	ROM_REGION( 0x500000, REGION_GFX6 | REGIONFLAG_DISPOSE )	/* sprites */
-	ROM_LOAD_GFX_EVEN( "90015-21.r46",  0x000000, 0x080000, 0x6f30211f )
-	ROM_LOAD_GFX_ODD(  "90015-22.r47",  0x000000, 0x080000, 0x05a9a5da )
-	ROM_LOAD_GFX_EVEN( "90015-23.r48",  0x100000, 0x080000, 0x58e9c6d2 )
-	ROM_LOAD_GFX_ODD(  "90015-24.r49",  0x100000, 0x080000, 0xabd6c91d )
-	ROM_LOAD_GFX_EVEN( "90015-25.r50",  0x200000, 0x080000, 0x7ded911f )
-	ROM_LOAD_GFX_ODD(  "90015-26.r51",  0x200000, 0x080000, 0x18a6c663 )
-	ROM_LOAD_GFX_EVEN( "90015-27.r52",  0x300000, 0x080000, 0x7378c82f )
-	ROM_LOAD_GFX_ODD(  "90015-28.r53",  0x300000, 0x080000, 0x9944dacd )
-	ROM_LOAD_GFX_EVEN( "90015-29.r54",  0x400000, 0x080000, 0x2cdec370 )
-	ROM_LOAD_GFX_ODD(  "90015-30.r55",  0x400000, 0x080000, 0x47e37604 )
+ROM_REGION(0x500000, REGION_GFX6 | REGIONFLAG_DISPOSE)	/* sprites */
+ROM_LOAD_GFX_EVEN("90015-21.r46",  0x000000, 0x080000, 0x6f30211f)
+ROM_LOAD_GFX_ODD("90015-22.r47",  0x000000, 0x080000, 0x05a9a5da)
+ROM_LOAD_GFX_EVEN("90015-23.r48",  0x100000, 0x080000, 0x58e9c6d2)
+ROM_LOAD_GFX_ODD("90015-24.r49",  0x100000, 0x080000, 0xabd6c91d)
+ROM_LOAD_GFX_EVEN("90015-25.r50",  0x200000, 0x080000, 0x7ded911f)
+ROM_LOAD_GFX_ODD("90015-26.r51",  0x200000, 0x080000, 0x18a6c663)
+ROM_LOAD_GFX_EVEN("90015-27.r52",  0x300000, 0x080000, 0x7378c82f)
+ROM_LOAD_GFX_ODD("90015-28.r53",  0x300000, 0x080000, 0x9944dacd)
+ROM_LOAD_GFX_EVEN("90015-29.r54",  0x400000, 0x080000, 0x2cdec370)
+ROM_LOAD_GFX_ODD("90015-30.r55",  0x400000, 0x080000, 0x47e37604)
 
-	ROM_REGION( 0x80000, REGION_SOUND1 )	/* samples */
-	ROM_LOAD( "90015-34.w32", 0x000000, 0x080000, 0x2ca9b062 ) // 2 x 0x40000
+ROM_REGION(0x80000, REGION_SOUND1)	/* samples */
+ROM_LOAD("90015-34.w32", 0x000000, 0x080000, 0x2ca9b062)    // 2 x 0x40000
 
-	ROM_REGION( 0x80000, REGION_SOUND2 )	/* samples */
-	ROM_LOAD( "90015-33.w31", 0x000000, 0x080000, 0x6121d247 ) // 2 x 0x40000
+ROM_REGION(0x80000, REGION_SOUND2)	/* samples */
+ROM_LOAD("90015-33.w31", 0x000000, 0x080000, 0x6121d247)    // 2 x 0x40000
 
-	/* Unused ROMs */
+/* Unused ROMs */
 
 // "I know that one of the ROM images in the archive looks bad (90015-04.W09)
 //  however, it is good as far as I can tell. There were two of those ROMs
@@ -1436,10 +1472,10 @@ ROM_END
 
 void init_f1gpstar(void)
 {
-/* Split ROMs */
-	rom_1 = memory_region(REGION_USER1) + 0x00000;
+    /* Split ROMs */
+    rom_1 = memory_region(REGION_USER1) + 0x00000;
 
-	cischeat_untangle_sprites(REGION_GFX6);
+    cischeat_untangle_sprites(REGION_GFX6);
 }
 
 
@@ -1447,13 +1483,13 @@ void init_f1gpstar(void)
 #define F1GPSTAR_VISIBLE_AREA	{0,255,16,239}
 
 // The date is 1992 whenever the country (DSW) isn't set to Japan
-GAME_DRIVER(	f1gpstar,
-				12000000,12000000,12000000,7000000,
-				STD_FM_CLOCK,STD_OKI_CLOCK,STD_OKI_CLOCK,
-				F1GPSTAR_VISIBLE_AREA,
-				16*16 * 3 + 64*16 * 2 + 128*16)	/* scroll 0,1,2; road 0,1; sprites */
+GAME_DRIVER(f1gpstar,
+            12000000, 12000000, 12000000, 7000000,
+            STD_FM_CLOCK, STD_OKI_CLOCK, STD_OKI_CLOCK,
+            F1GPSTAR_VISIBLE_AREA,
+            16 * 16 * 3 + 64 * 16 * 2 + 128 * 16)	/* scroll 0,1,2; road 0,1; sprites */
 
 
 
-GAME( 1990, cischeat, 0, cischeat, cischeat, cischeat, ROT0_16BIT, "Jaleco", "Cisco Heat" )
-GAME( 1991, f1gpstar, 0, f1gpstar, f1gpstar, f1gpstar, ROT0_16BIT, "Jaleco", "F1 Grand Prix Star" )
+GAME(1990, cischeat, 0, cischeat, cischeat, cischeat, ROT0_16BIT, "Jaleco", "Cisco Heat")
+GAME(1991, f1gpstar, 0, f1gpstar, f1gpstar, f1gpstar, ROT0_16BIT, "Jaleco", "F1 Grand Prix Star")

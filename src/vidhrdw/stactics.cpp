@@ -113,7 +113,7 @@ static int states_per_frame;
 /* The first 16 came from the 7448 BCD to 7-segment decoder data sheet */
 /* The rest are made up */
 
-static unsigned char stactics_special_chars[32*8] = {
+static unsigned char stactics_special_chars[32 * 8] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   /* Space */
     0x80, 0x80, 0x80, 0xf0, 0x80, 0x80, 0xf0, 0x00,   /* extras... */
     0xf0, 0x80, 0x80, 0xf0, 0x00, 0x00, 0xf0, 0x00,   /* extras... */
@@ -157,16 +157,15 @@ void stactics_vh_convert_color_prom(unsigned char *palette,
                                     unsigned short *colortable,
                                     const unsigned char *color_prom)
 {
-    int i,j;
+    int i, j;
 
-    #define TOTAL_COLORS(gfxn) (Machine->gfx[gfxn]->total_colors * Machine->gfx[gfxn]->color_granularity)
-    #define COLOR(gfxn,offs) (colortable[Machine->drv->gfxdecodeinfo[gfxn].color_codes_start + offs*sizeof(unsigned short)])
+#define TOTAL_COLORS(gfxn) (Machine->gfx[gfxn]->total_colors * Machine->gfx[gfxn]->color_granularity)
+#define COLOR(gfxn,offs) (colortable[Machine->drv->gfxdecodeinfo[gfxn].color_codes_start + offs*sizeof(unsigned short)])
 
     /* Now make the palette */
 
-    for (i=0;i<16;i++)
-    {
-        int bit0,bit1,bit2, bit3;
+    for (i = 0; i < 16; i++) {
+        int bit0, bit1, bit2, bit3;
 
         bit0 = i & 1;
         bit1 = (i >> 1) & 1;
@@ -174,13 +173,13 @@ void stactics_vh_convert_color_prom(unsigned char *palette,
         bit3 = (i >> 3) & 1;
 
         /* red component */
-        *(palette++) = 0xff * bit0;
+        * (palette++) = 0xff * bit0;
 
         /* green component */
-        *(palette++) = 0xff * bit1 - 0xcc * bit3;
+        * (palette++) = 0xff * bit1 - 0xcc * bit3;
 
         /* blue component */
-        *(palette++) = 0xff * bit2;
+        * (palette++) = 0xff * bit2;
     }
 
     /* The color prom in Space Tactics is used for both   */
@@ -191,31 +190,26 @@ void stactics_vh_convert_color_prom(unsigned char *palette,
     /* entries */
 
     /* For each of 4 color schemes */
-    for(i=0;i<4;i++)
-    {
+    for (i = 0; i < 4; i++) {
         /* For page B - Alphanumerics and alien shots */
-        for(j=0;j<16;j++)
-        {
-            *(colortable++) = 0;
-            *(colortable++) = color_prom[i*0x100+0x01*0x10+j];
+        for (j = 0; j < 16; j++) {
+            * (colortable++) = 0;
+            * (colortable++) = color_prom[i * 0x100 + 0x01 * 0x10 + j];
         }
         /* For page F - Close Aliens (these are all the same color) */
-        for(j=0;j<16;j++)
-        {
-            *(colortable++) = 0;
-            *(colortable++) = color_prom[i*0x100+0x02*0x10];
+        for (j = 0; j < 16; j++) {
+            * (colortable++) = 0;
+            * (colortable++) = color_prom[i * 0x100 + 0x02 * 0x10];
         }
         /* For page E - Medium Aliens (these are all the same color) */
-        for(j=0;j<16;j++)
-        {
-            *(colortable++) = 0;
-            *(colortable++) = color_prom[i*0x100+0x04*0x10+j];
+        for (j = 0; j < 16; j++) {
+            * (colortable++) = 0;
+            * (colortable++) = color_prom[i * 0x100 + 0x04 * 0x10 + j];
         }
         /* For page D - Far Aliens (these are all the same color) */
-        for(j=0;j<16;j++)
-        {
-            *(colortable++) = 0;
-            *(colortable++) = color_prom[i*0x100+0x08*0x10+j];
+        for (j = 0; j < 16; j++) {
+            * (colortable++) = 0;
+            * (colortable++) = color_prom[i * 0x100 + 0x08 * 0x10 + j];
         }
     }
 }
@@ -228,35 +222,35 @@ void stactics_vh_convert_color_prom(unsigned char *palette,
 
 int stactics_vh_start(void)
 {
-    int i,j;
+    int i, j;
     const unsigned char *firebeam_data;
-    unsigned char firechar[256*8*9];
+    unsigned char firechar[256 * 8 * 9];
 
-    if ((tmpbitmap  = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0) return 1;
-    if ((tmpbitmap2 = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0) return 1;
-    if ((bitmap_B = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)   return 1;
-    if ((bitmap_D = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)   return 1;
-    if ((bitmap_E = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)   return 1;
-    if ((bitmap_F = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)   return 1;
+    if ((tmpbitmap  = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0) return 1;
+    if ((tmpbitmap2 = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0) return 1;
+    if ((bitmap_B = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0)   return 1;
+    if ((bitmap_D = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0)   return 1;
+    if ((bitmap_E = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0)   return 1;
+    if ((bitmap_F = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0)   return 1;
 
-	/* Allocate dirty buffers */
-	if ((dirty_videoram_b = (unsigned char *)malloc(videoram_size)) == 0)       return 1;
-	if ((dirty_videoram_d = (unsigned char *)malloc(videoram_size)) == 0)       return 1;
-	if ((dirty_videoram_e = (unsigned char *)malloc(videoram_size)) == 0)       return 1;
-	if ((dirty_videoram_f = (unsigned char *)malloc(videoram_size)) == 0)       return 1;
-	if ((dirty_chardata_b = (unsigned char *)malloc(DIRTY_CHARDATA_SIZE)) == 0) return 1;
-	if ((dirty_chardata_d = (unsigned char *)malloc(DIRTY_CHARDATA_SIZE)) == 0) return 1;
-	if ((dirty_chardata_e = (unsigned char *)malloc(DIRTY_CHARDATA_SIZE)) == 0) return 1;
-	if ((dirty_chardata_f = (unsigned char *)malloc(DIRTY_CHARDATA_SIZE)) == 0) return 1;
+    /* Allocate dirty buffers */
+    if ((dirty_videoram_b = (unsigned char *) malloc(videoram_size)) == 0)       return 1;
+    if ((dirty_videoram_d = (unsigned char *) malloc(videoram_size)) == 0)       return 1;
+    if ((dirty_videoram_e = (unsigned char *) malloc(videoram_size)) == 0)       return 1;
+    if ((dirty_videoram_f = (unsigned char *) malloc(videoram_size)) == 0)       return 1;
+    if ((dirty_chardata_b = (unsigned char *) malloc(DIRTY_CHARDATA_SIZE)) == 0) return 1;
+    if ((dirty_chardata_d = (unsigned char *) malloc(DIRTY_CHARDATA_SIZE)) == 0) return 1;
+    if ((dirty_chardata_e = (unsigned char *) malloc(DIRTY_CHARDATA_SIZE)) == 0) return 1;
+    if ((dirty_chardata_f = (unsigned char *) malloc(DIRTY_CHARDATA_SIZE)) == 0) return 1;
 
-    memset(dirty_videoram_b,1,videoram_size);
-    memset(dirty_videoram_d,1,videoram_size);
-    memset(dirty_videoram_e,1,videoram_size);
-    memset(dirty_videoram_f,1,videoram_size);
-    memset(dirty_chardata_b,1,DIRTY_CHARDATA_SIZE);
-    memset(dirty_chardata_d,1,DIRTY_CHARDATA_SIZE);
-    memset(dirty_chardata_e,1,DIRTY_CHARDATA_SIZE);
-    memset(dirty_chardata_f,1,DIRTY_CHARDATA_SIZE);
+    memset(dirty_videoram_b, 1, videoram_size);
+    memset(dirty_videoram_d, 1, videoram_size);
+    memset(dirty_videoram_e, 1, videoram_size);
+    memset(dirty_videoram_f, 1, videoram_size);
+    memset(dirty_chardata_b, 1, DIRTY_CHARDATA_SIZE);
+    memset(dirty_chardata_d, 1, DIRTY_CHARDATA_SIZE);
+    memset(dirty_chardata_e, 1, DIRTY_CHARDATA_SIZE);
+    memset(dirty_chardata_f, 1, DIRTY_CHARDATA_SIZE);
 
     d_offset = 0;
     e_offset = 0;
@@ -271,21 +265,17 @@ int stactics_vh_start(void)
 
     /* Create a fake character set for LED fire beam */
 
-    memset(firechar,0,sizeof(firechar));
-    for(i=0;i<256;i++)
-    {
-        for(j=0;j<8;j++)
-        {
-            if ((i>>j)&0x01)
-            {
-                firechar[i*9+(7-j)]   |= (0x01<<(7-j));
-                firechar[i*9+(7-j)+1] |= (0x01<<(7-j));
+    memset(firechar, 0, sizeof(firechar));
+    for (i = 0; i < 256; i++) {
+        for (j = 0; j < 8; j++) {
+            if ((i >> j) & 0x01) {
+                firechar[i * 9 + (7 - j)]   |= (0x01 << (7 - j));
+                firechar[i * 9 + (7 - j) + 1] |= (0x01 << (7 - j));
             }
         }
     }
 
-    for(i=0;i<256;i++)
-    {
+    for (i = 0; i < 256; i++) {
         decodechar(Machine->gfx[4],
                    i,
                    firechar,
@@ -296,26 +286,24 @@ int stactics_vh_start(void)
     /* (I am basically just juggling the bytes */
     /* and storing it again to make it easier) */
 
-	if ((beamdata = (unsigned char *)malloc(BEAMDATA_SIZE)) == 0) return 1;
+    if ((beamdata = (unsigned char *) malloc(BEAMDATA_SIZE)) == 0) return 1;
 
     firebeam_data = memory_region(REGION_GFX1);
 
-    for(i=0;i<256;i++)
-    {
-        beamdata[i*8]   = firebeam_data[i                   ];
-        beamdata[i*8+1] = firebeam_data[i + 1024            ];
-        beamdata[i*8+2] = firebeam_data[i              + 256];
-        beamdata[i*8+3] = firebeam_data[i + 1024       + 256];
-        beamdata[i*8+4] = firebeam_data[i        + 512      ];
-        beamdata[i*8+5] = firebeam_data[i + 1024 + 512      ];
-        beamdata[i*8+6] = firebeam_data[i        + 512 + 256];
-        beamdata[i*8+7] = firebeam_data[i + 1024 + 512 + 256];
+    for (i = 0; i < 256; i++) {
+        beamdata[i * 8]   = firebeam_data[i                   ];
+        beamdata[i * 8 + 1] = firebeam_data[i + 1024            ];
+        beamdata[i * 8 + 2] = firebeam_data[i              + 256];
+        beamdata[i * 8 + 3] = firebeam_data[i + 1024       + 256];
+        beamdata[i * 8 + 4] = firebeam_data[i        + 512      ];
+        beamdata[i * 8 + 5] = firebeam_data[i + 1024 + 512      ];
+        beamdata[i * 8 + 6] = firebeam_data[i        + 512 + 256];
+        beamdata[i * 8 + 7] = firebeam_data[i + 1024 + 512 + 256];
     }
 
     /* Build some characters for simulating the LED displays */
 
-    for(i=0;i<32;i++)
-    {
+    for (i = 0; i < 32; i++) {
         decodechar(Machine->gfx[5],
                    i,
                    stactics_special_chars,
@@ -338,16 +326,16 @@ int stactics_vh_start(void)
 ***************************************************************************/
 void stactics_vh_stop(void)
 {
-	free(dirty_videoram_b);
-	free(dirty_videoram_d);
-	free(dirty_videoram_e);
-	free(dirty_videoram_f);
-	free(dirty_chardata_b);
-	free(dirty_chardata_d);
-	free(dirty_chardata_e);
-	free(dirty_chardata_f);
+    free(dirty_videoram_b);
+    free(dirty_videoram_d);
+    free(dirty_videoram_e);
+    free(dirty_videoram_f);
+    free(dirty_chardata_b);
+    free(dirty_chardata_d);
+    free(dirty_chardata_e);
+    free(dirty_chardata_f);
 
-	free(beamdata);
+    free(beamdata);
 
     bitmap_free(tmpbitmap);
     bitmap_free(tmpbitmap2);
@@ -358,66 +346,59 @@ void stactics_vh_stop(void)
 }
 
 
-WRITE_HANDLER( stactics_palette_w )
+WRITE_HANDLER(stactics_palette_w)
 {
     int old_palette_select = palette_select;
 
-    switch (offset)
-    {
-        case 0:
-            palette_select = (palette_select & 0x02) | (data&0x01);
-            break;
-        case 1:
-            palette_select = (palette_select & 0x01) | ((data&0x01)<<1);
-            break;
-        default:
-            return;
+    switch (offset) {
+    case 0:
+        palette_select = (palette_select & 0x02) | (data & 0x01);
+        break;
+    case 1:
+        palette_select = (palette_select & 0x01) | ((data & 0x01) << 1);
+        break;
+    default:
+        return;
     }
 
-    if (old_palette_select != palette_select)
-    {
-        memset(dirty_videoram_b,1,videoram_size);
-        memset(dirty_videoram_d,1,videoram_size);
-        memset(dirty_videoram_e,1,videoram_size);
-        memset(dirty_videoram_f,1,videoram_size);
+    if (old_palette_select != palette_select) {
+        memset(dirty_videoram_b, 1, videoram_size);
+        memset(dirty_videoram_d, 1, videoram_size);
+        memset(dirty_videoram_e, 1, videoram_size);
+        memset(dirty_videoram_f, 1, videoram_size);
     }
     return;
 }
 
 
-WRITE_HANDLER( stactics_scroll_ram_w )
+WRITE_HANDLER(stactics_scroll_ram_w)
 {
     int temp;
 
-    if (stactics_scroll_ram[offset] != data)
-    {
+    if (stactics_scroll_ram[offset] != data) {
         stactics_scroll_ram[offset] = data;
-        temp = (offset&0x700)>>8;
-        switch(temp)
-        {
-            case 4:  // Page D
-            {
-                if (data&0x01)
-                    d_offset = offset&0xff;
-                break;
-            }
-            case 5:  // Page E
-            {
-                if (data&0x01)
-                    e_offset = offset&0xff;
-                break;
-            }
-            case 6:  // Page F
-            {
-                if (data&0x01)
-                    f_offset = offset&0xff;
-                break;
-            }
+        temp = (offset & 0x700) >> 8;
+        switch (temp) {
+        case 4: { // Page D
+            if (data & 0x01)
+                d_offset = offset & 0xff;
+            break;
+        }
+        case 5: { // Page E
+            if (data & 0x01)
+                e_offset = offset & 0xff;
+            break;
+        }
+        case 6: { // Page F
+            if (data & 0x01)
+                f_offset = offset & 0xff;
+            break;
+        }
         }
     }
 }
 
-WRITE_HANDLER( stactics_speed_latch_w )
+WRITE_HANDLER(stactics_speed_latch_w)
 {
     /* This writes to a shift register which is clocked by   */
     /* a 555 oscillator.  This value determines the speed of */
@@ -432,101 +413,92 @@ WRITE_HANDLER( stactics_speed_latch_w )
     int i;
     int num_rising_edges = 0;
 
-    for(i=0;i<8;i++)
-    {
-        if ( (((data>>i)&0x01) == 1) && (((data>>((i+1)%8))&0x01) == 0))
+    for (i = 0; i < 8; i++) {
+        if ((((data >> i) & 0x01) == 1) && (((data >> ((i + 1) % 8)) & 0x01) == 0))
             num_rising_edges++;
     }
 
-    states_per_frame = num_rising_edges*19/8;
+    states_per_frame = num_rising_edges * 19 / 8;
 }
 
-WRITE_HANDLER( stactics_shot_trigger_w )
+WRITE_HANDLER(stactics_shot_trigger_w)
 {
     stactics_shot_standby = 0;
 }
 
-WRITE_HANDLER( stactics_shot_flag_clear_w )
+WRITE_HANDLER(stactics_shot_flag_clear_w)
 {
     stactics_shot_arrive = 0;
 }
 
-WRITE_HANDLER( stactics_videoram_b_w )
+WRITE_HANDLER(stactics_videoram_b_w)
 {
-    if (stactics_videoram_b[offset] != data)
-    {
+    if (stactics_videoram_b[offset] != data) {
         stactics_videoram_b[offset] = data;
         dirty_videoram_b[offset] = 1;
     }
 }
 
-WRITE_HANDLER( stactics_chardata_b_w )
+WRITE_HANDLER(stactics_chardata_b_w)
 {
-    if (stactics_chardata_b[offset] != data)
-    {
+    if (stactics_chardata_b[offset] != data) {
         stactics_chardata_b[offset] = data;
-        dirty_chardata_b[offset>>3] = 1;
+        dirty_chardata_b[offset >> 3] = 1;
     }
 }
 
-WRITE_HANDLER( stactics_videoram_d_w )
+WRITE_HANDLER(stactics_videoram_d_w)
 {
-    if (stactics_videoram_d[offset] != data)
-    {
+    if (stactics_videoram_d[offset] != data) {
         stactics_videoram_d[offset] = data;
         dirty_videoram_d[offset] = 1;
     }
 }
 
-WRITE_HANDLER( stactics_chardata_d_w )
+WRITE_HANDLER(stactics_chardata_d_w)
 {
-    if (stactics_chardata_d[offset] != data)
-    {
+    if (stactics_chardata_d[offset] != data) {
         stactics_chardata_d[offset] = data;
-        dirty_chardata_d[offset>>3] = 1;
+        dirty_chardata_d[offset >> 3] = 1;
     }
 }
 
-WRITE_HANDLER( stactics_videoram_e_w )
+WRITE_HANDLER(stactics_videoram_e_w)
 {
-    if (stactics_videoram_e[offset] != data)
-    {
+    if (stactics_videoram_e[offset] != data) {
         stactics_videoram_e[offset] = data;
         dirty_videoram_e[offset] = 1;
     }
 }
 
-WRITE_HANDLER( stactics_chardata_e_w )
+WRITE_HANDLER(stactics_chardata_e_w)
 {
-    if (stactics_chardata_e[offset] != data)
-    {
+    if (stactics_chardata_e[offset] != data) {
         stactics_chardata_e[offset] = data;
-        dirty_chardata_e[offset>>3] = 1;
+        dirty_chardata_e[offset >> 3] = 1;
     }
 }
 
-WRITE_HANDLER( stactics_videoram_f_w )
+WRITE_HANDLER(stactics_videoram_f_w)
 {
-    if (stactics_videoram_f[offset] != data)
-    {
+    if (stactics_videoram_f[offset] != data) {
         stactics_videoram_f[offset] = data;
         dirty_videoram_f[offset] = 1;
     }
 }
 
-WRITE_HANDLER( stactics_chardata_f_w )
+WRITE_HANDLER(stactics_chardata_f_w)
 {
-    if (stactics_chardata_f[offset] != data)
-    {
+    if (stactics_chardata_f[offset] != data) {
         stactics_chardata_f[offset] = data;
-        dirty_chardata_f[offset>>3] = 1;
+        dirty_chardata_f[offset >> 3] = 1;
     }
 }
 
 /* Actual area for visible monitor stuff is only 30*8 lines */
 /* The rest is used for the score, etc. */
 
-static const struct rectangle visible_screen_area = {0*8, 32*8, 0*8, 30*8};
+static const struct rectangle visible_screen_area = {0 * 8, 32 * 8, 0 * 8, 30 * 8};
 
 /***************************************************************************
 
@@ -536,7 +508,7 @@ static const struct rectangle visible_screen_area = {0*8, 32*8, 0*8, 30*8};
 
 ***************************************************************************/
 
-void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void stactics_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
     int offs, sx, sy, i;
     int char_number;
@@ -545,39 +517,34 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
 
     int palette_offset = palette_select * 64;
 
-    for(offs=0x400-1; offs>=0; offs--)
-    {
-        sx = offs%32;
-        sy = offs/32;
+    for (offs = 0x400 - 1; offs >= 0; offs--) {
+        sx = offs % 32;
+        sy = offs / 32;
 
-        color_code = palette_offset + (stactics_videoram_b[offs]>>4);
+        color_code = palette_offset + (stactics_videoram_b[offs] >> 4);
 
         /* Draw aliens in Page D */
 
         char_number = stactics_videoram_d[offs];
 
-        if (dirty_chardata_d[char_number] == 1)
-        {
+        if (dirty_chardata_d[char_number] == 1) {
             decodechar(Machine->gfx[3],
                        char_number,
                        stactics_chardata_d,
                        Machine->drv->gfxdecodeinfo[3].gfxlayout);
             dirty_chardata_d[char_number] = 2;
             dirty_videoram_d[offs] = 1;
-        }
-        else if (dirty_chardata_d[char_number] == 2)
-        {
+        } else if (dirty_chardata_d[char_number] == 2) {
             dirty_videoram_d[offs] = 1;
         }
 
-        if (dirty_videoram_d[offs])
-        {
-            drawgfx(bitmap_D,Machine->gfx[3],
+        if (dirty_videoram_d[offs]) {
+            drawgfx(bitmap_D, Machine->gfx[3],
                     char_number,
                     color_code,
-                    0,0,
-                    sx*8,sy*8,
-                    &Machine->visible_area,TRANSPARENCY_NONE,0);
+                    0, 0,
+                    sx * 8, sy * 8,
+                    &Machine->visible_area, TRANSPARENCY_NONE, 0);
             dirty_videoram_d[offs] = 0;
         }
 
@@ -585,28 +552,24 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
 
         char_number = stactics_videoram_e[offs];
 
-        if (dirty_chardata_e[char_number] == 1)
-        {
+        if (dirty_chardata_e[char_number] == 1) {
             decodechar(Machine->gfx[2],
                        char_number,
                        stactics_chardata_e,
                        Machine->drv->gfxdecodeinfo[2].gfxlayout);
             dirty_chardata_e[char_number] = 2;
             dirty_videoram_e[offs] = 1;
-        }
-        else if (dirty_chardata_e[char_number] == 2)
-        {
+        } else if (dirty_chardata_e[char_number] == 2) {
             dirty_videoram_e[offs] = 1;
         }
 
-        if (dirty_videoram_e[offs])
-        {
-            drawgfx(bitmap_E,Machine->gfx[2],
+        if (dirty_videoram_e[offs]) {
+            drawgfx(bitmap_E, Machine->gfx[2],
                     char_number,
                     color_code,
-                    0,0,
-                    sx*8,sy*8,
-                    &Machine->visible_area,TRANSPARENCY_NONE,0);
+                    0, 0,
+                    sx * 8, sy * 8,
+                    &Machine->visible_area, TRANSPARENCY_NONE, 0);
             dirty_videoram_e[offs] = 0;
         }
 
@@ -614,28 +577,24 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
 
         char_number = stactics_videoram_f[offs];
 
-        if (dirty_chardata_f[char_number] == 1)
-        {
+        if (dirty_chardata_f[char_number] == 1) {
             decodechar(Machine->gfx[1],
                        char_number,
                        stactics_chardata_f,
                        Machine->drv->gfxdecodeinfo[1].gfxlayout);
             dirty_chardata_f[char_number] = 2;
             dirty_videoram_f[offs] = 1;
-        }
-        else if (dirty_chardata_f[char_number] == 2)
-        {
+        } else if (dirty_chardata_f[char_number] == 2) {
             dirty_videoram_f[offs] = 1;
         }
 
-        if (dirty_videoram_f[offs])
-        {
-            drawgfx(bitmap_F,Machine->gfx[1],
+        if (dirty_videoram_f[offs]) {
+            drawgfx(bitmap_F, Machine->gfx[1],
                     char_number,
                     color_code,
-                    0,0,
-                    sx*8,sy*8,
-                    &Machine->visible_area,TRANSPARENCY_NONE,0);
+                    0, 0,
+                    sx * 8, sy * 8,
+                    &Machine->visible_area, TRANSPARENCY_NONE, 0);
             dirty_videoram_f[offs] = 0;
         }
 
@@ -643,28 +602,24 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
 
         char_number = stactics_videoram_b[offs];
 
-        if (dirty_chardata_b[char_number] == 1)
-        {
+        if (dirty_chardata_b[char_number] == 1) {
             decodechar(Machine->gfx[0],
                        char_number,
                        stactics_chardata_b,
                        Machine->drv->gfxdecodeinfo[0].gfxlayout);
             dirty_chardata_b[char_number] = 2;
             dirty_videoram_b[offs] = 1;
-        }
-        else if (dirty_chardata_b[char_number] == 2)
-        {
+        } else if (dirty_chardata_b[char_number] == 2) {
             dirty_videoram_b[offs] = 1;
         }
 
-        if (dirty_videoram_b[offs])
-        {
-            drawgfx(bitmap_B,Machine->gfx[0],
+        if (dirty_videoram_b[offs]) {
+            drawgfx(bitmap_B, Machine->gfx[0],
                     char_number,
                     color_code,
-                    0,0,
-                    sx*8,sy*8,
-                    &Machine->visible_area,TRANSPARENCY_NONE,0);
+                    0, 0,
+                    sx * 8, sy * 8,
+                    &Machine->visible_area, TRANSPARENCY_NONE, 0);
             dirty_videoram_b[offs] = 0;
         }
 
@@ -672,19 +627,19 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
 
     /* Now, composite the four layers together */
 
-    copyscrollbitmap(tmpbitmap2,bitmap_D,0,0,1,&d_offset,
-                     &Machine->visible_area,TRANSPARENCY_NONE,0);
-    copyscrollbitmap(tmpbitmap2,bitmap_E,0,0,1,&e_offset,
-                     &Machine->visible_area,TRANSPARENCY_COLOR,0);
-    copyscrollbitmap(tmpbitmap2,bitmap_F,0,0,1,&f_offset,
-                     &Machine->visible_area,TRANSPARENCY_COLOR,0);
-    copybitmap(tmpbitmap2,bitmap_B,0,0,0,0,
-                     &Machine->visible_area,TRANSPARENCY_COLOR,0);
+    copyscrollbitmap(tmpbitmap2, bitmap_D, 0, 0, 1, &d_offset,
+                     &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    copyscrollbitmap(tmpbitmap2, bitmap_E, 0, 0, 1, &e_offset,
+                     &Machine->visible_area, TRANSPARENCY_COLOR, 0);
+    copyscrollbitmap(tmpbitmap2, bitmap_F, 0, 0, 1, &f_offset,
+                     &Machine->visible_area, TRANSPARENCY_COLOR, 0);
+    copybitmap(tmpbitmap2, bitmap_B, 0, 0, 0, 0,
+               &Machine->visible_area, TRANSPARENCY_COLOR, 0);
 
     /* Now flip X & simulate the monitor motion */
     fillbitmap(bitmap, Machine->pens[0], &Machine->visible_area);
-    copybitmap(bitmap,tmpbitmap2,1,0,stactics_horiz_pos,stactics_vert_pos,
-                &visible_screen_area,TRANSPARENCY_NONE,0);
+    copybitmap(bitmap, tmpbitmap2, 1, 0, stactics_horiz_pos, stactics_vert_pos,
+               &visible_screen_area, TRANSPARENCY_NONE, 0);
 
     /* Finally, draw stuff that is on the console or on top of the monitor (LED's) */
 
@@ -694,126 +649,122 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
     pixel_y = 248;
 
     /* Draw an S */
-    drawgfx(bitmap,Machine->gfx[5],
+    drawgfx(bitmap, Machine->gfx[5],
             18,
             0,
-            0,0,
-            pixel_x,pixel_y,
-            &Machine->visible_area,TRANSPARENCY_NONE,0);
-    pixel_x+=6;
+            0, 0,
+            pixel_x, pixel_y,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    pixel_x += 6;
     /* Draw a colon */
-    drawgfx(bitmap,Machine->gfx[5],
+    drawgfx(bitmap, Machine->gfx[5],
             25,
             0,
-            0,0,
-            pixel_x,pixel_y,
-            &Machine->visible_area,TRANSPARENCY_NONE,0);
-    pixel_x+=6;
+            0, 0,
+            pixel_x, pixel_y,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    pixel_x += 6;
     /* Draw the digits */
-    for(i=1;i<7;i++)
-    {
-        drawgfx(bitmap,Machine->gfx[5],
-                stactics_display_buffer[i]&0x0f,
+    for (i = 1; i < 7; i++) {
+        drawgfx(bitmap, Machine->gfx[5],
+                stactics_display_buffer[i] & 0x0f,
                 16,
-                0,0,
-                pixel_x,pixel_y,
-                &Machine->visible_area,TRANSPARENCY_NONE,0);
-        pixel_x+=6;
+                0, 0,
+                pixel_x, pixel_y,
+                &Machine->visible_area, TRANSPARENCY_NONE, 0);
+        pixel_x += 6;
     }
 
     /***** Draw Credits Indicator *****/
 
-    pixel_x = 64+16;
+    pixel_x = 64 + 16;
 
     /* Draw a C */
-    drawgfx(bitmap,Machine->gfx[5],
+    drawgfx(bitmap, Machine->gfx[5],
             21,
             0,
-            0,0,
-            pixel_x,pixel_y,
-            &Machine->visible_area,TRANSPARENCY_NONE,0);
-    pixel_x+=6;
+            0, 0,
+            pixel_x, pixel_y,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    pixel_x += 6;
     /* Draw a colon */
-    drawgfx(bitmap,Machine->gfx[5],
+    drawgfx(bitmap, Machine->gfx[5],
             25,
             0,
-            0,0,
-            pixel_x,pixel_y,
-            &Machine->visible_area,TRANSPARENCY_NONE,0);
-    pixel_x+=6;
+            0, 0,
+            pixel_x, pixel_y,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    pixel_x += 6;
     /* Draw the pips */
-    for(i=7;i<9;i++)
-    {
-        drawgfx(bitmap,Machine->gfx[5],
-                16 + (~stactics_display_buffer[i]&0x0f),
+    for (i = 7; i < 9; i++) {
+        drawgfx(bitmap, Machine->gfx[5],
+                16 + (~stactics_display_buffer[i] & 0x0f),
                 16,
-                0,0,
-                pixel_x,pixel_y,
-                &Machine->visible_area,TRANSPARENCY_NONE,0);
-        pixel_x+=2;
+                0, 0,
+                pixel_x, pixel_y,
+                &Machine->visible_area, TRANSPARENCY_NONE, 0);
+        pixel_x += 2;
     }
 
     /***** Draw Rounds Indicator *****/
 
-    pixel_x = 128+16;
+    pixel_x = 128 + 16;
 
     /* Draw an R */
-    drawgfx(bitmap,Machine->gfx[5],
+    drawgfx(bitmap, Machine->gfx[5],
             22,
             0,
-            0,0,
-            pixel_x,pixel_y,
-            &Machine->visible_area,TRANSPARENCY_NONE,0);
-    pixel_x+=6;
+            0, 0,
+            pixel_x, pixel_y,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    pixel_x += 6;
     /* Draw a colon */
-    drawgfx(bitmap,Machine->gfx[5],
+    drawgfx(bitmap, Machine->gfx[5],
             25,
             0,
-            0,0,
-            pixel_x,pixel_y,
-            &Machine->visible_area,TRANSPARENCY_NONE,0);
-    pixel_x+=6;
+            0, 0,
+            pixel_x, pixel_y,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    pixel_x += 6;
     /* Draw the pips */
-    for(i=9;i<12;i++)
-    {
-        drawgfx(bitmap,Machine->gfx[5],
-                16 + (~stactics_display_buffer[i]&0x0f),
+    for (i = 9; i < 12; i++) {
+        drawgfx(bitmap, Machine->gfx[5],
+                16 + (~stactics_display_buffer[i] & 0x0f),
                 16,
-                0,0,
-                pixel_x,pixel_y,
-                &Machine->visible_area,TRANSPARENCY_NONE,0);
-        pixel_x+=2;
+                0, 0,
+                pixel_x, pixel_y,
+                &Machine->visible_area, TRANSPARENCY_NONE, 0);
+        pixel_x += 2;
     }
 
     /***** Draw Barriers Indicator *****/
 
-    pixel_x = 192+16;
+    pixel_x = 192 + 16;
     /* Draw a B */
-    drawgfx(bitmap,Machine->gfx[5],
+    drawgfx(bitmap, Machine->gfx[5],
             23,
             0,
-            0,0,
-            pixel_x,pixel_y,
-            &Machine->visible_area,TRANSPARENCY_NONE,0);
-    pixel_x+=6;
+            0, 0,
+            pixel_x, pixel_y,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    pixel_x += 6;
     /* Draw a colon */
-    drawgfx(bitmap,Machine->gfx[5],
+    drawgfx(bitmap, Machine->gfx[5],
             25,
             0,
-            0,0,
-            pixel_x,pixel_y,
-            &Machine->visible_area,TRANSPARENCY_NONE,0);
-    pixel_x+=6;
+            0, 0,
+            pixel_x, pixel_y,
+            &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    pixel_x += 6;
     /* Draw the pips */
-    for(i=12;i<16;i++)
-    {
-        drawgfx(bitmap,Machine->gfx[5],
-                16 + (~stactics_display_buffer[i]&0x0f),
+    for (i = 12; i < 16; i++) {
+        drawgfx(bitmap, Machine->gfx[5],
+                16 + (~stactics_display_buffer[i] & 0x0f),
                 16,
-                0,0,
-                pixel_x,pixel_y,
-                &Machine->visible_area,TRANSPARENCY_NONE,0);
-        pixel_x+=2;
+                0, 0,
+                pixel_x, pixel_y,
+                &Machine->visible_area, TRANSPARENCY_NONE, 0);
+        pixel_x += 2;
     }
 
     /* An LED fire beam! */
@@ -823,9 +774,8 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
     /* First, update the firebeam state */
 
     old_firebeam_state = firebeam_state;
-    if (stactics_shot_standby == 0)
-    {
-        firebeam_state = (firebeam_state + states_per_frame)%512;
+    if (stactics_shot_standby == 0) {
+        firebeam_state = (firebeam_state + states_per_frame) % 512;
     }
 
     /* These are thresholds for the two shots from the LED fire ROM */
@@ -838,8 +788,7 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
     if ((old_firebeam_state < 0xca) & (firebeam_state >= 0xca))
         stactics_shot_arrive = 1;
 
-    if (firebeam_state > 255)
-    {
+    if (firebeam_state > 255) {
         firebeam_state = 0;
         stactics_shot_standby = 1;
     }
@@ -849,43 +798,39 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
     pixel_x = 15;
     pixel_y = 166;
 
-    for(i=0;i<8;i++)
-    {
-        if ((i%2)==1)
-        {
+    for (i = 0; i < 8; i++) {
+        if ((i % 2) == 1) {
             /* Draw 7 LEDS on each side */
-            drawgfx(bitmap,Machine->gfx[4],
-                    beamdata[firebeam_state*8+i]&0x7f,
-                    16*2,  /* Make it green */
-                    0,0,
-                    pixel_x,pixel_y,
-                    &Machine->visible_area,TRANSPARENCY_COLOR,0);
-            drawgfx(bitmap,Machine->gfx[4],
-                    beamdata[firebeam_state*8+i]&0x7f,
-                    16*2,  /* Make it green */
-                    1,0,
-                    255-pixel_x,pixel_y,
-                    &Machine->visible_area,TRANSPARENCY_COLOR,0);
-            pixel_x+=14;
-            pixel_y-=7;
-        }
-        else
-        {
+            drawgfx(bitmap, Machine->gfx[4],
+                    beamdata[firebeam_state * 8 + i] & 0x7f,
+                    16 * 2, /* Make it green */
+                    0, 0,
+                    pixel_x, pixel_y,
+                    &Machine->visible_area, TRANSPARENCY_COLOR, 0);
+            drawgfx(bitmap, Machine->gfx[4],
+                    beamdata[firebeam_state * 8 + i] & 0x7f,
+                    16 * 2, /* Make it green */
+                    1, 0,
+                    255 - pixel_x, pixel_y,
+                    &Machine->visible_area, TRANSPARENCY_COLOR, 0);
+            pixel_x += 14;
+            pixel_y -= 7;
+        } else {
             /* Draw 8 LEDS on each side */
-            drawgfx(bitmap,Machine->gfx[4],
-                    beamdata[firebeam_state*8+i],
-                    16*2,  /* Make it green */
-                    0,0,
-                    pixel_x,pixel_y,
-                    &Machine->visible_area,TRANSPARENCY_COLOR,0);
-            drawgfx(bitmap,Machine->gfx[4],
-                    beamdata[firebeam_state*8+i],
-                    16*2,  /* Make it green */
-                    1,0,
-                    255-pixel_x,pixel_y,
-                    &Machine->visible_area,TRANSPARENCY_COLOR,0);
-            pixel_x+=16;
-            pixel_y-=8;
+            drawgfx(bitmap, Machine->gfx[4],
+                    beamdata[firebeam_state * 8 + i],
+                    16 * 2, /* Make it green */
+                    0, 0,
+                    pixel_x, pixel_y,
+                    &Machine->visible_area, TRANSPARENCY_COLOR, 0);
+            drawgfx(bitmap, Machine->gfx[4],
+                    beamdata[firebeam_state * 8 + i],
+                    16 * 2, /* Make it green */
+                    1, 0,
+                    255 - pixel_x, pixel_y,
+                    &Machine->visible_area, TRANSPARENCY_COLOR, 0);
+            pixel_x += 16;
+            pixel_y -= 8;
         }
 
     }
@@ -895,22 +840,20 @@ void stactics_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
     pixel_x = 134;
     pixel_y = 112;
 
-    if (*stactics_motor_on & 0x01)
-    {
-        drawgfx(bitmap,Machine->gfx[5],
+    if (*stactics_motor_on & 0x01) {
+        drawgfx(bitmap, Machine->gfx[5],
                 26,
                 16, /* red */
-                0,0,
-                pixel_x,pixel_y,
-                &Machine->visible_area,TRANSPARENCY_COLOR,0);
+                0, 0,
+                pixel_x, pixel_y,
+                &Machine->visible_area, TRANSPARENCY_COLOR, 0);
     }
 
     /* Update vblank counter */
     stactics_vblank_count++;
 
     /* reset dirty flags */
-    for(i=0;i<0xff;i++)
-    {
+    for (i = 0; i < 0xff; i++) {
         dirty_chardata_b[i] &= 0x01;
         dirty_chardata_d[i] &= 0x01;
         dirty_chardata_e[i] &= 0x01;

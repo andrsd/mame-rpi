@@ -54,20 +54,44 @@
 #define n2a03_01 m6502_01									/* 6 ORA IDX */
 #define n2a03_21 m6502_21									/* 6 AND IDX */
 #define n2a03_41 m6502_41									/* 6 EOR IDX */
-OP(61) { int tmp; m6502_ICount -= 6; RD_IDX; ADC_NES;	  } /* 6 ADC IDX */
+OP(61)
+{
+    int tmp;    /* 6 ADC IDX */
+    m6502_ICount -= 6;
+    RD_IDX;
+    ADC_NES;
+}
 #define n2a03_81 m6502_81									/* 6 STA IDX */
 #define n2a03_a1 m6502_a1									/* 6 LDA IDX */
 #define n2a03_c1 m6502_c1									/* 6 CMP IDX */
-OP(e1) { int tmp; m6502_ICount -= 6; RD_IDX; SBC_NES;	  } /* 6 SBC IDX */
+OP(e1)
+{
+    int tmp;    /* 6 SBC IDX */
+    m6502_ICount -= 6;
+    RD_IDX;
+    SBC_NES;
+}
 
 #define n2a03_11 m6502_11									/* 5 ORA IDY */
 #define n2a03_31 m6502_31									/* 5 AND IDY */
 #define n2a03_51 m6502_51									/* 5 EOR IDY */
-OP(71) { int tmp; m6502_ICount -= 5; RD_IDY; ADC_NES;	  } /* 5 ADC IDY */
+OP(71)
+{
+    int tmp;    /* 5 ADC IDY */
+    m6502_ICount -= 5;
+    RD_IDY;
+    ADC_NES;
+}
 #define n2a03_91 m6502_91									/* 6 STA IDY */
 #define n2a03_b1 m6502_b1									/* 5 LDA IDY */
 #define n2a03_d1 m6502_d1									/* 5 CMP IDY */
-OP(f1) { int tmp; m6502_ICount -= 5; RD_IDY; SBC_NES;	  } /* 5 SBC IDY */
+OP(f1)
+{
+    int tmp;    /* 5 SBC IDY */
+    m6502_ICount -= 5;
+    RD_IDY;
+    SBC_NES;
+}
 
 #define n2a03_02 m6502_02									/* 2 ILL */
 #define n2a03_22 m6502_22									/* 2 ILL */
@@ -126,20 +150,44 @@ OP(f1) { int tmp; m6502_ICount -= 5; RD_IDY; SBC_NES;	  } /* 5 SBC IDY */
 #define n2a03_05 m6502_05									/* 3 ORA ZPG */
 #define n2a03_25 m6502_25									/* 3 AND ZPG */
 #define n2a03_45 m6502_45									/* 3 EOR ZPG */
-OP(65) { int tmp; m6502_ICount -= 3; RD_ZPG; ADC_NES;	  } /* 3 ADC ZPG */
+OP(65)
+{
+    int tmp;    /* 3 ADC ZPG */
+    m6502_ICount -= 3;
+    RD_ZPG;
+    ADC_NES;
+}
 #define n2a03_85 m6502_85									/* 3 STA ZPG */
 #define n2a03_a5 m6502_a5									/* 3 LDA ZPG */
 #define n2a03_c5 m6502_c5									/* 3 CMP ZPG */
-OP(e5) { int tmp; m6502_ICount -= 3; RD_ZPG; SBC_NES;	  } /* 3 SBC ZPG */
+OP(e5)
+{
+    int tmp;    /* 3 SBC ZPG */
+    m6502_ICount -= 3;
+    RD_ZPG;
+    SBC_NES;
+}
 
 #define n2a03_15 m6502_15									/* 4 ORA ZPX */
 #define n2a03_35 m6502_35									/* 4 AND ZPX */
 #define n2a03_55 m6502_55									/* 4 EOR ZPX */
-OP(75) { int tmp; m6502_ICount -= 4; RD_ZPX; ADC_NES;	  } /* 4 ADC ZPX */
+OP(75)
+{
+    int tmp;    /* 4 ADC ZPX */
+    m6502_ICount -= 4;
+    RD_ZPX;
+    ADC_NES;
+}
 #define n2a03_95 m6502_95									/* 4 STA ZPX */
 #define n2a03_b5 m6502_b5									/* 4 LDA ZPX */
 #define n2a03_d5 m6502_d5									/* 4 CMP ZPX */
-OP(f5) { int tmp; m6502_ICount -= 4; RD_ZPX; SBC_NES;	  } /* 4 SBC ZPX */
+OP(f5)
+{
+    int tmp;    /* 4 SBC ZPX */
+    m6502_ICount -= 4;
+    RD_ZPX;
+    SBC_NES;
+}
 
 #define n2a03_06 m6502_06									/* 5 ASL ZPG */
 #define n2a03_26 m6502_26									/* 5 ROL ZPG */
@@ -198,20 +246,44 @@ OP(f5) { int tmp; m6502_ICount -= 4; RD_ZPX; SBC_NES;	  } /* 4 SBC ZPX */
 #define n2a03_09 m6502_09									/* 2 ORA IMM */
 #define n2a03_29 m6502_29									/* 2 AND IMM */
 #define n2a03_49 m6502_49									/* 2 EOR IMM */
-OP(69) { int tmp; m6502_ICount -= 2; RD_IMM; ADC_NES;	  } /* 2 ADC IMM */
+OP(69)
+{
+    int tmp;    /* 2 ADC IMM */
+    m6502_ICount -= 2;
+    RD_IMM;
+    ADC_NES;
+}
 #define n2a03_89 m6502_89									/* 2 ILL */
 #define n2a03_a9 m6502_a9									/* 2 LDA IMM */
 #define n2a03_c9 m6502_c9									/* 2 CMP IMM */
-OP(e9) { int tmp; m6502_ICount -= 2; RD_IMM; SBC_NES;	  } /* 2 SBC IMM */
+OP(e9)
+{
+    int tmp;    /* 2 SBC IMM */
+    m6502_ICount -= 2;
+    RD_IMM;
+    SBC_NES;
+}
 
 #define n2a03_19 m6502_19									/* 4 ORA ABY */
 #define n2a03_39 m6502_39									/* 4 AND ABY */
 #define n2a03_59 m6502_59									/* 4 EOR ABY */
-OP(79) { int tmp; m6502_ICount -= 4; RD_ABY; ADC_NES;	  } /* 4 ADC ABY */
+OP(79)
+{
+    int tmp;    /* 4 ADC ABY */
+    m6502_ICount -= 4;
+    RD_ABY;
+    ADC_NES;
+}
 #define n2a03_99 m6502_99									/* 5 STA ABY */
 #define n2a03_b9 m6502_b9									/* 4 LDA ABY */
 #define n2a03_d9 m6502_d9									/* 4 CMP ABY */
-OP(f9) { int tmp; m6502_ICount -= 4; RD_ABY; SBC_NES;	  } /* 4 SBC ABY */
+OP(f9)
+{
+    int tmp;    /* 4 SBC ABY */
+    m6502_ICount -= 4;
+    RD_ABY;
+    SBC_NES;
+}
 
 #define n2a03_0a m6502_0a									/* 2 ASL A */
 #define n2a03_2a m6502_2a									/* 2 ROL A */
@@ -270,20 +342,44 @@ OP(f9) { int tmp; m6502_ICount -= 4; RD_ABY; SBC_NES;	  } /* 4 SBC ABY */
 #define n2a03_0d m6502_0d									/* 4 ORA ABS */
 #define n2a03_2d m6502_2d									/* 4 AND ABS */
 #define n2a03_4d m6502_4d									/* 4 EOR ABS */
-OP(6d) { int tmp; m6502_ICount -= 4; RD_ABS; ADC_NES;	  } /* 4 ADC ABS */
+OP(6d)
+{
+    int tmp;    /* 4 ADC ABS */
+    m6502_ICount -= 4;
+    RD_ABS;
+    ADC_NES;
+}
 #define n2a03_8d m6502_8d									/* 4 STA ABS */
 #define n2a03_ad m6502_ad									/* 4 LDA ABS */
 #define n2a03_cd m6502_cd									/* 4 CMP ABS */
-OP(ed) { int tmp; m6502_ICount -= 4; RD_ABS; SBC_NES;	  } /* 4 SBC ABS */
+OP(ed)
+{
+    int tmp;    /* 4 SBC ABS */
+    m6502_ICount -= 4;
+    RD_ABS;
+    SBC_NES;
+}
 
 #define n2a03_1d m6502_1d									/* 4 ORA ABX */
 #define n2a03_3d m6502_3d									/* 4 AND ABX */
 #define n2a03_5d m6502_5d									/* 4 EOR ABX */
-OP(7d) { int tmp; m6502_ICount -= 4; RD_ABX; ADC_NES;	  } /* 4 ADC ABX */
+OP(7d)
+{
+    int tmp;    /* 4 ADC ABX */
+    m6502_ICount -= 4;
+    RD_ABX;
+    ADC_NES;
+}
 #define n2a03_9d m6502_9d									/* 5 STA ABX */
 #define n2a03_bd m6502_bd									/* 4 LDA ABX */
 #define n2a03_dd m6502_dd									/* 4 CMP ABX */
-OP(fd) { int tmp; m6502_ICount -= 4; RD_ABX; SBC_NES;	  } /* 4 SBC ABX */
+OP(fd)
+{
+    int tmp;    /* 4 SBC ABX */
+    m6502_ICount -= 4;
+    RD_ABX;
+    SBC_NES;
+}
 
 #define n2a03_0e m6502_0e									/* 6 ASL ABS */
 #define n2a03_2e m6502_2e									/* 6 ROL ABS */
@@ -322,37 +418,37 @@ OP(fd) { int tmp; m6502_ICount -= 4; RD_ABX; SBC_NES;	  } /* 4 SBC ABX */
 #define n2a03_ff m6502_ff									/* 2 ILL */
 
 static void (*insn2a03[0x100])(void) = {
-	n2a03_00,n2a03_01,n2a03_02,n2a03_03,n2a03_04,n2a03_05,n2a03_06,n2a03_07,
-	n2a03_08,n2a03_09,n2a03_0a,n2a03_0b,n2a03_0c,n2a03_0d,n2a03_0e,n2a03_0f,
-	n2a03_10,n2a03_11,n2a03_12,n2a03_13,n2a03_14,n2a03_15,n2a03_16,n2a03_17,
-	n2a03_18,n2a03_19,n2a03_1a,n2a03_1b,n2a03_1c,n2a03_1d,n2a03_1e,n2a03_1f,
-	n2a03_20,n2a03_21,n2a03_22,n2a03_23,n2a03_24,n2a03_25,n2a03_26,n2a03_27,
-	n2a03_28,n2a03_29,n2a03_2a,n2a03_2b,n2a03_2c,n2a03_2d,n2a03_2e,n2a03_2f,
-	n2a03_30,n2a03_31,n2a03_32,n2a03_33,n2a03_34,n2a03_35,n2a03_36,n2a03_37,
-	n2a03_38,n2a03_39,n2a03_3a,n2a03_3b,n2a03_3c,n2a03_3d,n2a03_3e,n2a03_3f,
-	n2a03_40,n2a03_41,n2a03_42,n2a03_43,n2a03_44,n2a03_45,n2a03_46,n2a03_47,
-	n2a03_48,n2a03_49,n2a03_4a,n2a03_4b,n2a03_4c,n2a03_4d,n2a03_4e,n2a03_4f,
-	n2a03_50,n2a03_51,n2a03_52,n2a03_53,n2a03_54,n2a03_55,n2a03_56,n2a03_57,
-	n2a03_58,n2a03_59,n2a03_5a,n2a03_5b,n2a03_5c,n2a03_5d,n2a03_5e,n2a03_5f,
-	n2a03_60,n2a03_61,n2a03_62,n2a03_63,n2a03_64,n2a03_65,n2a03_66,n2a03_67,
-	n2a03_68,n2a03_69,n2a03_6a,n2a03_6b,n2a03_6c,n2a03_6d,n2a03_6e,n2a03_6f,
-	n2a03_70,n2a03_71,n2a03_72,n2a03_73,n2a03_74,n2a03_75,n2a03_76,n2a03_77,
-	n2a03_78,n2a03_79,n2a03_7a,n2a03_7b,n2a03_7c,n2a03_7d,n2a03_7e,n2a03_7f,
-	n2a03_80,n2a03_81,n2a03_82,n2a03_83,n2a03_84,n2a03_85,n2a03_86,n2a03_87,
-	n2a03_88,n2a03_89,n2a03_8a,n2a03_8b,n2a03_8c,n2a03_8d,n2a03_8e,n2a03_8f,
-	n2a03_90,n2a03_91,n2a03_92,n2a03_93,n2a03_94,n2a03_95,n2a03_96,n2a03_97,
-	n2a03_98,n2a03_99,n2a03_9a,n2a03_9b,n2a03_9c,n2a03_9d,n2a03_9e,n2a03_9f,
-	n2a03_a0,n2a03_a1,n2a03_a2,n2a03_a3,n2a03_a4,n2a03_a5,n2a03_a6,n2a03_a7,
-	n2a03_a8,n2a03_a9,n2a03_aa,n2a03_ab,n2a03_ac,n2a03_ad,n2a03_ae,n2a03_af,
-	n2a03_b0,n2a03_b1,n2a03_b2,n2a03_b3,n2a03_b4,n2a03_b5,n2a03_b6,n2a03_b7,
-	n2a03_b8,n2a03_b9,n2a03_ba,n2a03_bb,n2a03_bc,n2a03_bd,n2a03_be,n2a03_bf,
-	n2a03_c0,n2a03_c1,n2a03_c2,n2a03_c3,n2a03_c4,n2a03_c5,n2a03_c6,n2a03_c7,
-	n2a03_c8,n2a03_c9,n2a03_ca,n2a03_cb,n2a03_cc,n2a03_cd,n2a03_ce,n2a03_cf,
-	n2a03_d0,n2a03_d1,n2a03_d2,n2a03_d3,n2a03_d4,n2a03_d5,n2a03_d6,n2a03_d7,
-	n2a03_d8,n2a03_d9,n2a03_da,n2a03_db,n2a03_dc,n2a03_dd,n2a03_de,n2a03_df,
-	n2a03_e0,n2a03_e1,n2a03_e2,n2a03_e3,n2a03_e4,n2a03_e5,n2a03_e6,n2a03_e7,
-	n2a03_e8,n2a03_e9,n2a03_ea,n2a03_eb,n2a03_ec,n2a03_ed,n2a03_ee,n2a03_ef,
-	n2a03_f0,n2a03_f1,n2a03_f2,n2a03_f3,n2a03_f4,n2a03_f5,n2a03_f6,n2a03_f7,
-	n2a03_f8,n2a03_f9,n2a03_fa,n2a03_fb,n2a03_fc,n2a03_fd,n2a03_fe,n2a03_ff
+    n2a03_00, n2a03_01, n2a03_02, n2a03_03, n2a03_04, n2a03_05, n2a03_06, n2a03_07,
+    n2a03_08, n2a03_09, n2a03_0a, n2a03_0b, n2a03_0c, n2a03_0d, n2a03_0e, n2a03_0f,
+    n2a03_10, n2a03_11, n2a03_12, n2a03_13, n2a03_14, n2a03_15, n2a03_16, n2a03_17,
+    n2a03_18, n2a03_19, n2a03_1a, n2a03_1b, n2a03_1c, n2a03_1d, n2a03_1e, n2a03_1f,
+    n2a03_20, n2a03_21, n2a03_22, n2a03_23, n2a03_24, n2a03_25, n2a03_26, n2a03_27,
+    n2a03_28, n2a03_29, n2a03_2a, n2a03_2b, n2a03_2c, n2a03_2d, n2a03_2e, n2a03_2f,
+    n2a03_30, n2a03_31, n2a03_32, n2a03_33, n2a03_34, n2a03_35, n2a03_36, n2a03_37,
+    n2a03_38, n2a03_39, n2a03_3a, n2a03_3b, n2a03_3c, n2a03_3d, n2a03_3e, n2a03_3f,
+    n2a03_40, n2a03_41, n2a03_42, n2a03_43, n2a03_44, n2a03_45, n2a03_46, n2a03_47,
+    n2a03_48, n2a03_49, n2a03_4a, n2a03_4b, n2a03_4c, n2a03_4d, n2a03_4e, n2a03_4f,
+    n2a03_50, n2a03_51, n2a03_52, n2a03_53, n2a03_54, n2a03_55, n2a03_56, n2a03_57,
+    n2a03_58, n2a03_59, n2a03_5a, n2a03_5b, n2a03_5c, n2a03_5d, n2a03_5e, n2a03_5f,
+    n2a03_60, n2a03_61, n2a03_62, n2a03_63, n2a03_64, n2a03_65, n2a03_66, n2a03_67,
+    n2a03_68, n2a03_69, n2a03_6a, n2a03_6b, n2a03_6c, n2a03_6d, n2a03_6e, n2a03_6f,
+    n2a03_70, n2a03_71, n2a03_72, n2a03_73, n2a03_74, n2a03_75, n2a03_76, n2a03_77,
+    n2a03_78, n2a03_79, n2a03_7a, n2a03_7b, n2a03_7c, n2a03_7d, n2a03_7e, n2a03_7f,
+    n2a03_80, n2a03_81, n2a03_82, n2a03_83, n2a03_84, n2a03_85, n2a03_86, n2a03_87,
+    n2a03_88, n2a03_89, n2a03_8a, n2a03_8b, n2a03_8c, n2a03_8d, n2a03_8e, n2a03_8f,
+    n2a03_90, n2a03_91, n2a03_92, n2a03_93, n2a03_94, n2a03_95, n2a03_96, n2a03_97,
+    n2a03_98, n2a03_99, n2a03_9a, n2a03_9b, n2a03_9c, n2a03_9d, n2a03_9e, n2a03_9f,
+    n2a03_a0, n2a03_a1, n2a03_a2, n2a03_a3, n2a03_a4, n2a03_a5, n2a03_a6, n2a03_a7,
+    n2a03_a8, n2a03_a9, n2a03_aa, n2a03_ab, n2a03_ac, n2a03_ad, n2a03_ae, n2a03_af,
+    n2a03_b0, n2a03_b1, n2a03_b2, n2a03_b3, n2a03_b4, n2a03_b5, n2a03_b6, n2a03_b7,
+    n2a03_b8, n2a03_b9, n2a03_ba, n2a03_bb, n2a03_bc, n2a03_bd, n2a03_be, n2a03_bf,
+    n2a03_c0, n2a03_c1, n2a03_c2, n2a03_c3, n2a03_c4, n2a03_c5, n2a03_c6, n2a03_c7,
+    n2a03_c8, n2a03_c9, n2a03_ca, n2a03_cb, n2a03_cc, n2a03_cd, n2a03_ce, n2a03_cf,
+    n2a03_d0, n2a03_d1, n2a03_d2, n2a03_d3, n2a03_d4, n2a03_d5, n2a03_d6, n2a03_d7,
+    n2a03_d8, n2a03_d9, n2a03_da, n2a03_db, n2a03_dc, n2a03_dd, n2a03_de, n2a03_df,
+    n2a03_e0, n2a03_e1, n2a03_e2, n2a03_e3, n2a03_e4, n2a03_e5, n2a03_e6, n2a03_e7,
+    n2a03_e8, n2a03_e9, n2a03_ea, n2a03_eb, n2a03_ec, n2a03_ed, n2a03_ee, n2a03_ef,
+    n2a03_f0, n2a03_f1, n2a03_f2, n2a03_f3, n2a03_f4, n2a03_f5, n2a03_f6, n2a03_f7,
+    n2a03_f8, n2a03_f9, n2a03_fa, n2a03_fb, n2a03_fc, n2a03_fd, n2a03_fe, n2a03_ff
 };
 

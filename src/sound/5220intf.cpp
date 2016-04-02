@@ -44,7 +44,7 @@ static void tms5220_update(int ch, INT16 *buffer, int length);
 
 int tms5220_sh_start(const struct MachineSound *msound)
 {
-    intf = (const struct TMS5220interface *)msound->sound_interface;
+    intf = (const struct TMS5220interface *) msound->sound_interface;
 
     /* reset the 5220 */
     tms5220_reset();
@@ -56,10 +56,10 @@ int tms5220_sh_start(const struct MachineSound *msound)
     source_pos = 0;
     last_sample = curr_sample = 0;
 
-	/* initialize a stream */
-	stream = stream_init("TMS5220", intf->mixing_level, Machine->sample_rate, 0, tms5220_update);
-	if (stream == -1)
-		return 1;
+    /* initialize a stream */
+    stream = stream_init("TMS5220", intf->mixing_level, Machine->sample_rate, 0, tms5220_update);
+    if (stream == -1)
+        return 1;
 
     /* request a sound channel */
     return 0;
@@ -97,7 +97,7 @@ void tms5220_sh_update(void)
 
 ***********************************************************************************************/
 
-WRITE_HANDLER( tms5220_data_w )
+WRITE_HANDLER(tms5220_data_w)
 {
     /* bring up to date first */
 #ifndef MAME_FASTSOUND
@@ -119,7 +119,7 @@ WRITE_HANDLER( tms5220_data_w )
 
 ***********************************************************************************************/
 
-READ_HANDLER( tms5220_status_r )
+READ_HANDLER(tms5220_status_r)
 {
     /* bring up to date first */
 #ifndef MAME_FASTSOUND
@@ -187,66 +187,60 @@ int tms5220_int_r(void)
 
 static void tms5220_update(int ch, INT16 *buffer, int length)
 {
-	INT16 sample_data[MAX_SAMPLE_CHUNK], *curr_data = sample_data;
-	INT16 prev = last_sample, curr = curr_sample;
-	UINT32 final_pos;
-	UINT32 new_samples;
+    INT16 sample_data[MAX_SAMPLE_CHUNK], *curr_data = sample_data;
+    INT16 prev = last_sample, curr = curr_sample;
+    UINT32 final_pos;
+    UINT32 new_samples;
 
-	/* finish off the current sample */
-	if (source_pos > 0)
-	{
-		/* interpolate */
-		while (length > 0 && source_pos < FRAC_ONE)
-		{
-			*buffer++ = (((INT32)prev * (FRAC_ONE - source_pos)) + ((INT32)curr * source_pos)) >> FRAC_BITS;
-			source_pos += source_step;
-			length--;
-		}
+    /* finish off the current sample */
+    if (source_pos > 0) {
+        /* interpolate */
+        while (length > 0 && source_pos < FRAC_ONE) {
+            *buffer++ = (((INT32) prev * (FRAC_ONE - source_pos)) + ((INT32) curr * source_pos)) >> FRAC_BITS;
+            source_pos += source_step;
+            length--;
+        }
 
-		/* if we're over, continue; otherwise, we're done */
-		if (source_pos >= FRAC_ONE)
-			source_pos -= FRAC_ONE;
-		else
-		{
-			tms5220_process(sample_data, 0);
-			return;
-		}
-	}
+        /* if we're over, continue; otherwise, we're done */
+        if (source_pos >= FRAC_ONE)
+            source_pos -= FRAC_ONE;
+        else {
+            tms5220_process(sample_data, 0);
+            return;
+        }
+    }
 
-	/* compute how many new samples we need */
-	final_pos = source_pos + length * source_step;
-	new_samples = (final_pos + FRAC_ONE - 1) >> FRAC_BITS;
-	if (new_samples > MAX_SAMPLE_CHUNK)
-		new_samples = MAX_SAMPLE_CHUNK;
+    /* compute how many new samples we need */
+    final_pos = source_pos + length * source_step;
+    new_samples = (final_pos + FRAC_ONE - 1) >> FRAC_BITS;
+    if (new_samples > MAX_SAMPLE_CHUNK)
+        new_samples = MAX_SAMPLE_CHUNK;
 
-	/* generate them into our buffer */
-	tms5220_process(sample_data, new_samples);
-	prev = curr;
-	curr = *curr_data++;
+    /* generate them into our buffer */
+    tms5220_process(sample_data, new_samples);
+    prev = curr;
+    curr = *curr_data++;
 
-	/* then sample-rate convert with linear interpolation */
-	while (length > 0)
-	{
-		/* interpolate */
-		while (length > 0 && source_pos < FRAC_ONE)
-		{
-			*buffer++ = (((INT32)prev * (FRAC_ONE - source_pos)) + ((INT32)curr * source_pos)) >> FRAC_BITS;
-			source_pos += source_step;
-			length--;
-		}
+    /* then sample-rate convert with linear interpolation */
+    while (length > 0) {
+        /* interpolate */
+        while (length > 0 && source_pos < FRAC_ONE) {
+            *buffer++ = (((INT32) prev * (FRAC_ONE - source_pos)) + ((INT32) curr * source_pos)) >> FRAC_BITS;
+            source_pos += source_step;
+            length--;
+        }
 
-		/* if we're over, grab the next samples */
-		if (source_pos >= FRAC_ONE)
-		{
-			source_pos -= FRAC_ONE;
-			prev = curr;
-			curr = *curr_data++;
-		}
-	}
+        /* if we're over, grab the next samples */
+        if (source_pos >= FRAC_ONE) {
+            source_pos -= FRAC_ONE;
+            prev = curr;
+            curr = *curr_data++;
+        }
+    }
 
-	/* remember the last samples */
-	last_sample = prev;
-	curr_sample = curr;
+    /* remember the last samples */
+    last_sample = prev;
+    curr_sample = curr;
 }
 
 
@@ -259,12 +253,12 @@ static void tms5220_update(int ch, INT16 *buffer, int length)
 
 void tms5220_set_frequency(int frequency)
 {
-	/* skip if output frequency is zero */
-	if (!Machine->sample_rate)
-		return;
+    /* skip if output frequency is zero */
+    if (!Machine->sample_rate)
+        return;
 
-	/* update the stream and compute a new step size */
-	if (stream != -1)
-		stream_update(stream, 0);
-	source_step = (UINT32)((float)(frequency / 80) * (float)FRAC_ONE / (float)Machine->sample_rate);
+    /* update the stream and compute a new step size */
+    if (stream != -1)
+        stream_update(stream, 0);
+    source_step = (UINT32)((float)(frequency / 80) * (float) FRAC_ONE / (float) Machine->sample_rate);
 }

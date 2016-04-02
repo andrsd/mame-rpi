@@ -65,197 +65,197 @@
 
 void pacman_init_machine(void);
 
-static int counter=0;
+static int counter = 0;
 
 
 static void theglob_decrypt_rom_8(void)
 {
-	int oldbyte,inverted_oldbyte,newbyte;
-	int mem;
-	unsigned char *RAM;
+    int oldbyte, inverted_oldbyte, newbyte;
+    int mem;
+    unsigned char *RAM;
 
-	RAM = memory_region(REGION_CPU1);
+    RAM = memory_region(REGION_CPU1);
 
 
-	for (mem=0;mem<0x4000;mem++)
-	{
-		oldbyte = RAM[mem];
-		inverted_oldbyte = ~oldbyte;
+    for (mem = 0; mem < 0x4000; mem++) {
+        oldbyte = RAM[mem];
+        inverted_oldbyte = ~oldbyte;
 
-		/*	Note: D2 is inverted and connected to D1, D5 is inverted and
-			connected to D0.  The other six data bits are converted by a
-			PAL10H8 driven by the counter. */
-		newbyte = 0;
+        /*	Note: D2 is inverted and connected to D1, D5 is inverted and
+        	connected to D0.  The other six data bits are converted by a
+        	PAL10H8 driven by the counter. */
+        newbyte = 0;
 
-		/* Direct inversion */
-		newbyte  = (inverted_oldbyte & 0x04) >> 1;
-		newbyte |= (inverted_oldbyte & 0x20) >> 5;
-		/* PAL */
-		newbyte |= (oldbyte & 0x01) << 5;
-		newbyte |= (oldbyte & 0x02) << 1;
-		newbyte |= (inverted_oldbyte & 0x08) << 4;
-		newbyte |= (inverted_oldbyte & 0x10) >> 1;
-		newbyte |= (inverted_oldbyte & 0x40) >> 2;
-		newbyte |= (inverted_oldbyte & 0x80) >> 1;
+        /* Direct inversion */
+        newbyte  = (inverted_oldbyte & 0x04) >> 1;
+        newbyte |= (inverted_oldbyte & 0x20) >> 5;
+        /* PAL */
+        newbyte |= (oldbyte & 0x01) << 5;
+        newbyte |= (oldbyte & 0x02) << 1;
+        newbyte |= (inverted_oldbyte & 0x08) << 4;
+        newbyte |= (inverted_oldbyte & 0x10) >> 1;
+        newbyte |= (inverted_oldbyte & 0x40) >> 2;
+        newbyte |= (inverted_oldbyte & 0x80) >> 1;
 
-		RAM[mem + 0x10000] = newbyte;
-	}
+        RAM[mem + 0x10000] = newbyte;
+    }
 
-	return;
+    return;
 }
 
 
 static void theglob_decrypt_rom_9(void)
 {
-	int oldbyte,inverted_oldbyte,newbyte;
-	int mem;
-	unsigned char *RAM;
+    int oldbyte, inverted_oldbyte, newbyte;
+    int mem;
+    unsigned char *RAM;
 
-	RAM = memory_region(REGION_CPU1);
+    RAM = memory_region(REGION_CPU1);
 
-	for (mem=0;mem<0x4000;mem++)
-	{
-		oldbyte = RAM[mem];
-		inverted_oldbyte = ~oldbyte;
+    for (mem = 0; mem < 0x4000; mem++) {
+        oldbyte = RAM[mem];
+        inverted_oldbyte = ~oldbyte;
 
-		/*	Note: D2 is inverted and connected to D1, D5 is inverted and
-			connected to D0.  The other six data bits are converted by a
-			PAL10H8 driven by the counter. */
-		newbyte = 0;
+        /*	Note: D2 is inverted and connected to D1, D5 is inverted and
+        	connected to D0.  The other six data bits are converted by a
+        	PAL10H8 driven by the counter. */
+        newbyte = 0;
 
-		/* Direct inversion */
-		newbyte  = (inverted_oldbyte & 0x04) >> 1;
-		newbyte |= (inverted_oldbyte & 0x20) >> 5;
-		/* PAL */
-		newbyte |= (oldbyte & 0x01) << 5;
-		newbyte |= (inverted_oldbyte & 0x02) << 6;
-		newbyte |= (oldbyte & 0x08) << 1;
-		newbyte |= (inverted_oldbyte & 0x10) >> 1;
-		newbyte |= (inverted_oldbyte & 0x40) >> 4;
-		newbyte |= (inverted_oldbyte & 0x80) >> 1;
+        /* Direct inversion */
+        newbyte  = (inverted_oldbyte & 0x04) >> 1;
+        newbyte |= (inverted_oldbyte & 0x20) >> 5;
+        /* PAL */
+        newbyte |= (oldbyte & 0x01) << 5;
+        newbyte |= (inverted_oldbyte & 0x02) << 6;
+        newbyte |= (oldbyte & 0x08) << 1;
+        newbyte |= (inverted_oldbyte & 0x10) >> 1;
+        newbyte |= (inverted_oldbyte & 0x40) >> 4;
+        newbyte |= (inverted_oldbyte & 0x80) >> 1;
 
-		RAM[mem + 0x14000] = newbyte;
-	}
+        RAM[mem + 0x14000] = newbyte;
+    }
 
-	return;
+    return;
 }
 
 static void theglob_decrypt_rom_A(void)
 {
-	int oldbyte,inverted_oldbyte,newbyte;
-	int mem;
-	unsigned char *RAM;
+    int oldbyte, inverted_oldbyte, newbyte;
+    int mem;
+    unsigned char *RAM;
 
-	RAM = memory_region(REGION_CPU1);
+    RAM = memory_region(REGION_CPU1);
 
-	for (mem=0;mem<0x4000;mem++)
-	{
-		oldbyte = RAM[mem];
-		inverted_oldbyte = ~oldbyte;
+    for (mem = 0; mem < 0x4000; mem++) {
+        oldbyte = RAM[mem];
+        inverted_oldbyte = ~oldbyte;
 
-		/*	Note: D2 is inverted and connected to D1, D5 is inverted and
-			connected to D0.  The other six data bits are converted by a
-			PAL10H8 driven by the counter. */
-		newbyte = 0;
+        /*	Note: D2 is inverted and connected to D1, D5 is inverted and
+        	connected to D0.  The other six data bits are converted by a
+        	PAL10H8 driven by the counter. */
+        newbyte = 0;
 
-		/* Direct inversion */
-		newbyte  = (inverted_oldbyte & 0x04) >> 1;
-		newbyte |= (inverted_oldbyte & 0x20) >> 5;
-		/* PAL */
-		newbyte |= (inverted_oldbyte & 0x01) << 6;
-		newbyte |= (oldbyte & 0x02) << 1;
-		newbyte |= (inverted_oldbyte & 0x08) << 4;
-		newbyte |= (inverted_oldbyte & 0x10) << 1;
-		newbyte |= (inverted_oldbyte & 0x40) >> 2;
-		newbyte |= (oldbyte & 0x80) >> 4;
+        /* Direct inversion */
+        newbyte  = (inverted_oldbyte & 0x04) >> 1;
+        newbyte |= (inverted_oldbyte & 0x20) >> 5;
+        /* PAL */
+        newbyte |= (inverted_oldbyte & 0x01) << 6;
+        newbyte |= (oldbyte & 0x02) << 1;
+        newbyte |= (inverted_oldbyte & 0x08) << 4;
+        newbyte |= (inverted_oldbyte & 0x10) << 1;
+        newbyte |= (inverted_oldbyte & 0x40) >> 2;
+        newbyte |= (oldbyte & 0x80) >> 4;
 
-		RAM[mem + 0x18000] = newbyte;
-	}
+        RAM[mem + 0x18000] = newbyte;
+    }
 
-	return;
+    return;
 }
 
 static void theglob_decrypt_rom_B(void)
 {
-	int oldbyte,inverted_oldbyte,newbyte;
-	int mem;
-	unsigned char *RAM;
+    int oldbyte, inverted_oldbyte, newbyte;
+    int mem;
+    unsigned char *RAM;
 
-	RAM = memory_region(REGION_CPU1);
+    RAM = memory_region(REGION_CPU1);
 
-	for (mem=0;mem<0x4000;mem++)
-	{
-		oldbyte = RAM[mem];
-		inverted_oldbyte = ~oldbyte;
+    for (mem = 0; mem < 0x4000; mem++) {
+        oldbyte = RAM[mem];
+        inverted_oldbyte = ~oldbyte;
 
-		/*	Note: D2 is inverted and connected to D1, D5 is inverted and
-			connected to D0.  The other six data bits are converted by a
-			PAL10H8 driven by the counter. */
-		newbyte = 0;
+        /*	Note: D2 is inverted and connected to D1, D5 is inverted and
+        	connected to D0.  The other six data bits are converted by a
+        	PAL10H8 driven by the counter. */
+        newbyte = 0;
 
-		/* Direct inversion */
-		newbyte  = (inverted_oldbyte & 0x04) >> 1;
-		newbyte |= (inverted_oldbyte & 0x20) >> 5;
-		/* PAL */
-		newbyte |= (inverted_oldbyte & 0x01) << 6;
-		newbyte |= (inverted_oldbyte & 0x02) << 6;
-		newbyte |= (oldbyte & 0x08) << 1;
-		newbyte |= (inverted_oldbyte & 0x10) << 1;
-		newbyte |= (inverted_oldbyte & 0x40) >> 4;
-		newbyte |= (oldbyte & 0x80) >> 4;
+        /* Direct inversion */
+        newbyte  = (inverted_oldbyte & 0x04) >> 1;
+        newbyte |= (inverted_oldbyte & 0x20) >> 5;
+        /* PAL */
+        newbyte |= (inverted_oldbyte & 0x01) << 6;
+        newbyte |= (inverted_oldbyte & 0x02) << 6;
+        newbyte |= (oldbyte & 0x08) << 1;
+        newbyte |= (inverted_oldbyte & 0x10) << 1;
+        newbyte |= (inverted_oldbyte & 0x40) >> 4;
+        newbyte |= (oldbyte & 0x80) >> 4;
 
-		RAM[mem + 0x1C000] = newbyte;
-	}
+        RAM[mem + 0x1C000] = newbyte;
+    }
 
-	return;
+    return;
 }
 
 
-READ_HANDLER( theglob_decrypt_rom )
+READ_HANDLER(theglob_decrypt_rom)
 {
-	unsigned char *RAM = memory_region(REGION_CPU1);
+    unsigned char *RAM = memory_region(REGION_CPU1);
 
-	if (offset & 0x01)
-	{
-		counter = counter - 1;
-		if (counter < 0)
-			counter = 0x0F;
-	}
-	else
-	{
-		counter = (counter + 1) & 0x0F;
-	}
+    if (offset & 0x01) {
+        counter = counter - 1;
+        if (counter < 0)
+            counter = 0x0F;
+    } else {
+        counter = (counter + 1) & 0x0F;
+    }
 
-	switch(counter)
-	{
-		case 0x08:	cpu_setbank (1, &RAM[0x10000]);		break;
-		case 0x09:	cpu_setbank (1, &RAM[0x14000]);		break;
-		case 0x0A:	cpu_setbank (1, &RAM[0x18000]);		break;
-		case 0x0B:	cpu_setbank (1, &RAM[0x1C000]);		break;
-		default:
-			//logerror("Invalid counter = %02X\n",counter);
-			break;
-	}
+    switch (counter) {
+    case 0x08:
+        cpu_setbank(1, &RAM[0x10000]);
+        break;
+    case 0x09:
+        cpu_setbank(1, &RAM[0x14000]);
+        break;
+    case 0x0A:
+        cpu_setbank(1, &RAM[0x18000]);
+        break;
+    case 0x0B:
+        cpu_setbank(1, &RAM[0x1C000]);
+        break;
+    default:
+        //logerror("Invalid counter = %02X\n",counter);
+        break;
+    }
 
-	return 0;
+    return 0;
 }
 
 
 void theglob_init_machine(void)
 {
-	unsigned char *RAM = memory_region(REGION_CPU1);
+    unsigned char *RAM = memory_region(REGION_CPU1);
 
-	/* While the PAL supports up to 16 decryption methods, only four
-		are actually used in the PAL.  Therefore, we'll take a little
-		memory overhead and decrypt the ROMs using each method in advance. */
-	theglob_decrypt_rom_8();
-	theglob_decrypt_rom_9();
-	theglob_decrypt_rom_A();
-	theglob_decrypt_rom_B();
+    /* While the PAL supports up to 16 decryption methods, only four
+    	are actually used in the PAL.  Therefore, we'll take a little
+    	memory overhead and decrypt the ROMs using each method in advance. */
+    theglob_decrypt_rom_8();
+    theglob_decrypt_rom_9();
+    theglob_decrypt_rom_A();
+    theglob_decrypt_rom_B();
 
-	/* The initial state of the counter is 0x0A */
-	counter = 0x0A;
-	cpu_setbank (1, &RAM[0x18000]);
+    /* The initial state of the counter is 0x0A */
+    counter = 0x0A;
+    cpu_setbank(1, &RAM[0x18000]);
 
-	pacman_init_machine();
+    pacman_init_machine();
 }

@@ -33,7 +33,11 @@
 #define m65c02_20 m6502_20									/* 6 JSR ABS */
 #define m65c02_40 m6502_40									/* 6 RTI */
 #define m65c02_60 m6502_60									/* 6 RTS */
-OP(80) { int tmp;							 BRA(1);	  } /* 2 BRA */
+OP(80)
+{
+    int tmp;							    /* 2 BRA */
+    BRA(1);
+}
 #define m65c02_a0 m6502_a0									/* 2 LDY IMM */
 #define m65c02_c0 m6502_c0									/* 2 CPY IMM */
 #define m65c02_e0 m6502_e0									/* 2 CPX IMM */
@@ -75,14 +79,62 @@ OP(80) { int tmp;							 BRA(1);	  } /* 2 BRA */
 #define m65c02_e2 m6502_e2									/* 2 ILL */
 
 #ifndef CORE_M65CE02
-OP(12) { int tmp; m6502_ICount -= 3; RD_ZPI; ORA;		  } /* 3 ORA ZPI */
-OP(32) { int tmp; m6502_ICount -= 3; RD_ZPI; AND;		  } /* 3 AND ZPI */
-OP(52) { int tmp; m6502_ICount -= 3; RD_ZPI; EOR;		  } /* 3 EOR ZPI */
-OP(72) { int tmp; m6502_ICount -= 3; RD_ZPI; ADC;		  } /* 3 ADC ZPI */
-OP(92) { int tmp; m6502_ICount -= 4;		 STA; WR_ZPI; } /* 3 STA ZPI */
-OP(b2) { int tmp; m6502_ICount -= 3; RD_ZPI; LDA;		  } /* 3 LDA ZPI */
-OP(d2) { int tmp; m6502_ICount -= 3; RD_ZPI; CMP;		  } /* 3 CMP ZPI */
-OP(f2) { int tmp; m6502_ICount -= 3; RD_ZPI; SBC;		  } /* 3 SBC ZPI */
+OP(12)
+{
+    int tmp;    /* 3 ORA ZPI */
+    m6502_ICount -= 3;
+    RD_ZPI;
+    ORA;
+}
+OP(32)
+{
+    int tmp;    /* 3 AND ZPI */
+    m6502_ICount -= 3;
+    RD_ZPI;
+    AND;
+}
+OP(52)
+{
+    int tmp;    /* 3 EOR ZPI */
+    m6502_ICount -= 3;
+    RD_ZPI;
+    EOR;
+}
+OP(72)
+{
+    int tmp;    /* 3 ADC ZPI */
+    m6502_ICount -= 3;
+    RD_ZPI;
+    ADC;
+}
+OP(92)
+{
+    int tmp;    /* 3 STA ZPI */
+    m6502_ICount -= 4;
+    STA;
+    WR_ZPI;
+}
+OP(b2)
+{
+    int tmp;    /* 3 LDA ZPI */
+    m6502_ICount -= 3;
+    RD_ZPI;
+    LDA;
+}
+OP(d2)
+{
+    int tmp;    /* 3 CMP ZPI */
+    m6502_ICount -= 3;
+    RD_ZPI;
+    CMP;
+}
+OP(f2)
+{
+    int tmp;    /* 3 SBC ZPI */
+    m6502_ICount -= 3;
+    RD_ZPI;
+    SBC;
+}
 #endif
 
 #define m65c02_03 m6502_03									/* 2 ILL */
@@ -103,19 +155,51 @@ OP(f2) { int tmp; m6502_ICount -= 3; RD_ZPI; SBC;		  } /* 3 SBC ZPI */
 #define m65c02_d3 m6502_d3									/* 2 ILL */
 #define m65c02_f3 m6502_f3									/* 2 ILL */
 
-OP(04) { int tmp; m6502_ICount -= 3; RD_ZPG; TSB; WB_EA;  } /* 3 TSB ZPG */
+OP(04)
+{
+    int tmp;    /* 3 TSB ZPG */
+    m6502_ICount -= 3;
+    RD_ZPG;
+    TSB;
+    WB_EA;
+}
 #define m65c02_24 m6502_24									/* 3 BIT ZPG */
 #define m65c02_44 m6502_44									/* 2 ILL */
-OP(64) { int tmp; m6502_ICount -= 2;		 STZ; WR_ZPG; } /* 3 STZ ZPG */
+OP(64)
+{
+    int tmp;    /* 3 STZ ZPG */
+    m6502_ICount -= 2;
+    STZ;
+    WR_ZPG;
+}
 #define m65c02_84 m6502_84									/* 3 STY ZPG */
 #define m65c02_a4 m6502_a4									/* 3 LDY ZPG */
 #define m65c02_c4 m6502_c4									/* 3 CPY ZPG */
 #define m65c02_e4 m6502_e4									/* 3 CPX ZPG */
 
-OP(14) { int tmp; m6502_ICount -= 3; RD_ZPG; TRB; WB_EA;  } /* 3 TRB ZPG */
-OP(34) { int tmp; m6502_ICount -= 4; RD_ZPX; BIT;		  } /* 4 BIT ZPX */
+OP(14)
+{
+    int tmp;    /* 3 TRB ZPG */
+    m6502_ICount -= 3;
+    RD_ZPG;
+    TRB;
+    WB_EA;
+}
+OP(34)
+{
+    int tmp;    /* 4 BIT ZPX */
+    m6502_ICount -= 4;
+    RD_ZPX;
+    BIT;
+}
 #define m65c02_54 m6502_54									/* 2 ILL */
-OP(74) { int tmp; m6502_ICount -= 4;		 STZ; WR_ZPX; } /* 4 STZ ZPX */
+OP(74)
+{
+    int tmp;    /* 4 STZ ZPX */
+    m6502_ICount -= 4;
+    STZ;
+    WR_ZPX;
+}
 #define m65c02_94 m6502_94									/* 4 STY ZPX */
 #define m65c02_b4 m6502_b4									/* 4 LDY ZPX */
 #define m65c02_d4 m6502_d4									/* 2 ILL */
@@ -157,23 +241,135 @@ OP(74) { int tmp; m6502_ICount -= 4;		 STZ; WR_ZPX; } /* 4 STZ ZPX */
 #define m65c02_d6 m6502_d6									/* 6 DEC ZPX */
 #define m65c02_f6 m6502_f6									/* 6 INC ZPX */
 
-OP(07) { int tmp; m6502_ICount -= 5; RD_ZPG; RMB(0);WB_EA;} /* 5 RMB0 ZPG */
-OP(27) { int tmp; m6502_ICount -= 5; RD_ZPG; RMB(2);WB_EA;} /* 5 RMB2 ZPG */
-OP(47) { int tmp; m6502_ICount -= 5; RD_ZPG; RMB(4);WB_EA;} /* 5 RMB4 ZPG */
-OP(67) { int tmp; m6502_ICount -= 5; RD_ZPG; RMB(6);WB_EA;} /* 5 RMB6 ZPG */
-OP(87) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(0);WB_EA;} /* 5 SMB0 ZPG */
-OP(a7) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(2);WB_EA;} /* 5 SMB2 ZPG */
-OP(c7) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(4);WB_EA;} /* 5 SMB4 ZPG */
-OP(e7) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(6);WB_EA;} /* 5 SMB6 ZPG */
+OP(07)
+{
+    int tmp;    /* 5 RMB0 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    RMB(0);
+    WB_EA;
+}
+OP(27)
+{
+    int tmp;    /* 5 RMB2 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    RMB(2);
+    WB_EA;
+}
+OP(47)
+{
+    int tmp;    /* 5 RMB4 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    RMB(4);
+    WB_EA;
+}
+OP(67)
+{
+    int tmp;    /* 5 RMB6 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    RMB(6);
+    WB_EA;
+}
+OP(87)
+{
+    int tmp;    /* 5 SMB0 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    SMB(0);
+    WB_EA;
+}
+OP(a7)
+{
+    int tmp;    /* 5 SMB2 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    SMB(2);
+    WB_EA;
+}
+OP(c7)
+{
+    int tmp;    /* 5 SMB4 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    SMB(4);
+    WB_EA;
+}
+OP(e7)
+{
+    int tmp;    /* 5 SMB6 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    SMB(6);
+    WB_EA;
+}
 
-OP(17) { int tmp; m6502_ICount -= 5; RD_ZPG; RMB(1);WB_EA;} /* 5 RMB1 ZPG */
-OP(37) { int tmp; m6502_ICount -= 5; RD_ZPG; RMB(3);WB_EA;} /* 5 RMB3 ZPG */
-OP(57) { int tmp; m6502_ICount -= 5; RD_ZPG; RMB(5);WB_EA;} /* 5 RMB5 ZPG */
-OP(77) { int tmp; m6502_ICount -= 5; RD_ZPG; RMB(7);WB_EA;} /* 5 RMB7 ZPG */
-OP(97) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(1);WB_EA;} /* 5 SMB1 ZPG */
-OP(b7) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(3);WB_EA;} /* 5 SMB3 ZPG */
-OP(d7) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(5);WB_EA;} /* 5 SMB5 ZPG */
-OP(f7) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(7);WB_EA;} /* 5 SMB7 ZPG */
+OP(17)
+{
+    int tmp;    /* 5 RMB1 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    RMB(1);
+    WB_EA;
+}
+OP(37)
+{
+    int tmp;    /* 5 RMB3 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    RMB(3);
+    WB_EA;
+}
+OP(57)
+{
+    int tmp;    /* 5 RMB5 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    RMB(5);
+    WB_EA;
+}
+OP(77)
+{
+    int tmp;    /* 5 RMB7 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    RMB(7);
+    WB_EA;
+}
+OP(97)
+{
+    int tmp;    /* 5 SMB1 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    SMB(1);
+    WB_EA;
+}
+OP(b7)
+{
+    int tmp;    /* 5 SMB3 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    SMB(3);
+    WB_EA;
+}
+OP(d7)
+{
+    int tmp;    /* 5 SMB5 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    SMB(5);
+    WB_EA;
+}
+OP(f7)
+{
+    int tmp;    /* 5 SMB7 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    SMB(7);
+    WB_EA;
+}
 
 #define m65c02_08 m6502_08									/* 3 PHP */
 #define m65c02_28 m6502_28									/* 4 PLP */
@@ -197,7 +393,13 @@ OP(f7) { int tmp; m6502_ICount -= 5; RD_ZPG; SMB(7);WB_EA;} /* 5 SMB7 ZPG */
 #define m65c02_29 m6502_29									/* 2 AND IMM */
 #define m65c02_49 m6502_49									/* 2 EOR IMM */
 #define m65c02_69 m6502_69									/* 2 ADC IMM */
-OP(89) { int tmp; m6502_ICount -= 2; RD_IMM; BIT;		  } /* 2 BIT IMM */
+OP(89)
+{
+    int tmp;    /* 2 BIT IMM */
+    m6502_ICount -= 2;
+    RD_IMM;
+    BIT;
+}
 #define m65c02_a9 m6502_a9									/* 2 LDA IMM */
 #define m65c02_c9 m6502_c9									/* 2 CMP IMM */
 #define m65c02_e9 m6502_e9									/* 2 SBC IMM */
@@ -220,14 +422,38 @@ OP(89) { int tmp; m6502_ICount -= 2; RD_IMM; BIT;		  } /* 2 BIT IMM */
 #define m65c02_ca m6502_ca									/* 2 DEX */
 #define m65c02_ea m6502_ea									/* 2 NOP */
 
-OP(1a) {		  m6502_ICount -= 2;		 INA;		  } /* 2 INA */
-OP(3a) {		  m6502_ICount -= 2;		 DEA;		  } /* 2 DEA */
-OP(5a) {		  m6502_ICount -= 3;		 PHY;		  } /* 3 PHY */
-OP(7a) {		  m6502_ICount -= 4;		 PLY;		  } /* 4 PLY */
+OP(1a)
+{
+    m6502_ICount -= 2;		    /* 2 INA */
+    INA;
+}
+OP(3a)
+{
+    m6502_ICount -= 2;		    /* 2 DEA */
+    DEA;
+}
+OP(5a)
+{
+    m6502_ICount -= 3;		    /* 3 PHY */
+    PHY;
+}
+OP(7a)
+{
+    m6502_ICount -= 4;		    /* 4 PLY */
+    PLY;
+}
 #define m65c02_9a m6502_9a									/* 2 TXS */
 #define m65c02_ba m6502_ba									/* 2 TSX */
-OP(da) {		  m6502_ICount -= 3;		 PHX;		  } /* 3 PHX */
-OP(fa) {		  m6502_ICount -= 4;		 PLX;		  } /* 4 PLX */
+OP(da)
+{
+    m6502_ICount -= 3;		    /* 3 PHX */
+    PHX;
+}
+OP(fa)
+{
+    m6502_ICount -= 4;		    /* 4 PLX */
+    PLX;
+}
 
 #define m65c02_0b m6502_0b									/* 2 ILL */
 #define m65c02_2b m6502_2b									/* 2 ILL */
@@ -247,20 +473,58 @@ OP(fa) {		  m6502_ICount -= 4;		 PLX;		  } /* 4 PLX */
 #define m65c02_db m6502_db									/* 2 ILL */
 #define m65c02_fb m6502_fb									/* 2 ILL */
 
-OP(0c) { int tmp; m6502_ICount -= 2; RD_ABS; TSB; WB_EA;  } /* 4 TSB ABS */
+OP(0c)
+{
+    int tmp;    /* 4 TSB ABS */
+    m6502_ICount -= 2;
+    RD_ABS;
+    TSB;
+    WB_EA;
+}
 #define m65c02_2c m6502_2c									/* 4 BIT ABS */
 #define m65c02_4c m6502_4c									/* 3 JMP ABS */
-OP(6c) { int tmp; m6502_ICount -= 5; EA_IND; JMP;		  } /* 5 JMP IND */
+OP(6c)
+{
+    int tmp;    /* 5 JMP IND */
+    m6502_ICount -= 5;
+    EA_IND;
+    JMP;
+}
 #define m65c02_8c m6502_8c									/* 4 STY ABS */
 #define m65c02_ac m6502_ac									/* 4 LDY ABS */
 #define m65c02_cc m6502_cc									/* 4 CPY ABS */
 #define m65c02_ec m6502_ec									/* 4 CPX ABS */
 
-OP(1c) { int tmp; m6502_ICount -= 4; RD_ABS; TRB; WB_EA;  } /* 4 TRB ABS */
-OP(3c) { int tmp; m6502_ICount -= 4; RD_ABX; BIT;		  } /* 4 BIT ABX */
+OP(1c)
+{
+    int tmp;    /* 4 TRB ABS */
+    m6502_ICount -= 4;
+    RD_ABS;
+    TRB;
+    WB_EA;
+}
+OP(3c)
+{
+    int tmp;    /* 4 BIT ABX */
+    m6502_ICount -= 4;
+    RD_ABX;
+    BIT;
+}
 #define m65c02_5c m6502_5c									/* 2 ILL */
-OP(7c) { int tmp; m6502_ICount -= 2; EA_IAX; JMP;		  } /* 6 JMP IAX */
-OP(9c) { int tmp; m6502_ICount -= 4;		 STZ; WR_ABS; } /* 4 STZ ABS */
+OP(7c)
+{
+    int tmp;    /* 6 JMP IAX */
+    m6502_ICount -= 2;
+    EA_IAX;
+    JMP;
+}
+OP(9c)
+{
+    int tmp;    /* 4 STZ ABS */
+    m6502_ICount -= 4;
+    STZ;
+    WR_ABS;
+}
 #define m65c02_bc m6502_bc									/* 4 LDY ABX */
 #define m65c02_dc m6502_dc									/* 2 ILL */
 #define m65c02_fc m6502_fc									/* 2 ILL */
@@ -296,62 +560,164 @@ OP(9c) { int tmp; m6502_ICount -= 4;		 STZ; WR_ABS; } /* 4 STZ ABS */
 #define m65c02_3e m6502_3e									/* 7 ROL ABX */
 #define m65c02_5e m6502_5e									/* 7 LSR ABX */
 #define m65c02_7e m6502_7e									/* 7 ROR ABX */
-OP(9e) { int tmp; m6502_ICount -= 5;		 STZ; WR_ABX; } /* 5 STZ ABX */
+OP(9e)
+{
+    int tmp;    /* 5 STZ ABX */
+    m6502_ICount -= 5;
+    STZ;
+    WR_ABX;
+}
 #define m65c02_be m6502_be									/* 4 LDX ABY */
 #define m65c02_de m6502_de									/* 7 DEC ABX */
 #define m65c02_fe m6502_fe									/* 7 INC ABX */
 
-OP(0f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBR(0);	  } /* 5 BBR0 ZPG */
-OP(2f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBR(2);	  } /* 5 BBR2 ZPG */
-OP(4f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBR(4);	  } /* 5 BBR4 ZPG */
-OP(6f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBR(6);	  } /* 5 BBR6 ZPG */
-OP(8f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBS(0);	  } /* 5 BBS0 ZPG */
-OP(af) { int tmp; m6502_ICount -= 5; RD_ZPG; BBS(2);	  } /* 5 BBS2 ZPG */
-OP(cf) { int tmp; m6502_ICount -= 5; RD_ZPG; BBS(4);	  } /* 5 BBS4 ZPG */
-OP(ef) { int tmp; m6502_ICount -= 5; RD_ZPG; BBS(6);	  } /* 5 BBS6 ZPG */
+OP(0f)
+{
+    int tmp;    /* 5 BBR0 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBR(0);
+}
+OP(2f)
+{
+    int tmp;    /* 5 BBR2 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBR(2);
+}
+OP(4f)
+{
+    int tmp;    /* 5 BBR4 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBR(4);
+}
+OP(6f)
+{
+    int tmp;    /* 5 BBR6 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBR(6);
+}
+OP(8f)
+{
+    int tmp;    /* 5 BBS0 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBS(0);
+}
+OP(af)
+{
+    int tmp;    /* 5 BBS2 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBS(2);
+}
+OP(cf)
+{
+    int tmp;    /* 5 BBS4 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBS(4);
+}
+OP(ef)
+{
+    int tmp;    /* 5 BBS6 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBS(6);
+}
 
-OP(1f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBR(1);	  } /* 5 BBR1 ZPG */
-OP(3f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBR(3);	  } /* 5 BBR3 ZPG */
-OP(5f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBR(5);	  } /* 5 BBR5 ZPG */
-OP(7f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBR(7);	  } /* 5 BBR7 ZPG */
-OP(9f) { int tmp; m6502_ICount -= 5; RD_ZPG; BBS(1);	  } /* 5 BBS1 ZPG */
-OP(bf) { int tmp; m6502_ICount -= 5; RD_ZPG; BBS(3);	  } /* 5 BBS3 ZPG */
-OP(df) { int tmp; m6502_ICount -= 5; RD_ZPG; BBS(5);	  } /* 5 BBS5 ZPG */
-OP(ff) { int tmp; m6502_ICount -= 5; RD_ZPG; BBS(7);	  } /* 5 BBS7 ZPG */
+OP(1f)
+{
+    int tmp;    /* 5 BBR1 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBR(1);
+}
+OP(3f)
+{
+    int tmp;    /* 5 BBR3 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBR(3);
+}
+OP(5f)
+{
+    int tmp;    /* 5 BBR5 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBR(5);
+}
+OP(7f)
+{
+    int tmp;    /* 5 BBR7 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBR(7);
+}
+OP(9f)
+{
+    int tmp;    /* 5 BBS1 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBS(1);
+}
+OP(bf)
+{
+    int tmp;    /* 5 BBS3 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBS(3);
+}
+OP(df)
+{
+    int tmp;    /* 5 BBS5 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBS(5);
+}
+OP(ff)
+{
+    int tmp;    /* 5 BBS7 ZPG */
+    m6502_ICount -= 5;
+    RD_ZPG;
+    BBS(7);
+}
 
 static void (*insn65c02[0x100])(void) = {
-	m65c02_00,m65c02_01,m65c02_02,m65c02_03,m65c02_04,m65c02_05,m65c02_06,m65c02_07,
-	m65c02_08,m65c02_09,m65c02_0a,m65c02_0b,m65c02_0c,m65c02_0d,m65c02_0e,m65c02_0f,
-	m65c02_10,m65c02_11,m65c02_12,m65c02_13,m65c02_14,m65c02_15,m65c02_16,m65c02_17,
-	m65c02_18,m65c02_19,m65c02_1a,m65c02_1b,m65c02_1c,m65c02_1d,m65c02_1e,m65c02_1f,
-	m65c02_20,m65c02_21,m65c02_22,m65c02_23,m65c02_24,m65c02_25,m65c02_26,m65c02_27,
-	m65c02_28,m65c02_29,m65c02_2a,m65c02_2b,m65c02_2c,m65c02_2d,m65c02_2e,m65c02_2f,
-	m65c02_30,m65c02_31,m65c02_32,m65c02_33,m65c02_34,m65c02_35,m65c02_36,m65c02_37,
-	m65c02_38,m65c02_39,m65c02_3a,m65c02_3b,m65c02_3c,m65c02_3d,m65c02_3e,m65c02_3f,
-	m65c02_40,m65c02_41,m65c02_42,m65c02_43,m65c02_44,m65c02_45,m65c02_46,m65c02_47,
-	m65c02_48,m65c02_49,m65c02_4a,m65c02_4b,m65c02_4c,m65c02_4d,m65c02_4e,m65c02_4f,
-	m65c02_50,m65c02_51,m65c02_52,m65c02_53,m65c02_54,m65c02_55,m65c02_56,m65c02_57,
-	m65c02_58,m65c02_59,m65c02_5a,m65c02_5b,m65c02_5c,m65c02_5d,m65c02_5e,m65c02_5f,
-	m65c02_60,m65c02_61,m65c02_62,m65c02_63,m65c02_64,m65c02_65,m65c02_66,m65c02_67,
-	m65c02_68,m65c02_69,m65c02_6a,m65c02_6b,m65c02_6c,m65c02_6d,m65c02_6e,m65c02_6f,
-	m65c02_70,m65c02_71,m65c02_72,m65c02_73,m65c02_74,m65c02_75,m65c02_76,m65c02_77,
-	m65c02_78,m65c02_79,m65c02_7a,m65c02_7b,m65c02_7c,m65c02_7d,m65c02_7e,m65c02_7f,
-	m65c02_80,m65c02_81,m65c02_82,m65c02_83,m65c02_84,m65c02_85,m65c02_86,m65c02_87,
-	m65c02_88,m65c02_89,m65c02_8a,m65c02_8b,m65c02_8c,m65c02_8d,m65c02_8e,m65c02_8f,
-	m65c02_90,m65c02_91,m65c02_92,m65c02_93,m65c02_94,m65c02_95,m65c02_96,m65c02_97,
-	m65c02_98,m65c02_99,m65c02_9a,m65c02_9b,m65c02_9c,m65c02_9d,m65c02_9e,m65c02_9f,
-	m65c02_a0,m65c02_a1,m65c02_a2,m65c02_a3,m65c02_a4,m65c02_a5,m65c02_a6,m65c02_a7,
-	m65c02_a8,m65c02_a9,m65c02_aa,m65c02_ab,m65c02_ac,m65c02_ad,m65c02_ae,m65c02_af,
-	m65c02_b0,m65c02_b1,m65c02_b2,m65c02_b3,m65c02_b4,m65c02_b5,m65c02_b6,m65c02_b7,
-	m65c02_b8,m65c02_b9,m65c02_ba,m65c02_bb,m65c02_bc,m65c02_bd,m65c02_be,m65c02_bf,
-	m65c02_c0,m65c02_c1,m65c02_c2,m65c02_c3,m65c02_c4,m65c02_c5,m65c02_c6,m65c02_c7,
-	m65c02_c8,m65c02_c9,m65c02_ca,m65c02_cb,m65c02_cc,m65c02_cd,m65c02_ce,m65c02_cf,
-	m65c02_d0,m65c02_d1,m65c02_d2,m65c02_d3,m65c02_d4,m65c02_d5,m65c02_d6,m65c02_d7,
-	m65c02_d8,m65c02_d9,m65c02_da,m65c02_db,m65c02_dc,m65c02_dd,m65c02_de,m65c02_df,
-	m65c02_e0,m65c02_e1,m65c02_e2,m65c02_e3,m65c02_e4,m65c02_e5,m65c02_e6,m65c02_e7,
-	m65c02_e8,m65c02_e9,m65c02_ea,m65c02_eb,m65c02_ec,m65c02_ed,m65c02_ee,m65c02_ef,
-	m65c02_f0,m65c02_f1,m65c02_f2,m65c02_f3,m65c02_f4,m65c02_f5,m65c02_f6,m65c02_f7,
-	m65c02_f8,m65c02_f9,m65c02_fa,m65c02_fb,m65c02_fc,m65c02_fd,m65c02_fe,m65c02_ff
+    m65c02_00, m65c02_01, m65c02_02, m65c02_03, m65c02_04, m65c02_05, m65c02_06, m65c02_07,
+    m65c02_08, m65c02_09, m65c02_0a, m65c02_0b, m65c02_0c, m65c02_0d, m65c02_0e, m65c02_0f,
+    m65c02_10, m65c02_11, m65c02_12, m65c02_13, m65c02_14, m65c02_15, m65c02_16, m65c02_17,
+    m65c02_18, m65c02_19, m65c02_1a, m65c02_1b, m65c02_1c, m65c02_1d, m65c02_1e, m65c02_1f,
+    m65c02_20, m65c02_21, m65c02_22, m65c02_23, m65c02_24, m65c02_25, m65c02_26, m65c02_27,
+    m65c02_28, m65c02_29, m65c02_2a, m65c02_2b, m65c02_2c, m65c02_2d, m65c02_2e, m65c02_2f,
+    m65c02_30, m65c02_31, m65c02_32, m65c02_33, m65c02_34, m65c02_35, m65c02_36, m65c02_37,
+    m65c02_38, m65c02_39, m65c02_3a, m65c02_3b, m65c02_3c, m65c02_3d, m65c02_3e, m65c02_3f,
+    m65c02_40, m65c02_41, m65c02_42, m65c02_43, m65c02_44, m65c02_45, m65c02_46, m65c02_47,
+    m65c02_48, m65c02_49, m65c02_4a, m65c02_4b, m65c02_4c, m65c02_4d, m65c02_4e, m65c02_4f,
+    m65c02_50, m65c02_51, m65c02_52, m65c02_53, m65c02_54, m65c02_55, m65c02_56, m65c02_57,
+    m65c02_58, m65c02_59, m65c02_5a, m65c02_5b, m65c02_5c, m65c02_5d, m65c02_5e, m65c02_5f,
+    m65c02_60, m65c02_61, m65c02_62, m65c02_63, m65c02_64, m65c02_65, m65c02_66, m65c02_67,
+    m65c02_68, m65c02_69, m65c02_6a, m65c02_6b, m65c02_6c, m65c02_6d, m65c02_6e, m65c02_6f,
+    m65c02_70, m65c02_71, m65c02_72, m65c02_73, m65c02_74, m65c02_75, m65c02_76, m65c02_77,
+    m65c02_78, m65c02_79, m65c02_7a, m65c02_7b, m65c02_7c, m65c02_7d, m65c02_7e, m65c02_7f,
+    m65c02_80, m65c02_81, m65c02_82, m65c02_83, m65c02_84, m65c02_85, m65c02_86, m65c02_87,
+    m65c02_88, m65c02_89, m65c02_8a, m65c02_8b, m65c02_8c, m65c02_8d, m65c02_8e, m65c02_8f,
+    m65c02_90, m65c02_91, m65c02_92, m65c02_93, m65c02_94, m65c02_95, m65c02_96, m65c02_97,
+    m65c02_98, m65c02_99, m65c02_9a, m65c02_9b, m65c02_9c, m65c02_9d, m65c02_9e, m65c02_9f,
+    m65c02_a0, m65c02_a1, m65c02_a2, m65c02_a3, m65c02_a4, m65c02_a5, m65c02_a6, m65c02_a7,
+    m65c02_a8, m65c02_a9, m65c02_aa, m65c02_ab, m65c02_ac, m65c02_ad, m65c02_ae, m65c02_af,
+    m65c02_b0, m65c02_b1, m65c02_b2, m65c02_b3, m65c02_b4, m65c02_b5, m65c02_b6, m65c02_b7,
+    m65c02_b8, m65c02_b9, m65c02_ba, m65c02_bb, m65c02_bc, m65c02_bd, m65c02_be, m65c02_bf,
+    m65c02_c0, m65c02_c1, m65c02_c2, m65c02_c3, m65c02_c4, m65c02_c5, m65c02_c6, m65c02_c7,
+    m65c02_c8, m65c02_c9, m65c02_ca, m65c02_cb, m65c02_cc, m65c02_cd, m65c02_ce, m65c02_cf,
+    m65c02_d0, m65c02_d1, m65c02_d2, m65c02_d3, m65c02_d4, m65c02_d5, m65c02_d6, m65c02_d7,
+    m65c02_d8, m65c02_d9, m65c02_da, m65c02_db, m65c02_dc, m65c02_dd, m65c02_de, m65c02_df,
+    m65c02_e0, m65c02_e1, m65c02_e2, m65c02_e3, m65c02_e4, m65c02_e5, m65c02_e6, m65c02_e7,
+    m65c02_e8, m65c02_e9, m65c02_ea, m65c02_eb, m65c02_ec, m65c02_ed, m65c02_ee, m65c02_ef,
+    m65c02_f0, m65c02_f1, m65c02_f2, m65c02_f3, m65c02_f4, m65c02_f5, m65c02_f6, m65c02_f7,
+    m65c02_f8, m65c02_f9, m65c02_fa, m65c02_fb, m65c02_fc, m65c02_fd, m65c02_fe, m65c02_ff
 };
 
 

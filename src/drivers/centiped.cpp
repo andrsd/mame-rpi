@@ -148,8 +148,8 @@ Known issues:
 #include "machine/atari_vg.h"
 
 
-WRITE_HANDLER( centiped_paletteram_w );
-void centiped_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh);
+WRITE_HANDLER(centiped_paletteram_w);
+void centiped_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh);
 
 void centiped_init_machine(void);	/* in vidhrdw */
 int centiped_interrupt(void);	/* in vidhrdw */
@@ -172,168 +172,160 @@ int centiped_interrupt(void);	/* in vidhrdw */
  * The counter is read 240 times per second. There is no provision whatsoever
  * to prevent the counter from wrapping around between reads.
  */
-static READ_HANDLER( centiped_IN0_r )
+static READ_HANDLER(centiped_IN0_r)
 {
-	static int oldpos,sign;
-	int newpos;
+    static int oldpos, sign;
+    int newpos;
 
-	newpos = readinputport(6);
-	if (newpos != oldpos)
-	{
-		sign = (newpos - oldpos) & 0x80;
-		oldpos = newpos;
-	}
+    newpos = readinputport(6);
+    if (newpos != oldpos) {
+        sign = (newpos - oldpos) & 0x80;
+        oldpos = newpos;
+    }
 
-	return ((readinputport(0) & 0x70) | (oldpos & 0x0f) | sign );
+    return ((readinputport(0) & 0x70) | (oldpos & 0x0f) | sign);
 }
 
-static READ_HANDLER( centiped_IN2_r )
+static READ_HANDLER(centiped_IN2_r)
 {
-	static int oldpos,sign;
-	int newpos;
+    static int oldpos, sign;
+    int newpos;
 
-	newpos = readinputport(2);
-	if (newpos != oldpos)
-	{
-		sign = (newpos - oldpos) & 0x80;
-		oldpos = newpos;
-	}
+    newpos = readinputport(2);
+    if (newpos != oldpos) {
+        sign = (newpos - oldpos) & 0x80;
+        oldpos = newpos;
+    }
 
-	return ((oldpos & 0x0f) | sign );
+    return ((oldpos & 0x0f) | sign);
 }
 
 
-static WRITE_HANDLER( centiped_led_w )
+static WRITE_HANDLER(centiped_led_w)
 {
-	osd_led_w(offset,~data >> 7);
+    osd_led_w(offset, ~data >> 7);
 }
 
-static READ_HANDLER( centipdb_rand_r )
+static READ_HANDLER(centipdb_rand_r)
 {
-	return rand() % 0xff;
+    return rand() % 0xff;
 }
 
-static WRITE_HANDLER( centipdb_AY8910_w )
+static WRITE_HANDLER(centipdb_AY8910_w)
 {
-	AY8910_control_port_0_w(0, offset);
-	AY8910_write_port_0_w(0, data);
+    AY8910_control_port_0_w(0, offset);
+    AY8910_write_port_0_w(0, data);
 }
 
-static READ_HANDLER( centipdb_AY8910_r )
+static READ_HANDLER(centipdb_AY8910_r)
 {
-	AY8910_control_port_0_w(0, offset);
-	return AY8910_read_port_0_r(0);
+    AY8910_control_port_0_w(0, offset);
+    return AY8910_read_port_0_r(0);
 }
 
-static struct MemoryReadAddress centiped_readmem[] =
-{
-	{ 0x0000, 0x03ff, MRA_RAM },
-	{ 0x0400, 0x07ff, MRA_RAM },
-	{ 0x0800, 0x0800, input_port_4_r },	/* DSW1 */
-	{ 0x0801, 0x0801, input_port_5_r },	/* DSW2 */
-	{ 0x0c00, 0x0c00, centiped_IN0_r },	/* IN0 */
-	{ 0x0c01, 0x0c01, input_port_1_r },	/* IN1 */
-	{ 0x0c02, 0x0c02, centiped_IN2_r },	/* IN2 */	/* JB 971220 */
-	{ 0x0c03, 0x0c03, input_port_3_r },	/* IN3 */
-	{ 0x1000, 0x100f, pokey1_r },
-	{ 0x1700, 0x173f, atari_vg_earom_r },
-	{ 0x2000, 0x3fff, MRA_ROM },
-	{ 0xf800, 0xffff, MRA_ROM },	/* for the reset / interrupt vectors */
-	{ -1 }	/* end of table */
+static struct MemoryReadAddress centiped_readmem[] = {
+    { 0x0000, 0x03ff, MRA_RAM },
+    { 0x0400, 0x07ff, MRA_RAM },
+    { 0x0800, 0x0800, input_port_4_r },	/* DSW1 */
+    { 0x0801, 0x0801, input_port_5_r },	/* DSW2 */
+    { 0x0c00, 0x0c00, centiped_IN0_r },	/* IN0 */
+    { 0x0c01, 0x0c01, input_port_1_r },	/* IN1 */
+    { 0x0c02, 0x0c02, centiped_IN2_r },	/* IN2 */	/* JB 971220 */
+    { 0x0c03, 0x0c03, input_port_3_r },	/* IN3 */
+    { 0x1000, 0x100f, pokey1_r },
+    { 0x1700, 0x173f, atari_vg_earom_r },
+    { 0x2000, 0x3fff, MRA_ROM },
+    { 0xf800, 0xffff, MRA_ROM },	/* for the reset / interrupt vectors */
+    { -1 }	/* end of table */
 };
 
 /* Same as the regular one, except it uses an AY8910 and an external RNG */
-static struct MemoryReadAddress centipdb_readmem[] =
-{
-	{ 0x0000, 0x03ff, MRA_RAM },
-	{ 0x0400, 0x07ff, MRA_RAM },
-	{ 0x0800, 0x0800, input_port_4_r },	/* DSW1 */
-	{ 0x0801, 0x0801, input_port_5_r },	/* DSW2 */
-	{ 0x0c00, 0x0c00, centiped_IN0_r },	/* IN0 */
-	{ 0x0c01, 0x0c01, input_port_1_r },	/* IN1 */
-	{ 0x0c02, 0x0c02, centiped_IN2_r },	/* IN2 */	/* JB 971220 */
-	{ 0x0c03, 0x0c03, input_port_3_r },	/* IN3 */
-	{ 0x1000, 0x100f, centipdb_AY8910_r },
-	{ 0x1700, 0x173f, atari_vg_earom_r },
-	{ 0x1780, 0x1780, centipdb_rand_r },
-	{ 0x2000, 0x3fff, MRA_ROM },
-	{ 0xf800, 0xffff, MRA_ROM },	/* for the reset / interrupt vectors */
-	{ -1 }	/* end of table */
+static struct MemoryReadAddress centipdb_readmem[] = {
+    { 0x0000, 0x03ff, MRA_RAM },
+    { 0x0400, 0x07ff, MRA_RAM },
+    { 0x0800, 0x0800, input_port_4_r },	/* DSW1 */
+    { 0x0801, 0x0801, input_port_5_r },	/* DSW2 */
+    { 0x0c00, 0x0c00, centiped_IN0_r },	/* IN0 */
+    { 0x0c01, 0x0c01, input_port_1_r },	/* IN1 */
+    { 0x0c02, 0x0c02, centiped_IN2_r },	/* IN2 */	/* JB 971220 */
+    { 0x0c03, 0x0c03, input_port_3_r },	/* IN3 */
+    { 0x1000, 0x100f, centipdb_AY8910_r },
+    { 0x1700, 0x173f, atari_vg_earom_r },
+    { 0x1780, 0x1780, centipdb_rand_r },
+    { 0x2000, 0x3fff, MRA_ROM },
+    { 0xf800, 0xffff, MRA_ROM },	/* for the reset / interrupt vectors */
+    { -1 }	/* end of table */
 };
 
-static struct MemoryReadAddress centipb2_readmem[] =
-{
-	{ 0x0000, 0x03ff, MRA_RAM },
-	{ 0x0400, 0x07ff, MRA_RAM },
-	{ 0x0800, 0x0800, input_port_4_r },	/* DSW1 */
-	{ 0x0801, 0x0801, input_port_5_r },	/* DSW2 */
-	{ 0x0c00, 0x0c00, centiped_IN0_r },	/* IN0 */
-	{ 0x0c01, 0x0c01, input_port_1_r },	/* IN1 */
-	{ 0x0c02, 0x0c02, centiped_IN2_r },	/* IN2 */	/* JB 971220 */
-	{ 0x0c03, 0x0c03, input_port_3_r },	/* IN3 */
-	{ 0x1001, 0x1001, AY8910_read_port_0_r },
-	{ 0x1700, 0x173f, atari_vg_earom_r },
-	{ 0x2000, 0x3fff, MRA_ROM },
-	{ 0x6000, 0x67ff, MRA_ROM },
-	{ 0xf800, 0xffff, MRA_ROM },	/* for the reset / interrupt vectors */
-	{ -1 }	/* end of table */
+static struct MemoryReadAddress centipb2_readmem[] = {
+    { 0x0000, 0x03ff, MRA_RAM },
+    { 0x0400, 0x07ff, MRA_RAM },
+    { 0x0800, 0x0800, input_port_4_r },	/* DSW1 */
+    { 0x0801, 0x0801, input_port_5_r },	/* DSW2 */
+    { 0x0c00, 0x0c00, centiped_IN0_r },	/* IN0 */
+    { 0x0c01, 0x0c01, input_port_1_r },	/* IN1 */
+    { 0x0c02, 0x0c02, centiped_IN2_r },	/* IN2 */	/* JB 971220 */
+    { 0x0c03, 0x0c03, input_port_3_r },	/* IN3 */
+    { 0x1001, 0x1001, AY8910_read_port_0_r },
+    { 0x1700, 0x173f, atari_vg_earom_r },
+    { 0x2000, 0x3fff, MRA_ROM },
+    { 0x6000, 0x67ff, MRA_ROM },
+    { 0xf800, 0xffff, MRA_ROM },	/* for the reset / interrupt vectors */
+    { -1 }	/* end of table */
 };
 
-static struct MemoryWriteAddress centiped_writemem[] =
-{
-	{ 0x0000, 0x03ff, MWA_RAM },
-	{ 0x0400, 0x07bf, videoram_w, &videoram, &videoram_size },
-	{ 0x07c0, 0x07ff, MWA_RAM, &spriteram },
-	{ 0x1000, 0x100f, pokey1_w },
-	{ 0x1400, 0x140f, centiped_paletteram_w, &paletteram },
-	{ 0x1600, 0x163f, atari_vg_earom_w },
-	{ 0x1680, 0x1680, atari_vg_earom_ctrl_w },
-	{ 0x1800, 0x1800, MWA_NOP },	/* IRQ acknowldege */
-	{ 0x1c00, 0x1c02, coin_counter_w },
-	{ 0x1c03, 0x1c04, centiped_led_w },
-	{ 0x1c07, 0x1c07, flip_screen_w },
-	{ 0x2000, 0x2000, watchdog_reset_w },
-	{ 0x2000, 0x3fff, MWA_ROM },
-	{ -1 }	/* end of table */
+static struct MemoryWriteAddress centiped_writemem[] = {
+    { 0x0000, 0x03ff, MWA_RAM },
+    { 0x0400, 0x07bf, videoram_w, &videoram, &videoram_size },
+    { 0x07c0, 0x07ff, MWA_RAM, &spriteram },
+    { 0x1000, 0x100f, pokey1_w },
+    { 0x1400, 0x140f, centiped_paletteram_w, &paletteram },
+    { 0x1600, 0x163f, atari_vg_earom_w },
+    { 0x1680, 0x1680, atari_vg_earom_ctrl_w },
+    { 0x1800, 0x1800, MWA_NOP },	/* IRQ acknowldege */
+    { 0x1c00, 0x1c02, coin_counter_w },
+    { 0x1c03, 0x1c04, centiped_led_w },
+    { 0x1c07, 0x1c07, flip_screen_w },
+    { 0x2000, 0x2000, watchdog_reset_w },
+    { 0x2000, 0x3fff, MWA_ROM },
+    { -1 }	/* end of table */
 };
 
 /* Same as the regular one, except it uses an AY8910 */
-static struct MemoryWriteAddress centipdb_writemem[] =
-{
-	{ 0x0000, 0x03ff, MWA_RAM },
-	{ 0x0400, 0x07bf, videoram_w, &videoram, &videoram_size },
-	{ 0x07c0, 0x07ff, MWA_RAM, &spriteram },
-	{ 0x1000, 0x100f, centipdb_AY8910_w },
-	{ 0x1400, 0x140f, centiped_paletteram_w, &paletteram },
-	{ 0x1600, 0x163f, atari_vg_earom_w },
-	{ 0x1680, 0x1680, atari_vg_earom_ctrl_w },
-	{ 0x1800, 0x1800, MWA_NOP },	/* IRQ acknowldege */
-	{ 0x1c00, 0x1c02, coin_counter_w },
-	{ 0x1c03, 0x1c04, centiped_led_w },
-	{ 0x1c07, 0x1c07, flip_screen_w },
-	{ 0x2000, 0x2000, watchdog_reset_w },
-	{ 0x2000, 0x3fff, MWA_ROM },
-	{ -1 }	/* end of table */
+static struct MemoryWriteAddress centipdb_writemem[] = {
+    { 0x0000, 0x03ff, MWA_RAM },
+    { 0x0400, 0x07bf, videoram_w, &videoram, &videoram_size },
+    { 0x07c0, 0x07ff, MWA_RAM, &spriteram },
+    { 0x1000, 0x100f, centipdb_AY8910_w },
+    { 0x1400, 0x140f, centiped_paletteram_w, &paletteram },
+    { 0x1600, 0x163f, atari_vg_earom_w },
+    { 0x1680, 0x1680, atari_vg_earom_ctrl_w },
+    { 0x1800, 0x1800, MWA_NOP },	/* IRQ acknowldege */
+    { 0x1c00, 0x1c02, coin_counter_w },
+    { 0x1c03, 0x1c04, centiped_led_w },
+    { 0x1c07, 0x1c07, flip_screen_w },
+    { 0x2000, 0x2000, watchdog_reset_w },
+    { 0x2000, 0x3fff, MWA_ROM },
+    { -1 }	/* end of table */
 };
 
-static struct MemoryWriteAddress centipb2_writemem[] =
-{
-	{ 0x0000, 0x03ff, MWA_RAM },
-	{ 0x0400, 0x07bf, videoram_w, &videoram, &videoram_size },
-	{ 0x07c0, 0x07ff, MWA_RAM, &spriteram },
-	{ 0x1000, 0x1000, AY8910_write_port_0_w },
-	{ 0x1001, 0x1001, AY8910_control_port_0_w },
-	{ 0x1400, 0x140f, centiped_paletteram_w, &paletteram },
-	{ 0x1600, 0x163f, atari_vg_earom_w },
-	{ 0x1680, 0x1680, atari_vg_earom_ctrl_w },
-	{ 0x1800, 0x1800, MWA_NOP },	/* IRQ acknowldege */
-	{ 0x1c00, 0x1c02, coin_counter_w },
-	{ 0x1c03, 0x1c04, centiped_led_w },
-	{ 0x1c07, 0x1c07, flip_screen_w },
-	{ 0x2000, 0x2000, watchdog_reset_w },
-	{ 0x2000, 0x3fff, MWA_ROM },
-	{ 0x6000, 0x67ff, MWA_ROM },
-	{ -1 }	/* end of table */
+static struct MemoryWriteAddress centipb2_writemem[] = {
+    { 0x0000, 0x03ff, MWA_RAM },
+    { 0x0400, 0x07bf, videoram_w, &videoram, &videoram_size },
+    { 0x07c0, 0x07ff, MWA_RAM, &spriteram },
+    { 0x1000, 0x1000, AY8910_write_port_0_w },
+    { 0x1001, 0x1001, AY8910_control_port_0_w },
+    { 0x1400, 0x140f, centiped_paletteram_w, &paletteram },
+    { 0x1600, 0x163f, atari_vg_earom_w },
+    { 0x1680, 0x1680, atari_vg_earom_ctrl_w },
+    { 0x1800, 0x1800, MWA_NOP },	/* IRQ acknowldege */
+    { 0x1c00, 0x1c02, coin_counter_w },
+    { 0x1c03, 0x1c04, centiped_led_w },
+    { 0x1c07, 0x1c07, flip_screen_w },
+    { 0x2000, 0x2000, watchdog_reset_w },
+    { 0x2000, 0x3fff, MWA_ROM },
+    { 0x6000, 0x67ff, MWA_ROM },
+    { -1 }	/* end of table */
 };
 
 
@@ -432,78 +424,74 @@ PORTS(centiped, "Spanish")
 PORTS(centipdb, "Italian")
 
 
-static struct GfxLayout charlayout =
-{
-	8,8,	/* 8*8 characters */
-	256,	/* 256 characters */
-	2,	/* 2 bits per pixel */
-	{ 256*8*8, 0 },	/* the two bitplanes are separated */
-	{ 0, 1, 2, 3, 4, 5, 6, 7 },
-	{ 0*8, 1*8, 2*8, 3*8, 4*8, 5*8, 6*8, 7*8 },
-	8*8	/* every char takes 8 consecutive bytes */
+static struct GfxLayout charlayout = {
+    8, 8,	/* 8*8 characters */
+    256,	/* 256 characters */
+    2,	/* 2 bits per pixel */
+    { 256 * 8 * 8, 0 },	/* the two bitplanes are separated */
+    { 0, 1, 2, 3, 4, 5, 6, 7 },
+    { 0 * 8, 1 * 8, 2 * 8, 3 * 8, 4 * 8, 5 * 8, 6 * 8, 7 * 8 },
+    8 * 8	/* every char takes 8 consecutive bytes */
 };
-static struct GfxLayout spritelayout =
-{
-	8,16,	/* 16*8 sprites */
-	128,	/* 64 sprites */
-	2,	/* 2 bits per pixel */
-	{ 128*16*8, 0 },	/* the two bitplanes are separated */
-	{ 0, 1, 2, 3, 4, 5, 6, 7 },
-	{ 0*8, 1*8, 2*8, 3*8, 4*8, 5*8, 6*8, 7*8,
-			8*8, 9*8, 10*8, 11*8, 12*8, 13*8, 14*8, 15*8 },
-	16*8	/* every sprite takes 16 consecutive bytes */
-};
-
-
-
-static struct GfxDecodeInfo gfxdecodeinfo[] =
-{
-	{ REGION_GFX1, 0, &charlayout,   4, 4 },	/* 4 color codes to support midframe */
-												/* palette changes in test mode */
-	{ REGION_GFX1, 0, &spritelayout, 0, 1 },
-	{ -1 } /* end of array */
+static struct GfxLayout spritelayout = {
+    8, 16,	/* 16*8 sprites */
+    128,	/* 64 sprites */
+    2,	/* 2 bits per pixel */
+    { 128 * 16 * 8, 0 },	/* the two bitplanes are separated */
+    { 0, 1, 2, 3, 4, 5, 6, 7 },
+    {
+        0 * 8, 1 * 8, 2 * 8, 3 * 8, 4 * 8, 5 * 8, 6 * 8, 7 * 8,
+        8 * 8, 9 * 8, 10 * 8, 11 * 8, 12 * 8, 13 * 8, 14 * 8, 15 * 8
+    },
+    16 * 8	/* every sprite takes 16 consecutive bytes */
 };
 
 
 
-static struct POKEYinterface pokey_interface =
-{
-	1,	/* 1 chip */
-	12096000/8,	/* 1.512 MHz */
-	{ 100 },
-	/* The 8 pot handlers */
-	{ 0 },
-	{ 0 },
-	{ 0 },
-	{ 0 },
-	{ 0 },
-	{ 0 },
-	{ 0 },
-	{ 0 },
-	/* The allpot handler */
-	{ 0 },
+static struct GfxDecodeInfo gfxdecodeinfo[] = {
+    { REGION_GFX1, 0, &charlayout,   4, 4 },	/* 4 color codes to support midframe */
+    /* palette changes in test mode */
+    { REGION_GFX1, 0, &spritelayout, 0, 1 },
+    { -1 } /* end of array */
 };
 
-static struct AY8910interface centipdb_ay8910_interface =
-{
-	1,	/* 1 chips */
-	12096000/8,	/* 1.512 MHz */
-	{ 50 },
-	{ 0 },
-	{ 0 },
-	{ 0 },
-	{ 0 }
+
+
+static struct POKEYinterface pokey_interface = {
+    1,	/* 1 chip */
+    12096000 / 8,	/* 1.512 MHz */
+    { 100 },
+    /* The 8 pot handlers */
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    /* The allpot handler */
+    { 0 },
 };
 
-static struct AY8910interface centipb2_ay8910_interface =
-{
-	1,	/* 1 chips */
-	12096000/8,	/* 1.512 MHz */
-	{ 50 },
-	{ centipdb_rand_r },
-	{ 0 },
-	{ 0 },
-	{ 0 }
+static struct AY8910interface centipdb_ay8910_interface = {
+    1,	/* 1 chips */
+    12096000 / 8,	/* 1.512 MHz */
+    { 50 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 }
+};
+
+static struct AY8910interface centipb2_ay8910_interface = {
+    1,	/* 1 chips */
+    12096000 / 8,	/* 1.512 MHz */
+    { 50 },
+    { centipdb_rand_r },
+    { 0 },
+    { 0 },
+    { 0 }
 };
 
 
@@ -562,61 +550,61 @@ DRIVER(centipb2, SOUND_AY8910, &centipb2_ay8910_interface)
 
 ***************************************************************************/
 
-ROM_START( centiped )
-	ROM_REGION( 0x10000, REGION_CPU1 )	/* 64k for code */
-	ROM_LOAD( "centiped.307", 0x2000, 0x0800, 0x5ab0d9de )
-	ROM_LOAD( "centiped.308", 0x2800, 0x0800, 0x4c07fd3e )
-	ROM_LOAD( "centiped.309", 0x3000, 0x0800, 0xff69b424 )
-	ROM_LOAD( "centiped.310", 0x3800, 0x0800, 0x44e40fa4 )
-	ROM_RELOAD(               0xf800, 0x0800 )	/* for the reset and interrupt vectors */
+ROM_START(centiped)
+ROM_REGION(0x10000, REGION_CPU1)	/* 64k for code */
+ROM_LOAD("centiped.307", 0x2000, 0x0800, 0x5ab0d9de)
+ROM_LOAD("centiped.308", 0x2800, 0x0800, 0x4c07fd3e)
+ROM_LOAD("centiped.309", 0x3000, 0x0800, 0xff69b424)
+ROM_LOAD("centiped.310", 0x3800, 0x0800, 0x44e40fa4)
+ROM_RELOAD(0xf800, 0x0800)	/* for the reset and interrupt vectors */
 
-	ROM_REGION( 0x1000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "centiped.211", 0x0000, 0x0800, 0x880acfb9 )
-	ROM_LOAD( "centiped.212", 0x0800, 0x0800, 0xb1397029 )
+ROM_REGION(0x1000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("centiped.211", 0x0000, 0x0800, 0x880acfb9)
+ROM_LOAD("centiped.212", 0x0800, 0x0800, 0xb1397029)
 ROM_END
 
-ROM_START( centipd2 )
-	ROM_REGION( 0x10000, REGION_CPU1 )	/* 64k for code */
-	ROM_LOAD( "centiped.207", 0x2000, 0x0800, 0xb2909e2f )
-	ROM_LOAD( "centiped.208", 0x2800, 0x0800, 0x110e04ff )
-	ROM_LOAD( "centiped.209", 0x3000, 0x0800, 0xcc2edb26 )
-	ROM_LOAD( "centiped.210", 0x3800, 0x0800, 0x93999153 )
-	ROM_RELOAD(               0xf800, 0x0800 )	/* for the reset and interrupt vectors */
+ROM_START(centipd2)
+ROM_REGION(0x10000, REGION_CPU1)	/* 64k for code */
+ROM_LOAD("centiped.207", 0x2000, 0x0800, 0xb2909e2f)
+ROM_LOAD("centiped.208", 0x2800, 0x0800, 0x110e04ff)
+ROM_LOAD("centiped.209", 0x3000, 0x0800, 0xcc2edb26)
+ROM_LOAD("centiped.210", 0x3800, 0x0800, 0x93999153)
+ROM_RELOAD(0xf800, 0x0800)	/* for the reset and interrupt vectors */
 
-	ROM_REGION( 0x1000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "centiped.211", 0x0000, 0x0800, 0x880acfb9 )
-	ROM_LOAD( "centiped.212", 0x0800, 0x0800, 0xb1397029 )
+ROM_REGION(0x1000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("centiped.211", 0x0000, 0x0800, 0x880acfb9)
+ROM_LOAD("centiped.212", 0x0800, 0x0800, 0xb1397029)
 ROM_END
 
-ROM_START( centipdb )
-	ROM_REGION( 0x10000, REGION_CPU1 )	/* 64k for code */
-	ROM_LOAD( "olympia.c28",  0x2000, 0x0800, 0x8a744e57 )
-	ROM_LOAD( "olympia.c29",  0x2800, 0x0800, 0xbb897b10 )
-	ROM_LOAD( "olympia.c30",  0x3000, 0x0800, 0x2297c2ac )
-	ROM_LOAD( "olympia.c31",  0x3800, 0x0800, 0xcc529d6b )
-	ROM_RELOAD(               0xf800, 0x0800 )	/* for the reset and interrupt vectors */
+ROM_START(centipdb)
+ROM_REGION(0x10000, REGION_CPU1)	/* 64k for code */
+ROM_LOAD("olympia.c28",  0x2000, 0x0800, 0x8a744e57)
+ROM_LOAD("olympia.c29",  0x2800, 0x0800, 0xbb897b10)
+ROM_LOAD("olympia.c30",  0x3000, 0x0800, 0x2297c2ac)
+ROM_LOAD("olympia.c31",  0x3800, 0x0800, 0xcc529d6b)
+ROM_RELOAD(0xf800, 0x0800)	/* for the reset and interrupt vectors */
 
-	ROM_REGION( 0x1000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "olympia.c32",  0x0000, 0x0800, 0xd91b9724 )
-	ROM_LOAD( "olympia.c33",  0x0800, 0x0800, 0x1a6acd02 )
+ROM_REGION(0x1000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("olympia.c32",  0x0000, 0x0800, 0xd91b9724)
+ROM_LOAD("olympia.c33",  0x0800, 0x0800, 0x1a6acd02)
 ROM_END
 
-ROM_START( centipb2 )
-	ROM_REGION( 0x10000, REGION_CPU1 )	/* 64k for code */
-	ROM_LOAD( "d1",  		  0x2000, 0x0800, 0xb17b8e0b )
-	ROM_LOAD( "e1",  		  0x2800, 0x0800, 0x7684398e )
-	ROM_LOAD( "h1",  		  0x3000, 0x0800, 0x74580fe4 )
-	ROM_LOAD( "j1",  		  0x3800, 0x0800, 0x84600161 )
-	ROM_RELOAD(               0xf800, 0x0800 )	/* for the reset and interrupt vectors */
-	ROM_LOAD( "k1",  		  0x6000, 0x0800, 0xf1aa329b )
+ROM_START(centipb2)
+ROM_REGION(0x10000, REGION_CPU1)	/* 64k for code */
+ROM_LOAD("d1",  		  0x2000, 0x0800, 0xb17b8e0b)
+ROM_LOAD("e1",  		  0x2800, 0x0800, 0x7684398e)
+ROM_LOAD("h1",  		  0x3000, 0x0800, 0x74580fe4)
+ROM_LOAD("j1",  		  0x3800, 0x0800, 0x84600161)
+ROM_RELOAD(0xf800, 0x0800)	/* for the reset and interrupt vectors */
+ROM_LOAD("k1",  		  0x6000, 0x0800, 0xf1aa329b)
 
-	ROM_REGION( 0x1000, REGION_GFX1 | REGIONFLAG_DISPOSE )
-	ROM_LOAD( "centiped.211", 0x0000, 0x0800, 0x880acfb9 )
-	ROM_LOAD( "centiped.212", 0x0800, 0x0800, 0xb1397029 )
+ROM_REGION(0x1000, REGION_GFX1 | REGIONFLAG_DISPOSE)
+ROM_LOAD("centiped.211", 0x0000, 0x0800, 0x880acfb9)
+ROM_LOAD("centiped.212", 0x0800, 0x0800, 0xb1397029)
 ROM_END
 
 
-GAME( 1980, centiped, 0,        centiped, centiped, 0, ROT270, "Atari", "Centipede (revision 3)" )
-GAME( 1980, centipd2, centiped, centiped, centiped, 0, ROT270, "Atari", "Centipede (revision 2)" )
-GAME( 1980, centipdb, centiped, centipdb, centipdb, 0, ROT270, "bootleg", "Centipede (bootleg set 1)" )
-GAME( 1980, centipb2, centiped, centipb2, centiped, 0, ROT270, "bootleg", "Centipede (bootleg set 2)" )
+GAME(1980, centiped, 0,        centiped, centiped, 0, ROT270, "Atari", "Centipede (revision 3)")
+GAME(1980, centipd2, centiped, centiped, centiped, 0, ROT270, "Atari", "Centipede (revision 2)")
+GAME(1980, centipdb, centiped, centipdb, centipdb, 0, ROT270, "bootleg", "Centipede (bootleg set 1)")
+GAME(1980, centipb2, centiped, centipb2, centiped, 0, ROT270, "bootleg", "Centipede (bootleg set 2)")

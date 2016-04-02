@@ -17,9 +17,9 @@
 
 
 
-unsigned char *matmania_videoram2,*matmania_colorram2;
+unsigned char *matmania_videoram2, *matmania_colorram2;
 size_t matmania_videoram2_size;
-unsigned char *matmania_videoram3,*matmania_colorram3;
+unsigned char *matmania_videoram3, *matmania_colorram3;
 size_t matmania_videoram3_size;
 unsigned char *matmania_scroll;
 static struct osd_bitmap *tmpbitmap2;
@@ -52,72 +52,71 @@ unsigned char *matmania_pageselect;
   bit 0 -- 2.2kohm resistor  -- BLUE
 
 ***************************************************************************/
-void matmania_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void matmania_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	int i;
-	#define TOTAL_COLORS(gfxn) (Machine->gfx[gfxn]->total_colors * Machine->gfx[gfxn]->color_granularity)
-	#define COLOR(gfxn,offs) (colortable[Machine->drv->gfxdecodeinfo[gfxn].color_codes_start + offs])
+    int i;
+#define TOTAL_COLORS(gfxn) (Machine->gfx[gfxn]->total_colors * Machine->gfx[gfxn]->color_granularity)
+#define COLOR(gfxn,offs) (colortable[Machine->drv->gfxdecodeinfo[gfxn].color_codes_start + offs])
 
 
-	for (i = 0;i < 64;i++)
-	{
-		int bit0,bit1,bit2,bit3;
+    for (i = 0; i < 64; i++) {
+        int bit0, bit1, bit2, bit3;
 
 
-		bit0 = (color_prom[0] >> 0) & 0x01;
-		bit1 = (color_prom[0] >> 1) & 0x01;
-		bit2 = (color_prom[0] >> 2) & 0x01;
-		bit3 = (color_prom[0] >> 3) & 0x01;
-		*(palette++) = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
-		bit0 = (color_prom[0] >> 4) & 0x01;
-		bit1 = (color_prom[0] >> 5) & 0x01;
-		bit2 = (color_prom[0] >> 6) & 0x01;
-		bit3 = (color_prom[0] >> 7) & 0x01;
-		*(palette++) = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
-		bit0 = (color_prom[64] >> 0) & 0x01;
-		bit1 = (color_prom[64] >> 1) & 0x01;
-		bit2 = (color_prom[64] >> 2) & 0x01;
-		bit3 = (color_prom[64] >> 3) & 0x01;
-		*(palette++) = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+        bit0 = (color_prom[0] >> 0) & 0x01;
+        bit1 = (color_prom[0] >> 1) & 0x01;
+        bit2 = (color_prom[0] >> 2) & 0x01;
+        bit3 = (color_prom[0] >> 3) & 0x01;
+        * (palette++) = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+        bit0 = (color_prom[0] >> 4) & 0x01;
+        bit1 = (color_prom[0] >> 5) & 0x01;
+        bit2 = (color_prom[0] >> 6) & 0x01;
+        bit3 = (color_prom[0] >> 7) & 0x01;
+        * (palette++) = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+        bit0 = (color_prom[64] >> 0) & 0x01;
+        bit1 = (color_prom[64] >> 1) & 0x01;
+        bit2 = (color_prom[64] >> 2) & 0x01;
+        bit3 = (color_prom[64] >> 3) & 0x01;
+        * (palette++) = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
 
-		color_prom++;
-	}
+        color_prom++;
+    }
 }
 
 
 
-WRITE_HANDLER( matmania_paletteram_w )
+WRITE_HANDLER(matmania_paletteram_w)
 {
-	int bit0,bit1,bit2,bit3,val;
-	int r,g,b;
-	int offs2;
+    int bit0, bit1, bit2, bit3, val;
+    int r, g, b;
+    int offs2;
 
 
-	paletteram[offset] = data;
-	offs2 = offset & 0x0f;
+    paletteram[offset] = data;
+    offs2 = offset & 0x0f;
 
-	val = paletteram[offs2];
-	bit0 = (val >> 0) & 0x01;
-	bit1 = (val >> 1) & 0x01;
-	bit2 = (val >> 2) & 0x01;
-	bit3 = (val >> 3) & 0x01;
-	r = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+    val = paletteram[offs2];
+    bit0 = (val >> 0) & 0x01;
+    bit1 = (val >> 1) & 0x01;
+    bit2 = (val >> 2) & 0x01;
+    bit3 = (val >> 3) & 0x01;
+    r = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
 
-	val = paletteram[offs2 | 0x10];
-	bit0 = (val >> 0) & 0x01;
-	bit1 = (val >> 1) & 0x01;
-	bit2 = (val >> 2) & 0x01;
-	bit3 = (val >> 3) & 0x01;
-	g = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+    val = paletteram[offs2 | 0x10];
+    bit0 = (val >> 0) & 0x01;
+    bit1 = (val >> 1) & 0x01;
+    bit2 = (val >> 2) & 0x01;
+    bit3 = (val >> 3) & 0x01;
+    g = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
 
-	val = paletteram[offs2 | 0x20];
-	bit0 = (val >> 0) & 0x01;
-	bit1 = (val >> 1) & 0x01;
-	bit2 = (val >> 2) & 0x01;
-	bit3 = (val >> 3) & 0x01;
-	b = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
+    val = paletteram[offs2 | 0x20];
+    bit0 = (val >> 0) & 0x01;
+    bit1 = (val >> 1) & 0x01;
+    bit2 = (val >> 2) & 0x01;
+    bit3 = (val >> 3) & 0x01;
+    b = 0x0e * bit0 + 0x1f * bit1 + 0x43 * bit2 + 0x8f * bit3;
 
-	palette_change_color(offs2 + 64,r,g,b);
+    palette_change_color(offs2 + 64, r, g, b);
 }
 
 
@@ -128,35 +127,32 @@ WRITE_HANDLER( matmania_paletteram_w )
 ***************************************************************************/
 int matmania_vh_start(void)
 {
-	if ((dirtybuffer = (unsigned char*)malloc(videoram_size)) == 0)
-		return 1;
-	memset(dirtybuffer,1,videoram_size);
+    if ((dirtybuffer = (unsigned char*) malloc(videoram_size)) == 0)
+        return 1;
+    memset(dirtybuffer, 1, videoram_size);
 
-	if ((dirtybuffer2 = (unsigned char*)malloc(matmania_videoram3_size)) == 0)
-	{
-		free(dirtybuffer);
-		return 1;
-	}
-	memset(dirtybuffer2,1,matmania_videoram3_size);
+    if ((dirtybuffer2 = (unsigned char*) malloc(matmania_videoram3_size)) == 0) {
+        free(dirtybuffer);
+        return 1;
+    }
+    memset(dirtybuffer2, 1, matmania_videoram3_size);
 
-	/* Mat Mania has a virtual screen twice as large as the visible screen */
-	if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width,2* Machine->drv->screen_height)) == 0)
-	{
-		free(dirtybuffer);
-		free(dirtybuffer2);
-		return 1;
-	}
+    /* Mat Mania has a virtual screen twice as large as the visible screen */
+    if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width, 2 * Machine->drv->screen_height)) == 0) {
+        free(dirtybuffer);
+        free(dirtybuffer2);
+        return 1;
+    }
 
-	/* Mat Mania has a virtual screen twice as large as the visible screen */
-	if ((tmpbitmap2 = bitmap_alloc(Machine->drv->screen_width,2 * Machine->drv->screen_height)) == 0)
-	{
-		free(tmpbitmap);
-		free(dirtybuffer);
-		free(dirtybuffer2);
-		return 1;
-	}
+    /* Mat Mania has a virtual screen twice as large as the visible screen */
+    if ((tmpbitmap2 = bitmap_alloc(Machine->drv->screen_width, 2 * Machine->drv->screen_height)) == 0) {
+        free(tmpbitmap);
+        free(dirtybuffer);
+        free(dirtybuffer2);
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -168,236 +164,218 @@ int matmania_vh_start(void)
 ***************************************************************************/
 void matmania_vh_stop(void)
 {
-	free(dirtybuffer);
-	free(dirtybuffer2);
-	bitmap_free(tmpbitmap);
-	bitmap_free(tmpbitmap2);
+    free(dirtybuffer);
+    free(dirtybuffer2);
+    bitmap_free(tmpbitmap);
+    bitmap_free(tmpbitmap2);
 }
 
 
-WRITE_HANDLER( matmania_videoram3_w )
+WRITE_HANDLER(matmania_videoram3_w)
 {
-	if (matmania_videoram3[offset] != data)
-	{
-		dirtybuffer2[offset] = 1;
+    if (matmania_videoram3[offset] != data) {
+        dirtybuffer2[offset] = 1;
 
-		matmania_videoram3[offset] = data;
-	}
+        matmania_videoram3[offset] = data;
+    }
 }
 
 
 
-WRITE_HANDLER( matmania_colorram3_w )
+WRITE_HANDLER(matmania_colorram3_w)
 {
-	if (matmania_colorram3[offset] != data)
-	{
-		dirtybuffer2[offset] = 1;
+    if (matmania_colorram3[offset] != data) {
+        dirtybuffer2[offset] = 1;
 
-		matmania_colorram3[offset] = data;
-	}
+        matmania_colorram3[offset] = data;
+    }
 }
 
 
-void matmania_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void matmania_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int offs;
+    int offs;
 
 
-	if (palette_recalc())
-	{
-		memset(dirtybuffer,1,videoram_size);
-		memset(dirtybuffer2,1,matmania_videoram3_size);
-	}
+    if (palette_recalc()) {
+        memset(dirtybuffer, 1, videoram_size);
+        memset(dirtybuffer2, 1, matmania_videoram3_size);
+    }
 
-	/* Update the tiles in the left tile ram bank */
-	for (offs = videoram_size - 1;offs >= 0;offs--)
-	{
-		if (dirtybuffer[offs])
-		{
-			int sx,sy;
+    /* Update the tiles in the left tile ram bank */
+    for (offs = videoram_size - 1; offs >= 0; offs--) {
+        if (dirtybuffer[offs]) {
+            int sx, sy;
 
 
-			dirtybuffer[offs] = 0;
+            dirtybuffer[offs] = 0;
 
-			sx = 15 - offs / 32;
-			sy = offs % 32;
+            sx = 15 - offs / 32;
+            sy = offs % 32;
 
-			drawgfx(tmpbitmap,Machine->gfx[1],
-					videoram[offs] + ((colorram[offs] & 0x08) << 5),
-					(colorram[offs] & 0x30) >> 4,
-					0,sy >= 16,	/* flip horizontally tiles on the right half of the bitmap */
-					16*sx,16*sy,
-					0,TRANSPARENCY_NONE,0);
-		}
-	}
+            drawgfx(tmpbitmap, Machine->gfx[1],
+                    videoram[offs] + ((colorram[offs] & 0x08) << 5),
+                    (colorram[offs] & 0x30) >> 4,
+                    0, sy >= 16,	/* flip horizontally tiles on the right half of the bitmap */
+                    16 * sx, 16 * sy,
+                    0, TRANSPARENCY_NONE, 0);
+        }
+    }
 
-	/* Update the tiles in the right tile ram bank */
-	for (offs = matmania_videoram3_size - 1;offs >= 0;offs--)
-	{
-		if (dirtybuffer2[offs])
-		{
-			int sx,sy;
+    /* Update the tiles in the right tile ram bank */
+    for (offs = matmania_videoram3_size - 1; offs >= 0; offs--) {
+        if (dirtybuffer2[offs]) {
+            int sx, sy;
 
 
-			dirtybuffer2[offs] = 0;
+            dirtybuffer2[offs] = 0;
 
-			sx = 15 - offs / 32;
-			sy = offs % 32;
+            sx = 15 - offs / 32;
+            sy = offs % 32;
 
-			drawgfx(tmpbitmap2,Machine->gfx[1],
-					matmania_videoram3[offs] + ((matmania_colorram3[offs] & 0x08) << 5),
-					(matmania_colorram3[offs] & 0x30) >> 4,
-					0,sy >= 16,	/* flip horizontally tiles on the right half of the bitmap */
-					16*sx,16*sy,
-					0,TRANSPARENCY_NONE,0);
-		}
-	}
-
-
-	/* copy the temporary bitmap to the screen */
-	{
-		int scrolly;
+            drawgfx(tmpbitmap2, Machine->gfx[1],
+                    matmania_videoram3[offs] + ((matmania_colorram3[offs] & 0x08) << 5),
+                    (matmania_colorram3[offs] & 0x30) >> 4,
+                    0, sy >= 16,	/* flip horizontally tiles on the right half of the bitmap */
+                    16 * sx, 16 * sy,
+                    0, TRANSPARENCY_NONE, 0);
+        }
+    }
 
 
-		scrolly = -*matmania_scroll;
-		if (*matmania_pageselect)
-			copyscrollbitmap(bitmap,tmpbitmap2,0,0,1,&scrolly,&Machine->visible_area,TRANSPARENCY_NONE,0);
-		else
-			copyscrollbitmap(bitmap,tmpbitmap,0,0,1,&scrolly,&Machine->visible_area,TRANSPARENCY_NONE,0);
-	}
+    /* copy the temporary bitmap to the screen */
+    {
+        int scrolly;
 
 
-	/* Draw the sprites */
-	for (offs = 0;offs < spriteram_size;offs += 4)
-	{
-		if (spriteram[offs] & 0x01)
-		{
-			drawgfx(bitmap,Machine->gfx[2],
-					spriteram[offs+1] + ((spriteram[offs] & 0xf0) << 4),
-					(spriteram[offs] & 0x08) >> 3,
-					spriteram[offs] & 0x04,spriteram[offs] & 0x02,
-					239 - spriteram[offs+3],(240 - spriteram[offs+2]) & 0xff,
-					&Machine->visible_area,TRANSPARENCY_PEN,0);
-		}
-	}
+        scrolly = -*matmania_scroll;
+        if (*matmania_pageselect)
+            copyscrollbitmap(bitmap, tmpbitmap2, 0, 0, 1, &scrolly, &Machine->visible_area, TRANSPARENCY_NONE, 0);
+        else
+            copyscrollbitmap(bitmap, tmpbitmap, 0, 0, 1, &scrolly, &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    }
 
 
-	/* draw the frontmost playfield. They are characters, but draw them as sprites */
-	for (offs = matmania_videoram2_size - 1;offs >= 0;offs--)
-	{
-		int sx,sy;
+    /* Draw the sprites */
+    for (offs = 0; offs < spriteram_size; offs += 4) {
+        if (spriteram[offs] & 0x01) {
+            drawgfx(bitmap, Machine->gfx[2],
+                    spriteram[offs + 1] + ((spriteram[offs] & 0xf0) << 4),
+                    (spriteram[offs] & 0x08) >> 3,
+                    spriteram[offs] & 0x04, spriteram[offs] & 0x02,
+                    239 - spriteram[offs + 3], (240 - spriteram[offs + 2]) & 0xff,
+                    &Machine->visible_area, TRANSPARENCY_PEN, 0);
+        }
+    }
 
 
-		sx = 31 - offs / 32;
-		sy = offs % 32;
+    /* draw the frontmost playfield. They are characters, but draw them as sprites */
+    for (offs = matmania_videoram2_size - 1; offs >= 0; offs--) {
+        int sx, sy;
 
-		drawgfx(bitmap,Machine->gfx[0],
-				matmania_videoram2[offs] + 256 * (matmania_colorram2[offs] & 0x07),
-				(matmania_colorram2[offs] & 0x30) >> 4,
-				0,0,
-				8*sx,8*sy,
-				&Machine->visible_area,TRANSPARENCY_PEN,0);
-	}
+
+        sx = 31 - offs / 32;
+        sy = offs % 32;
+
+        drawgfx(bitmap, Machine->gfx[0],
+                matmania_videoram2[offs] + 256 * (matmania_colorram2[offs] & 0x07),
+                (matmania_colorram2[offs] & 0x30) >> 4,
+                0, 0,
+                8 * sx, 8 * sy,
+                &Machine->visible_area, TRANSPARENCY_PEN, 0);
+    }
 }
 
-void maniach_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void maniach_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int offs;
+    int offs;
 
 
-	if (palette_recalc())
-	{
-		memset(dirtybuffer,1,videoram_size);
-		memset(dirtybuffer2,1,matmania_videoram3_size);
-	}
+    if (palette_recalc()) {
+        memset(dirtybuffer, 1, videoram_size);
+        memset(dirtybuffer2, 1, matmania_videoram3_size);
+    }
 
-	/* Update the tiles in the left tile ram bank */
-	for (offs = videoram_size - 1;offs >= 0;offs--)
-	{
-		if (dirtybuffer[offs])
-		{
-			int sx,sy;
+    /* Update the tiles in the left tile ram bank */
+    for (offs = videoram_size - 1; offs >= 0; offs--) {
+        if (dirtybuffer[offs]) {
+            int sx, sy;
 
 
-			dirtybuffer[offs] = 0;
+            dirtybuffer[offs] = 0;
 
-			sx = 15 - offs / 32;
-			sy = offs % 32;
+            sx = 15 - offs / 32;
+            sy = offs % 32;
 
-			drawgfx(tmpbitmap,Machine->gfx[1],
-					videoram[offs] + ((colorram[offs] & 0x03) << 8),
-					(colorram[offs] & 0x30) >> 4,
-					0,sy >= 16,	/* flip horizontally tiles on the right half of the bitmap */
-					16*sx,16*sy,
-					0,TRANSPARENCY_NONE,0);
-		}
-	}
+            drawgfx(tmpbitmap, Machine->gfx[1],
+                    videoram[offs] + ((colorram[offs] & 0x03) << 8),
+                    (colorram[offs] & 0x30) >> 4,
+                    0, sy >= 16,	/* flip horizontally tiles on the right half of the bitmap */
+                    16 * sx, 16 * sy,
+                    0, TRANSPARENCY_NONE, 0);
+        }
+    }
 
-	/* Update the tiles in the right tile ram bank */
-	for (offs = matmania_videoram3_size - 1;offs >= 0;offs--)
-	{
-		if (dirtybuffer2[offs])
-		{
-			int sx,sy;
+    /* Update the tiles in the right tile ram bank */
+    for (offs = matmania_videoram3_size - 1; offs >= 0; offs--) {
+        if (dirtybuffer2[offs]) {
+            int sx, sy;
 
 
-			dirtybuffer2[offs] = 0;
+            dirtybuffer2[offs] = 0;
 
-			sx = 15 - offs / 32;
-			sy = offs % 32;
+            sx = 15 - offs / 32;
+            sy = offs % 32;
 
-			drawgfx(tmpbitmap2,Machine->gfx[1],
-					matmania_videoram3[offs] + ((matmania_colorram3[offs] & 0x03) << 8),
-					(matmania_colorram3[offs] & 0x30) >> 4,
-					0,sy >= 16,	/* flip horizontally tiles on the right half of the bitmap */
-					16*sx,16*sy,
-					0,TRANSPARENCY_NONE,0);
-		}
-	}
-
-
-	/* copy the temporary bitmap to the screen */
-	{
-		int scrolly;
+            drawgfx(tmpbitmap2, Machine->gfx[1],
+                    matmania_videoram3[offs] + ((matmania_colorram3[offs] & 0x03) << 8),
+                    (matmania_colorram3[offs] & 0x30) >> 4,
+                    0, sy >= 16,	/* flip horizontally tiles on the right half of the bitmap */
+                    16 * sx, 16 * sy,
+                    0, TRANSPARENCY_NONE, 0);
+        }
+    }
 
 
-		scrolly = -*matmania_scroll;
-		if (*matmania_pageselect)
-			copyscrollbitmap(bitmap,tmpbitmap2,0,0,1,&scrolly,&Machine->visible_area,TRANSPARENCY_NONE,0);
-		else
-			copyscrollbitmap(bitmap,tmpbitmap,0,0,1,&scrolly,&Machine->visible_area,TRANSPARENCY_NONE,0);
-	}
+    /* copy the temporary bitmap to the screen */
+    {
+        int scrolly;
 
 
-	/* Draw the sprites */
-	for (offs = 0;offs < spriteram_size;offs += 4)
-	{
-		if (spriteram[offs] & 0x01)
-		{
-			drawgfx(bitmap,Machine->gfx[2],
-					spriteram[offs+1] + ((spriteram[offs] & 0xf0) << 4),
-					(spriteram[offs] & 0x08) >> 3,
-					spriteram[offs] & 0x04,spriteram[offs] & 0x02,
-					239 - spriteram[offs+3],(240 - spriteram[offs+2]) & 0xff,
-					&Machine->visible_area,TRANSPARENCY_PEN,0);
-		}
-	}
+        scrolly = -*matmania_scroll;
+        if (*matmania_pageselect)
+            copyscrollbitmap(bitmap, tmpbitmap2, 0, 0, 1, &scrolly, &Machine->visible_area, TRANSPARENCY_NONE, 0);
+        else
+            copyscrollbitmap(bitmap, tmpbitmap, 0, 0, 1, &scrolly, &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    }
 
 
-	/* draw the frontmost playfield. They are characters, but draw them as sprites */
-	for (offs = matmania_videoram2_size - 1;offs >= 0;offs--)
-	{
-		int sx,sy;
+    /* Draw the sprites */
+    for (offs = 0; offs < spriteram_size; offs += 4) {
+        if (spriteram[offs] & 0x01) {
+            drawgfx(bitmap, Machine->gfx[2],
+                    spriteram[offs + 1] + ((spriteram[offs] & 0xf0) << 4),
+                    (spriteram[offs] & 0x08) >> 3,
+                    spriteram[offs] & 0x04, spriteram[offs] & 0x02,
+                    239 - spriteram[offs + 3], (240 - spriteram[offs + 2]) & 0xff,
+                    &Machine->visible_area, TRANSPARENCY_PEN, 0);
+        }
+    }
 
 
-		sx = 31 - offs / 32;
-		sy = offs % 32;
+    /* draw the frontmost playfield. They are characters, but draw them as sprites */
+    for (offs = matmania_videoram2_size - 1; offs >= 0; offs--) {
+        int sx, sy;
 
-		drawgfx(bitmap,Machine->gfx[0],
-				matmania_videoram2[offs] + 256 * (matmania_colorram2[offs] & 0x07),
-				(matmania_colorram2[offs] & 0x30) >> 4,
-				0,0,
-				8*sx,8*sy,
-				&Machine->visible_area,TRANSPARENCY_PEN,0);
-	}
+
+        sx = 31 - offs / 32;
+        sy = offs % 32;
+
+        drawgfx(bitmap, Machine->gfx[0],
+                matmania_videoram2[offs] + 256 * (matmania_colorram2[offs] & 0x07),
+                (matmania_colorram2[offs] & 0x30) >> 4,
+                0, 0,
+                8 * sx, 8 * sy,
+                &Machine->visible_area, TRANSPARENCY_PEN, 0);
+    }
 }

@@ -90,56 +90,54 @@
 
 void capbowl_init_machine(void);
 
-void capbowl_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh);
+void capbowl_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh);
 
 int  capbowl_vh_start(void);
 void capbowl_vh_stop(void);
 
 extern unsigned char *capbowl_rowaddress;
 
-WRITE_HANDLER( capbowl_rom_select_w );
+WRITE_HANDLER(capbowl_rom_select_w);
 
-READ_HANDLER( capbowl_pagedrom_r );
+READ_HANDLER(capbowl_pagedrom_r);
 
-WRITE_HANDLER( bowlrama_turbo_w );
-READ_HANDLER( bowlrama_turbo_r );
+WRITE_HANDLER(bowlrama_turbo_w);
+READ_HANDLER(bowlrama_turbo_r);
 
 
 
 static unsigned char *nvram;
 static size_t nvram_size;
 
-static void nvram_handler(void *file,int read_or_write)
+static void nvram_handler(void *file, int read_or_write)
 {
-	if (read_or_write)
-		osd_fwrite(file,nvram,nvram_size);
-	else
-	{
-		if (file)
-			osd_fread(file,nvram,nvram_size);
-		else
-		{
-			/* invalidate nvram to make the game initialize it.
-			   A 0xff fill will cause the game to malfunction, so we use a
-			   0x01 fill which seems OK */
-			memset(nvram,0x01,nvram_size);
-		}
-	}
+    if (read_or_write)
+        osd_fwrite(file, nvram, nvram_size);
+    else {
+        if (file)
+            osd_fread(file, nvram, nvram_size);
+        else {
+            /* invalidate nvram to make the game initialize it.
+               A 0xff fill will cause the game to malfunction, so we use a
+               0x01 fill which seems OK */
+            memset(nvram, 0x01, nvram_size);
+        }
+    }
 }
 
 
-static WRITE_HANDLER( capbowl_sndcmd_w )
+static WRITE_HANDLER(capbowl_sndcmd_w)
 {
-	cpu_cause_interrupt(1, M6809_INT_IRQ);
+    cpu_cause_interrupt(1, M6809_INT_IRQ);
 
-	soundlatch_w(offset, data);
+    soundlatch_w(offset, data);
 }
 
 
 /* Handler called by the 2203 emulator when the internal timers cause an IRQ */
 static void firqhandler(int irq)
 {
-	cpu_set_irq_line(1,1,irq ? ASSERT_LINE : CLEAR_LINE);
+    cpu_set_irq_line(1, 1, irq ? ASSERT_LINE : CLEAR_LINE);
 }
 
 
@@ -151,140 +149,133 @@ static void firqhandler(int irq)
 ***************************************************************************/
 static int capbowl_interrupt(void)
 {
-	if (readinputport(4) & 1)	/* get status of the F2 key */
-		return nmi_interrupt();	/* trigger self test */
+    if (readinputport(4) & 1)	/* get status of the F2 key */
+        return nmi_interrupt();	/* trigger self test */
 
-	return ignore_interrupt();
+    return ignore_interrupt();
 }
 
 
 static int track[2];
 
-static READ_HANDLER( track_0_r )
+static READ_HANDLER(track_0_r)
 {
-	return (input_port_0_r(offset) & 0xf0) | ((input_port_2_r(offset) - track[0]) & 0x0f);
+    return (input_port_0_r(offset) & 0xf0) | ((input_port_2_r(offset) - track[0]) & 0x0f);
 }
 
-static READ_HANDLER( track_1_r )
+static READ_HANDLER(track_1_r)
 {
-	return (input_port_1_r(offset) & 0xf0) | ((input_port_3_r(offset) - track[1]) & 0x0f);
+    return (input_port_1_r(offset) & 0xf0) | ((input_port_3_r(offset) - track[1]) & 0x0f);
 }
 
-static WRITE_HANDLER( track_reset_w )
+static WRITE_HANDLER(track_reset_w)
 {
-	/* reset the trackball counters */
-	track[0] = input_port_2_r(offset);
-	track[1] = input_port_3_r(offset);
+    /* reset the trackball counters */
+    track[0] = input_port_2_r(offset);
+    track[1] = input_port_3_r(offset);
 
-	watchdog_reset_w(offset,data);
+    watchdog_reset_w(offset, data);
 }
 
 
 
-static struct MemoryReadAddress capbowl_readmem[] =
-{
-	{ 0x0000, 0x3fff, MRA_BANK1 },
-	{ 0x5000, 0x57ff, MRA_RAM },
-	{ 0x5800, 0x5fff, TMS34061_r },
-	{ 0x7000, 0x7000, track_0_r },	/* + other inputs */
-	{ 0x7800, 0x7800, track_1_r },	/* + other inputs */
-	{ 0x8000, 0xffff, MRA_ROM },
-	{ -1 }  /* end of table */
+static struct MemoryReadAddress capbowl_readmem[] = {
+    { 0x0000, 0x3fff, MRA_BANK1 },
+    { 0x5000, 0x57ff, MRA_RAM },
+    { 0x5800, 0x5fff, TMS34061_r },
+    { 0x7000, 0x7000, track_0_r },	/* + other inputs */
+    { 0x7800, 0x7800, track_1_r },	/* + other inputs */
+    { 0x8000, 0xffff, MRA_ROM },
+    { -1 }  /* end of table */
 };
 
-static struct MemoryReadAddress bowlrama_readmem[] =
-{
-	{ 0x0000, 0x001f, bowlrama_turbo_r },
-	{ 0x5000, 0x57ff, MRA_RAM },
-	{ 0x5800, 0x5fff, TMS34061_r },
-	{ 0x7000, 0x7000, track_0_r },	/* + other inputs */
-	{ 0x7800, 0x7800, track_1_r },	/* + other inputs */
-	{ 0x8000, 0xffff, MRA_ROM },
-	{ -1 }  /* end of table */
+static struct MemoryReadAddress bowlrama_readmem[] = {
+    { 0x0000, 0x001f, bowlrama_turbo_r },
+    { 0x5000, 0x57ff, MRA_RAM },
+    { 0x5800, 0x5fff, TMS34061_r },
+    { 0x7000, 0x7000, track_0_r },	/* + other inputs */
+    { 0x7800, 0x7800, track_1_r },	/* + other inputs */
+    { 0x8000, 0xffff, MRA_ROM },
+    { -1 }  /* end of table */
 };
 
-static struct MemoryWriteAddress writemem[] =
-{
-	{ 0x0000, 0x001f, bowlrama_turbo_w },	/* Bowl-O-Rama only */
-	{ 0x4000, 0x4000, MWA_RAM, &capbowl_rowaddress },
-	{ 0x4800, 0x4800, capbowl_rom_select_w },
-	{ 0x5000, 0x57ff, MWA_RAM, &nvram, &nvram_size },
-	{ 0x5800, 0x5fff, TMS34061_w },
-	{ 0x6000, 0x6000, capbowl_sndcmd_w },
-	{ 0x6800, 0x6800, track_reset_w },	/* + watchdog */
-	{ -1 }  /* end of table */
+static struct MemoryWriteAddress writemem[] = {
+    { 0x0000, 0x001f, bowlrama_turbo_w },	/* Bowl-O-Rama only */
+    { 0x4000, 0x4000, MWA_RAM, &capbowl_rowaddress },
+    { 0x4800, 0x4800, capbowl_rom_select_w },
+    { 0x5000, 0x57ff, MWA_RAM, &nvram, &nvram_size },
+    { 0x5800, 0x5fff, TMS34061_w },
+    { 0x6000, 0x6000, capbowl_sndcmd_w },
+    { 0x6800, 0x6800, track_reset_w },	/* + watchdog */
+    { -1 }  /* end of table */
 };
 
 
-static struct MemoryReadAddress sound_readmem[] =
-{
-	{ 0x0000, 0x07ff, MRA_RAM },
-	{ 0x1000, 0x1000, YM2203_status_port_0_r },
-	{ 0x1001, 0x1001, YM2203_read_port_0_r },
-	{ 0x7000, 0x7000, soundlatch_r },
-	{ 0x8000, 0xffff, MRA_ROM },
-	{ -1 }  /* end of table */
+static struct MemoryReadAddress sound_readmem[] = {
+    { 0x0000, 0x07ff, MRA_RAM },
+    { 0x1000, 0x1000, YM2203_status_port_0_r },
+    { 0x1001, 0x1001, YM2203_read_port_0_r },
+    { 0x7000, 0x7000, soundlatch_r },
+    { 0x8000, 0xffff, MRA_ROM },
+    { -1 }  /* end of table */
 };
 
-static struct MemoryWriteAddress sound_writemem[] =
-{
-	{ 0x0000, 0x07ff, MWA_RAM},
-	{ 0x1000, 0x1000, YM2203_control_port_0_w },
-	{ 0x1001, 0x1001, YM2203_write_port_0_w },
-	{ 0x2000, 0x2000, MWA_NOP },  /* Not hooked up according to the schematics */
-	{ 0x6000, 0x6000, DAC_0_data_w },
-	{ -1 }  /* end of table */
+static struct MemoryWriteAddress sound_writemem[] = {
+    { 0x0000, 0x07ff, MWA_RAM},
+    { 0x1000, 0x1000, YM2203_control_port_0_w },
+    { 0x1001, 0x1001, YM2203_write_port_0_w },
+    { 0x2000, 0x2000, MWA_NOP },  /* Not hooked up according to the schematics */
+    { 0x6000, 0x6000, DAC_0_data_w },
+    { -1 }  /* end of table */
 };
 
 
 
-INPUT_PORTS_START( capbowl )
-	PORT_START	/* IN0 */
-	/* low 4 bits are for the trackball */
-	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_COCKTAIL )
-	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_COCKTAIL )
-	PORT_DIPNAME( 0x40, 0x40, DEF_STR( Cabinet ) ) /* This version of Bowl-O-Rama */
-	PORT_DIPSETTING(    0x40, DEF_STR( Upright ) )			   /* is Upright only */
-	PORT_DIPSETTING(    0x00, DEF_STR( Cocktail ) )
-	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_COIN2 )
+INPUT_PORTS_START(capbowl)
+PORT_START	/* IN0 */
+/* low 4 bits are for the trackball */
+PORT_BIT(0x10, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_COCKTAIL)
+PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_COCKTAIL)
+PORT_DIPNAME(0x40, 0x40, DEF_STR(Cabinet))       /* This version of Bowl-O-Rama */
+PORT_DIPSETTING(0x40, DEF_STR(Upright))			          /* is Upright only */
+PORT_DIPSETTING(0x00, DEF_STR(Cocktail))
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_COIN2)
 
-	PORT_START	/* IN1 */
-	/* low 4 bits are for the trackball */
-	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON1 )
-	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 )
-	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_START1 )
-	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_COIN1 )
+PORT_START	/* IN1 */
+/* low 4 bits are for the trackball */
+PORT_BIT(0x10, IP_ACTIVE_LOW, IPT_BUTTON1)
+PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_BUTTON2)
+PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_START1)
+PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_COIN1)
 
-	PORT_START	/* FAKE */
-	PORT_ANALOG( 0xff, 0x00, IPT_TRACKBALL_Y | IPF_REVERSE, 20, 40, 0, 0 )
+PORT_START	/* FAKE */
+PORT_ANALOG(0xff, 0x00, IPT_TRACKBALL_Y | IPF_REVERSE, 20, 40, 0, 0)
 
-	PORT_START	/* FAKE */
-	PORT_ANALOG( 0xff, 0x00, IPT_TRACKBALL_X, 20, 40, 0, 0 )
+PORT_START	/* FAKE */
+PORT_ANALOG(0xff, 0x00, IPT_TRACKBALL_X, 20, 40, 0, 0)
 
-	PORT_START	/* FAKE */
-	/* This fake input port is used to get the status of the F2 key, */
-	/* and activate the test mode, which is triggered by a NMI */
-	PORT_BITX(0x01, IP_ACTIVE_HIGH, IPT_SERVICE, DEF_STR( Service_Mode ), KEYCODE_F2, IP_JOY_NONE )
+PORT_START	/* FAKE */
+/* This fake input port is used to get the status of the F2 key, */
+/* and activate the test mode, which is triggered by a NMI */
+PORT_BITX(0x01, IP_ACTIVE_HIGH, IPT_SERVICE, DEF_STR(Service_Mode), KEYCODE_F2, IP_JOY_NONE)
 INPUT_PORTS_END
 
 
 
-static struct YM2203interface ym2203_interface =
-{
-	1,			/* 1 chip */
-	4000000,	/* 4 MHz */
-	{ YM2203_VOL(40,40) },
-	{ ticket_dispenser_r },
-	{ 0 },
-	{ 0 },
-	{ ticket_dispenser_w },  /* Also a status LED. See memory map above */
-	{ firqhandler }
+static struct YM2203interface ym2203_interface = {
+    1,			/* 1 chip */
+    4000000,	/* 4 MHz */
+    { YM2203_VOL(40, 40) },
+    { ticket_dispenser_r },
+    { 0 },
+    { 0 },
+    { ticket_dispenser_w },  /* Also a status LED. See memory map above */
+    { firqhandler }
 };
 
-static struct DACinterface dac_interface =
-{
-	1,
-	{ 100 }
+static struct DACinterface dac_interface = {
+    1,
+    { 100 }
 };
 
 
@@ -351,53 +342,53 @@ MACHINEDRIVER(bowlrama, 239)
 
 ***************************************************************************/
 
-ROM_START( capbowl )
-	ROM_REGION( 0x28000, REGION_CPU1 )   /* 160k for code and graphics */
-	ROM_LOAD( "u6",           0x08000, 0x8000, 0x14924c96 )
-	ROM_LOAD( "gr0",          0x10000, 0x8000, 0xef53ca7a )
-	ROM_LOAD( "gr1",          0x18000, 0x8000, 0x27ede6ce )
-	ROM_LOAD( "gr2",          0x20000, 0x8000, 0xe49238f4 )
+ROM_START(capbowl)
+ROM_REGION(0x28000, REGION_CPU1)     /* 160k for code and graphics */
+ROM_LOAD("u6",           0x08000, 0x8000, 0x14924c96)
+ROM_LOAD("gr0",          0x10000, 0x8000, 0xef53ca7a)
+ROM_LOAD("gr1",          0x18000, 0x8000, 0x27ede6ce)
+ROM_LOAD("gr2",          0x20000, 0x8000, 0xe49238f4)
 
-	ROM_REGION( 0x10000, REGION_CPU2 )   /* 64k for sound */
-	ROM_LOAD( "sound",        0x8000, 0x8000, 0x8c9c3b8a )
+ROM_REGION(0x10000, REGION_CPU2)     /* 64k for sound */
+ROM_LOAD("sound",        0x8000, 0x8000, 0x8c9c3b8a)
 ROM_END
 
-ROM_START( capbowl2 )
-	ROM_REGION( 0x28000, REGION_CPU1 )   /* 160k for code and graphics */
-	ROM_LOAD( "progrev3.u6",  0x08000, 0x8000, 0x9162934a )
-	ROM_LOAD( "gr0",          0x10000, 0x8000, 0xef53ca7a )
-	ROM_LOAD( "gr1",          0x18000, 0x8000, 0x27ede6ce )
-	ROM_LOAD( "gr2",          0x20000, 0x8000, 0xe49238f4 )
+ROM_START(capbowl2)
+ROM_REGION(0x28000, REGION_CPU1)     /* 160k for code and graphics */
+ROM_LOAD("progrev3.u6",  0x08000, 0x8000, 0x9162934a)
+ROM_LOAD("gr0",          0x10000, 0x8000, 0xef53ca7a)
+ROM_LOAD("gr1",          0x18000, 0x8000, 0x27ede6ce)
+ROM_LOAD("gr2",          0x20000, 0x8000, 0xe49238f4)
 
-	ROM_REGION( 0x10000, REGION_CPU2 )   /* 64k for sound */
-	ROM_LOAD( "sound",        0x8000, 0x8000, 0x8c9c3b8a )
+ROM_REGION(0x10000, REGION_CPU2)     /* 64k for sound */
+ROM_LOAD("sound",        0x8000, 0x8000, 0x8c9c3b8a)
 ROM_END
 
-ROM_START( clbowl )
-	ROM_REGION( 0x28000, REGION_CPU1 )   /* 160k for code and graphics */
-	ROM_LOAD( "u6.cl",        0x08000, 0x8000, 0x91e06bc4 )
-	ROM_LOAD( "gr0.cl",       0x10000, 0x8000, 0x899c8f15 )
-	ROM_LOAD( "gr1.cl",       0x18000, 0x8000, 0x0ac0dc4c )
-	ROM_LOAD( "gr2.cl",       0x20000, 0x8000, 0x251f5da5 )
+ROM_START(clbowl)
+ROM_REGION(0x28000, REGION_CPU1)     /* 160k for code and graphics */
+ROM_LOAD("u6.cl",        0x08000, 0x8000, 0x91e06bc4)
+ROM_LOAD("gr0.cl",       0x10000, 0x8000, 0x899c8f15)
+ROM_LOAD("gr1.cl",       0x18000, 0x8000, 0x0ac0dc4c)
+ROM_LOAD("gr2.cl",       0x20000, 0x8000, 0x251f5da5)
 
-	ROM_REGION( 0x10000, REGION_CPU2 )   /* 64k for sound */
-	ROM_LOAD( "sound.cl",     0x8000, 0x8000, 0x1eba501e )
+ROM_REGION(0x10000, REGION_CPU2)     /* 64k for sound */
+ROM_LOAD("sound.cl",     0x8000, 0x8000, 0x1eba501e)
 ROM_END
 
-ROM_START( bowlrama )
-	ROM_REGION( 0x10000, REGION_CPU1 )      /* 64k for code */
-	ROM_LOAD( "u6",           0x08000, 0x08000, 0x7103ad55 )
+ROM_START(bowlrama)
+ROM_REGION(0x10000, REGION_CPU1)        /* 64k for code */
+ROM_LOAD("u6",           0x08000, 0x08000, 0x7103ad55)
 
-	ROM_REGION( 0x10000, REGION_CPU2 )     /* 64k for sound */
-	ROM_LOAD( "u30",          0x8000, 0x8000, 0xf3168834 )
+ROM_REGION(0x10000, REGION_CPU2)       /* 64k for sound */
+ROM_LOAD("u30",          0x8000, 0x8000, 0xf3168834)
 
-	ROM_REGION( 0x40000, REGION_GFX1 )     /* 256K for Graphics used at runtime */
-	ROM_LOAD( "ux7",          0x00000, 0x40000, 0x8727432a )
+ROM_REGION(0x40000, REGION_GFX1)       /* 256K for Graphics used at runtime */
+ROM_LOAD("ux7",          0x00000, 0x40000, 0x8727432a)
 ROM_END
 
 
 
-GAME( 1988, capbowl,  0,       capbowl,  capbowl, 0, ROT270_16BIT, "Incredible Technologies", "Capcom Bowling (set 1)" )
-GAME( 1988, capbowl2, capbowl, capbowl,  capbowl, 0, ROT270_16BIT, "Incredible Technologies", "Capcom Bowling (set 2)" )
-GAME( 1989, clbowl,   capbowl, capbowl,  capbowl, 0, ROT270_16BIT, "Incredible Technologies", "Coors Light Bowling" )
-GAME( 1991, bowlrama, 0,       bowlrama, capbowl, 0, ROT270_16BIT, "P & P Marketing", "Bowl-O-Rama" )
+GAME(1988, capbowl,  0,       capbowl,  capbowl, 0, ROT270_16BIT, "Incredible Technologies", "Capcom Bowling (set 1)")
+GAME(1988, capbowl2, capbowl, capbowl,  capbowl, 0, ROT270_16BIT, "Incredible Technologies", "Capcom Bowling (set 2)")
+GAME(1989, clbowl,   capbowl, capbowl,  capbowl, 0, ROT270_16BIT, "Incredible Technologies", "Coors Light Bowling")
+GAME(1991, bowlrama, 0,       bowlrama, capbowl, 0, ROT270_16BIT, "P & P Marketing", "Bowl-O-Rama")

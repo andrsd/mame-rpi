@@ -34,37 +34,34 @@ struct osd_bitmap *tmpbitmap;
 ***************************************************************************/
 int generic_vh_start(void)
 {
-	dirtybuffer = 0;
-	tmpbitmap = 0;
+    dirtybuffer = 0;
+    tmpbitmap = 0;
 
-	if (videoram_size == 0)
-	{
+    if (videoram_size == 0) {
 //logerror("Error: generic_vh_start() called but videoram_size not initialized\n");
-		return 1;
-	}
+        return 1;
+    }
 
-	if ((dirtybuffer = (unsigned char*)malloc(videoram_size)) == 0)
-		return 1;
-	memset(dirtybuffer,1,videoram_size);
+    if ((dirtybuffer = (unsigned char*) malloc(videoram_size)) == 0)
+        return 1;
+    memset(dirtybuffer, 1, videoram_size);
 
-	if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)
-	{
-		free(dirtybuffer);
-		return 1;
-	}
+    if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0) {
+        free(dirtybuffer);
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
 int generic_bitmapped_vh_start(void)
 {
-	if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)
-	{
-		return 1;
-	}
+    if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width, Machine->drv->screen_height)) == 0) {
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -75,18 +72,18 @@ int generic_bitmapped_vh_start(void)
 ***************************************************************************/
 void generic_vh_stop(void)
 {
-	free(dirtybuffer);
-	bitmap_free(tmpbitmap);
+    free(dirtybuffer);
+    bitmap_free(tmpbitmap);
 
-	dirtybuffer = 0;
-	tmpbitmap = 0;
+    dirtybuffer = 0;
+    tmpbitmap = 0;
 }
 
 void generic_bitmapped_vh_stop(void)
 {
-	bitmap_free(tmpbitmap);
+    bitmap_free(tmpbitmap);
 
-	tmpbitmap = 0;
+    tmpbitmap = 0;
 }
 
 
@@ -96,63 +93,61 @@ void generic_bitmapped_vh_stop(void)
   To be used by bitmapped games not using sprites.
 
 ***************************************************************************/
-void generic_bitmapped_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void generic_bitmapped_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	if (full_refresh)
-		copybitmap(bitmap,tmpbitmap,0,0,0,0,&Machine->visible_area,TRANSPARENCY_NONE,0);
+    if (full_refresh)
+        copybitmap(bitmap, tmpbitmap, 0, 0, 0, 0, &Machine->visible_area, TRANSPARENCY_NONE, 0);
 }
 
 
-READ_HANDLER( videoram_r )
+READ_HANDLER(videoram_r)
 {
-	return videoram[offset];
+    return videoram[offset];
 }
 
-READ_HANDLER( colorram_r )
+READ_HANDLER(colorram_r)
 {
-	return colorram[offset];
+    return colorram[offset];
 }
 
-WRITE_HANDLER( videoram_w )
+WRITE_HANDLER(videoram_w)
 {
-	if (videoram[offset] != data)
-	{
-		dirtybuffer[offset] = 1;
+    if (videoram[offset] != data) {
+        dirtybuffer[offset] = 1;
 
-		videoram[offset] = data;
-	}
+        videoram[offset] = data;
+    }
 }
 
-WRITE_HANDLER( colorram_w )
+WRITE_HANDLER(colorram_w)
 {
-	if (colorram[offset] != data)
-	{
-		dirtybuffer[offset] = 1;
+    if (colorram[offset] != data) {
+        dirtybuffer[offset] = 1;
 
-		colorram[offset] = data;
-	}
+        colorram[offset] = data;
+    }
 }
 
 
 
-READ_HANDLER( spriteram_r )
+READ_HANDLER(spriteram_r)
 {
-	return spriteram[offset];
+    return spriteram[offset];
 }
 
-WRITE_HANDLER( spriteram_w )
+WRITE_HANDLER(spriteram_w)
 {
-	spriteram[offset] = data;
+    spriteram[offset] = data;
 }
 
-READ_HANDLER( spriteram_2_r )
+READ_HANDLER(spriteram_2_r)
 {
-	return spriteram_2[offset];
+    return spriteram_2[offset];
 }
 
-WRITE_HANDLER( spriteram_2_w )
+WRITE_HANDLER(spriteram_2_w)
 {
-	spriteram_2[offset] = data;
+    spriteram_2[offset] = data;
 }
 
 /* Mish:  171099
@@ -198,22 +193,22 @@ more control is needed over what is buffered.
 
 */
 
-WRITE_HANDLER( buffer_spriteram_w )
+WRITE_HANDLER(buffer_spriteram_w)
 {
-	memcpy(buffered_spriteram,spriteram,spriteram_size);
+    memcpy(buffered_spriteram, spriteram, spriteram_size);
 }
 
-WRITE_HANDLER( buffer_spriteram_2_w )
+WRITE_HANDLER(buffer_spriteram_2_w)
 {
-	memcpy(buffered_spriteram_2,spriteram_2,spriteram_2_size);
+    memcpy(buffered_spriteram_2, spriteram_2, spriteram_2_size);
 }
 
-void buffer_spriteram(unsigned char *ptr,int length)
+void buffer_spriteram(unsigned char *ptr, int length)
 {
-	memcpy(buffered_spriteram,ptr,length);
+    memcpy(buffered_spriteram, ptr, length);
 }
 
-void buffer_spriteram_2(unsigned char *ptr,int length)
+void buffer_spriteram_2(unsigned char *ptr, int length)
 {
-	memcpy(buffered_spriteram_2,ptr,length);
+    memcpy(buffered_spriteram_2, ptr, length);
 }

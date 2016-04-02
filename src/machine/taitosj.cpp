@@ -14,30 +14,30 @@
 #define DEBUG_MCU	0
 
 
-static unsigned char fromz80,toz80;
-static int zaccept,zready;
+static unsigned char fromz80, toz80;
+static int zaccept, zready;
 
-WRITE_HANDLER( taitosj_bankswitch_w );
+WRITE_HANDLER(taitosj_bankswitch_w);
 
 
 void taitosj_init_machine(void)
 {
-	/* set the default ROM bank (many games only have one bank and */
-	/* never write to the bank selector register) */
+    /* set the default ROM bank (many games only have one bank and */
+    /* never write to the bank selector register) */
     taitosj_bankswitch_w(0, 0);
 
 
-	zaccept = 1;
-	zready = 0;
-	cpu_set_irq_line(2,0,CLEAR_LINE);
+    zaccept = 1;
+    zready = 0;
+    cpu_set_irq_line(2, 0, CLEAR_LINE);
 }
 
 
-WRITE_HANDLER( taitosj_bankswitch_w )
+WRITE_HANDLER(taitosj_bankswitch_w)
 {
-	unsigned char *RAM = memory_region(REGION_CPU1);
+    unsigned char *RAM = memory_region(REGION_CPU1);
 
-	cpu_setbank(1,&RAM[(data & 0x80) ? 0x10000 : 0x6000]);
+    cpu_setbank(1, &RAM[(data & 0x80) ? 0x10000 : 0x6000]);
 }
 
 
@@ -55,87 +55,87 @@ WRITE_HANDLER( taitosj_bankswitch_w )
  direct access to the Z80 memory space. It can also trigger IRQs on the Z80.
 
 ***************************************************************************/
-READ_HANDLER( taitosj_fake_data_r )
+READ_HANDLER(taitosj_fake_data_r)
 {
 #if DEBUG_MCU
-logerror("%04x: protection read\n",cpu_get_pc());
+    logerror("%04x: protection read\n", cpu_get_pc());
 #endif
-	return 0;
+    return 0;
 }
 
-WRITE_HANDLER( taitosj_fake_data_w )
+WRITE_HANDLER(taitosj_fake_data_w)
 {
 #if DEBUG_MCU
-logerror("%04x: protection write %02x\n",cpu_get_pc(),data);
+    logerror("%04x: protection write %02x\n", cpu_get_pc(), data);
 #endif
 }
 
-READ_HANDLER( taitosj_fake_status_r )
+READ_HANDLER(taitosj_fake_status_r)
 {
 #if DEBUG_MCU
-logerror("%04x: protection status read\n",cpu_get_pc());
+    logerror("%04x: protection status read\n", cpu_get_pc());
 #endif
-	return 0xff;
+    return 0xff;
 }
 
 
 /* timer callback : */
 void taitosj_mcu_real_data_r(int param)
 {
-	zaccept = 1;
+    zaccept = 1;
 }
 
-READ_HANDLER( taitosj_mcu_data_r )
+READ_HANDLER(taitosj_mcu_data_r)
 {
 #if DEBUG_MCU
-logerror("%04x: protection read %02x\n",cpu_get_pc(),toz80);
+    logerror("%04x: protection read %02x\n", cpu_get_pc(), toz80);
 #endif
-	timer_set(TIME_NOW,0,taitosj_mcu_real_data_r);
-	return toz80;
+    timer_set(TIME_NOW, 0, taitosj_mcu_real_data_r);
+    return toz80;
 }
 
 /* timer callback : */
 void taitosj_mcu_real_data_w(int data)
 {
-	zready = 1;
-	cpu_set_irq_line(2,0,ASSERT_LINE);
-	fromz80 = data;
+    zready = 1;
+    cpu_set_irq_line(2, 0, ASSERT_LINE);
+    fromz80 = data;
 }
 
-WRITE_HANDLER( taitosj_mcu_data_w )
+WRITE_HANDLER(taitosj_mcu_data_w)
 {
 #if DEBUG_MCU
-logerror("%04x: protection write %02x\n",cpu_get_pc(),data);
+    logerror("%04x: protection write %02x\n", cpu_get_pc(), data);
 #endif
-	timer_set(TIME_NOW,data,taitosj_mcu_real_data_w);
+    timer_set(TIME_NOW, data, taitosj_mcu_real_data_w);
 }
 
-READ_HANDLER( taitosj_mcu_status_r )
+READ_HANDLER(taitosj_mcu_status_r)
 {
-	/* mcu synchronization */
-	cpu_yielduntil_time (TIME_IN_USEC(5));
+    /* mcu synchronization */
+    cpu_yielduntil_time(TIME_IN_USEC(5));
 
-	/* bit 0 = the 68705 has read data from the Z80 */
-	/* bit 1 = the 68705 has written data for the Z80 */
-	return ~((zready << 0) | (zaccept << 1));
+    /* bit 0 = the 68705 has read data from the Z80 */
+    /* bit 1 = the 68705 has written data for the Z80 */
+    return ~((zready << 0) | (zaccept << 1));
 }
 
-static unsigned char portA_in,portA_out;
+static unsigned char portA_in, portA_out;
 
-READ_HANDLER( taitosj_68705_portA_r )
-{
-#if DEBUG_MCU
-logerror("%04x: 68705 port A read %02x\n",cpu_get_pc(),portA_in);
-#endif
-	return portA_in;
-}
-
-WRITE_HANDLER( taitosj_68705_portA_w )
+READ_HANDLER(taitosj_68705_portA_r)
 {
 #if DEBUG_MCU
-logerror("%04x: 68705 port A write %02x\n",cpu_get_pc(),data);
+    logerror("%04x: 68705 port A read %02x\n", cpu_get_pc(), portA_in);
 #endif
-	portA_out = data;
+    return portA_in;
+}
+
+WRITE_HANDLER(taitosj_68705_portA_w)
+{
+#if DEBUG_MCU
+    logerror("%04x: 68705 port A write %02x\n", cpu_get_pc(), data);
+#endif
+    portA_out = data;
 }
 
 
@@ -160,9 +160,9 @@ logerror("%04x: 68705 port A write %02x\n",cpu_get_pc(),data);
  *               the main Z80 memory location to access)
  */
 
-READ_HANDLER( taitosj_68705_portB_r )
+READ_HANDLER(taitosj_68705_portB_r)
 {
-	return 0xff;
+    return 0xff;
 }
 
 static int address;
@@ -170,81 +170,74 @@ static int address;
 /* timer callback : 68705 is going to read data from the Z80 */
 void taitosj_mcu_data_real_r(int param)
 {
-	zready = 0;
+    zready = 0;
 }
 
 /* timer callback : 68705 is writing data for the Z80 */
 void taitosj_mcu_status_real_w(int data)
 {
-	toz80 = data;
-	zaccept = 0;
+    toz80 = data;
+    zaccept = 0;
 }
 
-WRITE_HANDLER( taitosj_68705_portB_w )
+WRITE_HANDLER(taitosj_68705_portB_w)
 {
 #if DEBUG_MCU
-logerror("%04x: 68705 port B write %02x\n",cpu_get_pc(),data);
+    logerror("%04x: 68705 port B write %02x\n", cpu_get_pc(), data);
 #endif
 
-	if (~data & 0x01)
-	{
+    if (~data & 0x01) {
 #if DEBUG_MCU
-logerror("%04x: 68705  68INTRQ **NOT SUPPORTED**!\n",cpu_get_pc());
+        logerror("%04x: 68705  68INTRQ **NOT SUPPORTED**!\n", cpu_get_pc());
 #endif
-	}
-	if (~data & 0x02)
-	{
-		/* 68705 is going to read data from the Z80 */
-		timer_set(TIME_NOW,0,taitosj_mcu_data_real_r);
-		cpu_set_irq_line(2,0,CLEAR_LINE);
-		portA_in = fromz80;
+    }
+    if (~data & 0x02) {
+        /* 68705 is going to read data from the Z80 */
+        timer_set(TIME_NOW, 0, taitosj_mcu_data_real_r);
+        cpu_set_irq_line(2, 0, CLEAR_LINE);
+        portA_in = fromz80;
 #if DEBUG_MCU
-logerror("%04x: 68705 <- Z80 %02x\n",cpu_get_pc(),portA_in);
+        logerror("%04x: 68705 <- Z80 %02x\n", cpu_get_pc(), portA_in);
 #endif
-	}
-	if (~data & 0x04)
-	{
+    }
+    if (~data & 0x04) {
 #if DEBUG_MCU
-logerror("%04x: 68705 -> Z80 %02x\n",cpu_get_pc(),portA_out);
+        logerror("%04x: 68705 -> Z80 %02x\n", cpu_get_pc(), portA_out);
 #endif
-		/* 68705 is writing data for the Z80 */
-		timer_set(TIME_NOW,portA_out,taitosj_mcu_status_real_w);
-	}
-	if (~data & 0x10)
-	{
+        /* 68705 is writing data for the Z80 */
+        timer_set(TIME_NOW, portA_out, taitosj_mcu_status_real_w);
+    }
+    if (~data & 0x10) {
 #if DEBUG_MCU
-logerror("%04x: 68705 write %02x to address %04x\n",cpu_get_pc(),portA_out,address);
+        logerror("%04x: 68705 write %02x to address %04x\n", cpu_get_pc(), portA_out, address);
 #endif
         memorycontextswap(0);
-		cpu_writemem16(address, portA_out);
+        cpu_writemem16(address, portA_out);
         memorycontextswap(2);
 
-		/* increase low 8 bits of latched address for burst writes */
-		address = (address & 0xff00) | ((address + 1) & 0xff);
-	}
-	if (~data & 0x20)
-	{
+        /* increase low 8 bits of latched address for burst writes */
+        address = (address & 0xff00) | ((address + 1) & 0xff);
+    }
+    if (~data & 0x20) {
 #if DEBUG_MCU
-logerror("%04x: 68705 read %02x from address %04x\n",cpu_get_pc(),portA_in,address);
+        logerror("%04x: 68705 read %02x from address %04x\n", cpu_get_pc(), portA_in, address);
 #endif
         memorycontextswap(0);
-		portA_in = cpu_readmem16(address);
+        portA_in = cpu_readmem16(address);
         memorycontextswap(2);
-	}
-	if (~data & 0x40)
-	{
+    }
+    if (~data & 0x40) {
 #if DEBUG_MCU
-logerror("%04x: 68705 address low %02x\n",cpu_get_pc(),portA_out);
+        logerror("%04x: 68705 address low %02x\n", cpu_get_pc(), portA_out);
 #endif
-		address = (address & 0xff00) | portA_out;
-	}
-	if (~data & 0x80)
-	{
+        address = (address & 0xff00) | portA_out;
+    }
+    if (~data & 0x80) {
 #if DEBUG_MCU
-logerror("%04x: 68705 address high %02x\n",cpu_get_pc(),portA_out);
+        logerror("%04x: 68705 address high %02x\n", cpu_get_pc(), portA_out);
 #endif
-		address = (address & 0x00ff) | (portA_out << 8);
-	}
+        address = (address & 0x00ff) | (portA_out << 8);
+    }
 }
 
 /*
@@ -257,15 +250,15 @@ logerror("%04x: 68705 address high %02x\n",cpu_get_pc(),portA_out);
  *                  passes through)
  */
 
-READ_HANDLER( taitosj_68705_portC_r )
+READ_HANDLER(taitosj_68705_portC_r)
 {
-	int res;
+    int res;
 
-	res = (zready << 0) | (zaccept << 1);
+    res = (zready << 0) | (zaccept << 1);
 #if DEBUG_MCU
-logerror("%04x: 68705 port C read %02x\n",cpu_get_pc(),res);
+    logerror("%04x: 68705 port C read %02x\n", cpu_get_pc(), res);
 #endif
-	return res;
+    return res;
 }
 
 
@@ -274,37 +267,36 @@ logerror("%04x: 68705 port C read %02x\n",cpu_get_pc(),res);
 
 static int protection_value;
 
-WRITE_HANDLER( alpine_protection_w )
+WRITE_HANDLER(alpine_protection_w)
 {
-	switch (data)
-	{
-	case 0x05:
-		protection_value = 0x18;
-		break;
-	case 0x07:
-	case 0x0c:
-	case 0x0f:
-		protection_value = 0x00;		/* not used as far as I can tell */
-		break;
-	case 0x16:
-		protection_value = 0x08;
-		break;
-	case 0x1d:
-		protection_value = 0x18;
-		break;
-	default:
-		protection_value = data;		/* not used as far as I can tell */
-		break;
-	}
+    switch (data) {
+    case 0x05:
+        protection_value = 0x18;
+        break;
+    case 0x07:
+    case 0x0c:
+    case 0x0f:
+        protection_value = 0x00;		/* not used as far as I can tell */
+        break;
+    case 0x16:
+        protection_value = 0x08;
+        break;
+    case 0x1d:
+        protection_value = 0x18;
+        break;
+    default:
+        protection_value = data;		/* not used as far as I can tell */
+        break;
+    }
 }
 
-WRITE_HANDLER( alpinea_bankswitch_w )
+WRITE_HANDLER(alpinea_bankswitch_w)
 {
     taitosj_bankswitch_w(offset, data);
-	protection_value = data >> 2;
+    protection_value = data >> 2;
 }
 
-READ_HANDLER( alpine_port_2_r )
+READ_HANDLER(alpine_port_2_r)
 {
-	return input_port_2_r(offset) | protection_value;
+    return input_port_2_r(offset) | protection_value;
 }

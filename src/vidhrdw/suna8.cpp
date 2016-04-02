@@ -70,11 +70,11 @@ data8_t suna8_unknown;
 
 /* Functions defined in vidhrdw: */
 
-WRITE_HANDLER( suna8_spriteram_w );			// for debug
-WRITE_HANDLER( suna8_banked_spriteram_w );	// for debug
+WRITE_HANDLER(suna8_spriteram_w);			// for debug
+WRITE_HANDLER(suna8_banked_spriteram_w);	// for debug
 
 int  suna8_vh_start(void);
-void suna8_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh);
+void suna8_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh);
 
 
 /***************************************************************************
@@ -86,106 +86,113 @@ static int tiles, rombank;
 
 static void get_tile_info(int tile_index)
 {
-	data8_t code, attr;
-	if (keyboard_pressed(KEYCODE_X))
-	{	data8_t *rom = memory_region(REGION_CPU1) + 0x10000 + 0x4000*rombank;
-		code = rom[ 2 * tile_index + 0 ];
-		attr = rom[ 2 * tile_index + 1 ];	}
-	else
-	{	code = spriteram[ 2 * tile_index + 0 ];
-		attr = spriteram[ 2 * tile_index + 1 ];	}
-	SET_TILE_INFO(0, ( (attr & 0x03) << 8 ) + code + tiles*0x400,(attr >> 2) & 0xf);
-	tile_info.flags = TILE_FLIPYX( (attr >> 6) & 3 );
+    data8_t code, attr;
+    if (keyboard_pressed(KEYCODE_X)) {
+        data8_t *rom = memory_region(REGION_CPU1) + 0x10000 + 0x4000 * rombank;
+        code = rom[ 2 * tile_index + 0 ];
+        attr = rom[ 2 * tile_index + 1 ];
+    } else {
+        code = spriteram[ 2 * tile_index + 0 ];
+        attr = spriteram[ 2 * tile_index + 1 ];
+    }
+    SET_TILE_INFO(0, ((attr & 0x03) << 8) + code + tiles * 0x400, (attr >> 2) & 0xf);
+    tile_info.flags = TILE_FLIPYX((attr >> 6) & 3);
 }
 
 
 
-READ_HANDLER( suna8_banked_paletteram_r )
+READ_HANDLER(suna8_banked_paletteram_r)
 {
-	offset += suna8_palettebank * 0x200;
-	return paletteram[offset];
+    offset += suna8_palettebank * 0x200;
+    return paletteram[offset];
 }
 
-READ_HANDLER( suna8_banked_spriteram_r )
+READ_HANDLER(suna8_banked_spriteram_r)
 {
-	offset += suna8_spritebank * 0x2000;
-	return spriteram[offset];
+    offset += suna8_spritebank * 0x2000;
+    return spriteram[offset];
 }
 
-WRITE_HANDLER( suna8_spriteram_w )
+WRITE_HANDLER(suna8_spriteram_w)
 {
-	if (spriteram[offset] != data)
-	{
-		spriteram[offset] = data;
-		tilemap_mark_tile_dirty(tilemap,offset/2);
-	}
+    if (spriteram[offset] != data) {
+        spriteram[offset] = data;
+        tilemap_mark_tile_dirty(tilemap, offset / 2);
+    }
 }
 
-WRITE_HANDLER( suna8_banked_spriteram_w )
+WRITE_HANDLER(suna8_banked_spriteram_w)
 {
-	offset += suna8_spritebank * 0x2000;
-	if (spriteram[offset] != data)
-	{
-		spriteram[offset] = data;
-		tilemap_mark_tile_dirty(tilemap,offset/2);
-	}
+    offset += suna8_spritebank * 0x2000;
+    if (spriteram[offset] != data) {
+        spriteram[offset] = data;
+        tilemap_mark_tile_dirty(tilemap, offset / 2);
+    }
 }
 
 /*
 	Banked Palette RAM. The data is scrambled
 */
-WRITE_HANDLER( brickzn_banked_paletteram_w )
+WRITE_HANDLER(brickzn_banked_paletteram_w)
 {
-	int r,g,b;
-	UINT16 rgb;
-	offset += suna8_palettebank * 0x200;
-	paletteram[offset] = data;
-	rgb = (paletteram[offset&~1] << 8) + paletteram[offset|1];
-	r	=	(((rgb & (1<<0xc))?1:0)<<0) |
-			(((rgb & (1<<0xb))?1:0)<<1) |
-			(((rgb & (1<<0xe))?1:0)<<2) |
-			(((rgb & (1<<0xf))?1:0)<<3);
-	g	=	(((rgb & (1<<0x8))?1:0)<<0) |
-			(((rgb & (1<<0x9))?1:0)<<1) |
-			(((rgb & (1<<0xa))?1:0)<<2) |
-			(((rgb & (1<<0xd))?1:0)<<3);
-	b	=	(((rgb & (1<<0x4))?1:0)<<0) |
-			(((rgb & (1<<0x3))?1:0)<<1) |
-			(((rgb & (1<<0x6))?1:0)<<2) |
-			(((rgb & (1<<0x7))?1:0)<<3);
+    int r, g, b;
+    UINT16 rgb;
+    offset += suna8_palettebank * 0x200;
+    paletteram[offset] = data;
+    rgb = (paletteram[offset & ~1] << 8) + paletteram[offset | 1];
+    r	=	(((rgb & (1 << 0xc)) ? 1 : 0) << 0) |
+            (((rgb & (1 << 0xb)) ? 1 : 0) << 1) |
+            (((rgb & (1 << 0xe)) ? 1 : 0) << 2) |
+            (((rgb & (1 << 0xf)) ? 1 : 0) << 3);
+    g	=	(((rgb & (1 << 0x8)) ? 1 : 0) << 0) |
+            (((rgb & (1 << 0x9)) ? 1 : 0) << 1) |
+            (((rgb & (1 << 0xa)) ? 1 : 0) << 2) |
+            (((rgb & (1 << 0xd)) ? 1 : 0) << 3);
+    b	=	(((rgb & (1 << 0x4)) ? 1 : 0) << 0) |
+            (((rgb & (1 << 0x3)) ? 1 : 0) << 1) |
+            (((rgb & (1 << 0x6)) ? 1 : 0) << 2) |
+            (((rgb & (1 << 0x7)) ? 1 : 0) << 3);
 
-	r = (r << 4) | r;
-	g = (g << 4) | g;
-	b = (b << 4) | b;
-	palette_change_color(offset/2,r,g,b);
+    r = (r << 4) | r;
+    g = (g << 4) | g;
+    b = (b << 4) | b;
+    palette_change_color(offset / 2, r, g, b);
 }
 
 
 
 int suna8_vh_start_common(int dim)
 {
-	suna8_text_dim = dim;
-	tilemap = tilemap_create(	get_tile_info, tilemap_scan_cols,
-								TILEMAP_TRANSPARENT,
-								8,8,0x20*((suna8_text_dim > 0)?4:8),0x20);
+    suna8_text_dim = dim;
+    tilemap = tilemap_create(get_tile_info, tilemap_scan_cols,
+                             TILEMAP_TRANSPARENT,
+                             8, 8, 0x20 * ((suna8_text_dim > 0) ? 4 : 8), 0x20);
 
-	if ( tilemap == NULL )	return 1;
+    if (tilemap == NULL)	return 1;
 
-	if (!(suna8_text_dim > 0))
-	{
-		paletteram	=	memory_region(REGION_USER1);
-		spriteram	=	memory_region(REGION_USER2);
-		suna8_spritebank  = 0;
-		suna8_palettebank = 0;
-	}
+    if (!(suna8_text_dim > 0)) {
+        paletteram	=	memory_region(REGION_USER1);
+        spriteram	=	memory_region(REGION_USER2);
+        suna8_spritebank  = 0;
+        suna8_palettebank = 0;
+    }
 
-	tilemap_set_transparent_pen(tilemap,15);
-	return 0;
+    tilemap_set_transparent_pen(tilemap, 15);
+    return 0;
 }
 
-int suna8_vh_start_textdim0(void)	{ return suna8_vh_start_common(0);  }
-int suna8_vh_start_textdim8(void)	{ return suna8_vh_start_common(8);  }
-int suna8_vh_start_textdim12(void)	{ return suna8_vh_start_common(12); }
+int suna8_vh_start_textdim0(void)
+{
+    return suna8_vh_start_common(0);
+}
+int suna8_vh_start_textdim8(void)
+{
+    return suna8_vh_start_common(8);
+}
+int suna8_vh_start_textdim12(void)
+{
+    return suna8_vh_start_common(12);
+}
 
 /***************************************************************************
 
@@ -197,196 +204,205 @@ int suna8_vh_start_textdim12(void)	{ return suna8_vh_start_common(12); }
 
 void suna8_draw_normal_sprites(struct osd_bitmap *bitmap)
 {
-	int i;
-	int mx = 0;	// multisprite x counter
+    int i;
+    int mx = 0;	// multisprite x counter
 
-	int max_x	=	Machine->drv->screen_width	- 8;
-	int max_y	=	Machine->drv->screen_height - 8;
+    int max_x	=	Machine->drv->screen_width	- 8;
+    int max_y	=	Machine->drv->screen_height - 8;
 
-	for (i = 0x1d00; i < 0x2000; i += 4)
-	{
-		int srcpg, srcx,srcy, dimx,dimy, tx, ty;
-		int gfxbank, flipx,flipy, multisprite;
+    for (i = 0x1d00; i < 0x2000; i += 4) {
+        int srcpg, srcx, srcy, dimx, dimy, tx, ty;
+        int gfxbank, flipx, flipy, multisprite;
 
-		int y		=	spriteram[i + 0];
-		int code	=	spriteram[i + 1];
-		int x		=	spriteram[i + 2];
-		int bank	=	spriteram[i + 3];
+        int y		=	spriteram[i + 0];
+        int code	=	spriteram[i + 1];
+        int x		=	spriteram[i + 2];
+        int bank	=	spriteram[i + 3];
 
-		if (suna8_text_dim > 0)
-		{
-			/* Older, simpler hardware */
-			flipx = 0;
-			flipy = 0;
-			gfxbank = bank & 0x3f;
-			switch( code & 0x80 )
-			{
-			case 0x80:
-				dimx = 2;					dimy =	32;
-				srcx  = (code & 0xf) * 2;	srcy = 0;
-				srcpg = (code >> 4) & 3;
-				break;
-			case 0x00:
-			default:
-				dimx = 2;					dimy =	2;
-				srcx  = (code & 0xf) * 2;	srcy = ((code >> 5) & 0x3) * 8 + 6;
-				srcpg = (code >> 4) & 1;
-				break;
-			}
-			multisprite = ((code & 0x80) && (code & 0x40));
-		}
-		else
-		{
-			/* Newer, more complex hardware (not finished yet!) */
-			switch( code & 0xc0 )
-			{
-			case 0xc0:
-				dimx = 4;					dimy = 32;
-				srcx  = (code & 0xe) * 2;	srcy = 0;
-				flipx = (code & 0x1);
-				flipy = 0;
-				gfxbank = bank & 0x1f;
-				srcpg = (code >> 4) & 3;
-				break;
-			case 0x80:
-				dimx = 2;					dimy = 32;
-				srcx  = (code & 0xf) * 2;	srcy = 0;
-				flipx = 0;
-				flipy = 0;
-				gfxbank = bank & 0x1f;
-				srcpg = (code >> 4) & 3;
-				break;
-			case 0x40:
-				dimx = 4;					dimy = 4;
-				srcx  = (code & 0xf) * 2;
-				flipx = 0;
-				flipy = bank & 0x10;
-				srcy  = (((bank & 0x80)>>4) + (bank & 0x04) + ((~bank >> 4)&2)) * 2;
-				gfxbank = bank & 0x3;	// ??? brickzn: 06,a6,a2,b2->6. starfigh: 01->01,4->0
-				srcpg = (code >> 4) & 7;
-				break;
-			case 0x00:
-			default:
-				dimx = 2;					dimy = 2;
-				srcx  = (code & 0xf) * 2;
-				flipx = 0;
-				flipy = 0;
-				gfxbank = bank & 0x03;
-				srcy  = (((bank & 0x80)>>4) + (bank & 0x04) + ((~bank >> 4)&3)) * 2;
-				srcpg = (code >> 4) & 3;
-				break;
-			}
-			multisprite = ((code & 0x80) && (bank & 0x80));
-		}
+        if (suna8_text_dim > 0) {
+            /* Older, simpler hardware */
+            flipx = 0;
+            flipy = 0;
+            gfxbank = bank & 0x3f;
+            switch (code & 0x80) {
+            case 0x80:
+                dimx = 2;
+                dimy =	32;
+                srcx  = (code & 0xf) * 2;
+                srcy = 0;
+                srcpg = (code >> 4) & 3;
+                break;
+            case 0x00:
+            default:
+                dimx = 2;
+                dimy =	2;
+                srcx  = (code & 0xf) * 2;
+                srcy = ((code >> 5) & 0x3) * 8 + 6;
+                srcpg = (code >> 4) & 1;
+                break;
+            }
+            multisprite = ((code & 0x80) && (code & 0x40));
+        } else {
+            /* Newer, more complex hardware (not finished yet!) */
+            switch (code & 0xc0) {
+            case 0xc0:
+                dimx = 4;
+                dimy = 32;
+                srcx  = (code & 0xe) * 2;
+                srcy = 0;
+                flipx = (code & 0x1);
+                flipy = 0;
+                gfxbank = bank & 0x1f;
+                srcpg = (code >> 4) & 3;
+                break;
+            case 0x80:
+                dimx = 2;
+                dimy = 32;
+                srcx  = (code & 0xf) * 2;
+                srcy = 0;
+                flipx = 0;
+                flipy = 0;
+                gfxbank = bank & 0x1f;
+                srcpg = (code >> 4) & 3;
+                break;
+            case 0x40:
+                dimx = 4;
+                dimy = 4;
+                srcx  = (code & 0xf) * 2;
+                flipx = 0;
+                flipy = bank & 0x10;
+                srcy  = (((bank & 0x80) >> 4) + (bank & 0x04) + ((~bank >> 4) & 2)) * 2;
+                gfxbank = bank & 0x3;	// ??? brickzn: 06,a6,a2,b2->6. starfigh: 01->01,4->0
+                srcpg = (code >> 4) & 7;
+                break;
+            case 0x00:
+            default:
+                dimx = 2;
+                dimy = 2;
+                srcx  = (code & 0xf) * 2;
+                flipx = 0;
+                flipy = 0;
+                gfxbank = bank & 0x03;
+                srcy  = (((bank & 0x80) >> 4) + (bank & 0x04) + ((~bank >> 4) & 3)) * 2;
+                srcpg = (code >> 4) & 3;
+                break;
+            }
+            multisprite = ((code & 0x80) && (bank & 0x80));
+        }
 
-		x = x - ((bank & 0x40) ? 0x100 : 0);
-		y = (0x100 - y - dimy*8 ) & 0xff;
+        x = x - ((bank & 0x40) ? 0x100 : 0);
+        y = (0x100 - y - dimy * 8) & 0xff;
 
-		/* Multi Sprite */
-		if ( multisprite )	{	mx += dimx*8;	x = mx;	}
-		else					mx = x;
+        /* Multi Sprite */
+        if (multisprite)	{
+            mx += dimx * 8;
+            x = mx;
+        } else					mx = x;
 
-		gfxbank	*= 0x400;
+        gfxbank	*= 0x400;
 
-		for (ty = 0; ty < dimy; ty ++)
-		{
-			for (tx = 0; tx < dimx; tx ++)
-			{
-				int addr	=	(srcpg * 0x20 * 0x20) +
-								((srcx + (flipx?dimx-tx-1:tx)) & 0x1f) * 0x20 +
-								((srcy + (flipy?dimy-ty-1:ty)) & 0x1f);
+        for (ty = 0; ty < dimy; ty ++) {
+            for (tx = 0; tx < dimx; tx ++) {
+                int addr	=	(srcpg * 0x20 * 0x20) +
+                                ((srcx + (flipx ? dimx - tx - 1 : tx)) & 0x1f) * 0x20 +
+                                ((srcy + (flipy ? dimy - ty - 1 : ty)) & 0x1f);
 
-				int tile	=	spriteram[addr*2 + 0];
-				int attr	=	spriteram[addr*2 + 1];
+                int tile	=	spriteram[addr * 2 + 0];
+                int attr	=	spriteram[addr * 2 + 1];
 
-				int tile_flipx	=	attr & 0x40;
-				int tile_flipy	=	attr & 0x80;
+                int tile_flipx	=	attr & 0x40;
+                int tile_flipy	=	attr & 0x80;
 
-				int sx		=	 x + tx * 8;
-				int sy		=	(y + ty * 8) & 0xff;
+                int sx		=	 x + tx * 8;
+                int sy		=	(y + ty * 8) & 0xff;
 
-				if (flipx)	tile_flipx = !tile_flipx;
-				if (flipy)	tile_flipy = !tile_flipy;
+                if (flipx)	tile_flipx = !tile_flipx;
+                if (flipy)	tile_flipy = !tile_flipy;
 
-				if (flip_screen)
-				{	sx = max_x - sx;	tile_flipx = !tile_flipx;
-					sy = max_y - sy;	tile_flipy = !tile_flipy;	}
+                if (flip_screen) {
+                    sx = max_x - sx;
+                    tile_flipx = !tile_flipx;
+                    sy = max_y - sy;
+                    tile_flipy = !tile_flipy;
+                }
 
-				drawgfx(	bitmap,Machine->gfx[0],
-							tile + (attr & 0x3)*0x100 + gfxbank,
-							(attr >> 2) & 0xf,
-							tile_flipx, tile_flipy,
-							sx, sy,
-							&Machine->visible_area,TRANSPARENCY_PEN,15);
-			}
-		}
+                drawgfx(bitmap, Machine->gfx[0],
+                        tile + (attr & 0x3) * 0x100 + gfxbank,
+                        (attr >> 2) & 0xf,
+                        tile_flipx, tile_flipy,
+                        sx, sy,
+                        &Machine->visible_area, TRANSPARENCY_PEN, 15);
+            }
+        }
 
-	}
+    }
 }
 
 void suna8_draw_text_sprites(struct osd_bitmap *bitmap)
 {
-	int i;
+    int i;
 
-	int max_x	=	Machine->drv->screen_width	- 8;
-	int max_y	=	Machine->drv->screen_height - 8;
+    int max_x	=	Machine->drv->screen_width	- 8;
+    int max_y	=	Machine->drv->screen_height - 8;
 
-	/* Earlier games only */
-	if (!(suna8_text_dim > 0))	return;
+    /* Earlier games only */
+    if (!(suna8_text_dim > 0))	return;
 
-	for (i = 0x1900; i < 0x19ff; i += 4)
-	{
-		int srcpg, srcx,srcy, dimx,dimy, tx, ty;
+    for (i = 0x1900; i < 0x19ff; i += 4) {
+        int srcpg, srcx, srcy, dimx, dimy, tx, ty;
 
-		int y		=	spriteram[i + 0];
-		int code	=	spriteram[i + 1];
-		int x		=	spriteram[i + 2];
-		int bank	=	spriteram[i + 3];
+        int y		=	spriteram[i + 0];
+        int code	=	spriteram[i + 1];
+        int x		=	spriteram[i + 2];
+        int bank	=	spriteram[i + 3];
 
-		if (~code & 0x80)	continue;
+        if (~code & 0x80)	continue;
 
-		dimx = 2;					dimy = suna8_text_dim;
-		srcx  = (code & 0xf) * 2;	srcy = (y & 0xf0) / 8;
-		srcpg = (code >> 4) & 3;
+        dimx = 2;
+        dimy = suna8_text_dim;
+        srcx  = (code & 0xf) * 2;
+        srcy = (y & 0xf0) / 8;
+        srcpg = (code >> 4) & 3;
 
-		x = x - ((bank & 0x40) ? 0x100 : 0);
-		y = 0;
+        x = x - ((bank & 0x40) ? 0x100 : 0);
+        y = 0;
 
-		bank	=	(bank & 0x3f) * 0x400;
+        bank	=	(bank & 0x3f) * 0x400;
 
-		for (ty = 0; ty < dimy; ty ++)
-		{
-			for (tx = 0; tx < dimx; tx ++)
-			{
-				int real_ty	=	(ty < (dimy/2)) ? ty : (ty + 0x20 - dimy);
+        for (ty = 0; ty < dimy; ty ++) {
+            for (tx = 0; tx < dimx; tx ++) {
+                int real_ty	=	(ty < (dimy / 2)) ? ty : (ty + 0x20 - dimy);
 
-				int addr	=	(srcpg * 0x20 * 0x20) +
-								((srcx + tx) & 0x1f) * 0x20 +
-								((srcy + real_ty) & 0x1f);
+                int addr	=	(srcpg * 0x20 * 0x20) +
+                                ((srcx + tx) & 0x1f) * 0x20 +
+                                ((srcy + real_ty) & 0x1f);
 
-				int tile	=	spriteram[addr*2 + 0];
-				int attr	=	spriteram[addr*2 + 1];
+                int tile	=	spriteram[addr * 2 + 0];
+                int attr	=	spriteram[addr * 2 + 1];
 
-				int flipx	=	attr & 0x40;
-				int flipy	=	attr & 0x80;
+                int flipx	=	attr & 0x40;
+                int flipy	=	attr & 0x80;
 
-				int sx		=	 x + tx * 8;
-				int sy		=	(y + real_ty * 8) & 0xff;
+                int sx		=	 x + tx * 8;
+                int sy		=	(y + real_ty * 8) & 0xff;
 
-				if (flip_screen)
-				{	sx = max_x - sx;	flipx = !flipx;
-					sy = max_y - sy;	flipy = !flipy;	}
+                if (flip_screen) {
+                    sx = max_x - sx;
+                    flipx = !flipx;
+                    sy = max_y - sy;
+                    flipy = !flipy;
+                }
 
-				drawgfx(	bitmap,Machine->gfx[0],
-							tile + (attr & 0x3)*0x100 + bank,
-							(attr >> 2) & 0xf,
-							flipx, flipy,
-							sx, sy,
-							&Machine->visible_area,TRANSPARENCY_PEN,15);
-			}
-		}
+                drawgfx(bitmap, Machine->gfx[0],
+                        tile + (attr & 0x3) * 0x100 + bank,
+                        (attr >> 2) & 0xf,
+                        flipx, flipy,
+                        sx, sy,
+                        &Machine->visible_area, TRANSPARENCY_PEN, 15);
+            }
+        }
 
-	}
+    }
 }
 
 /***************************************************************************
@@ -408,16 +424,16 @@ void suna8_draw_text_sprites(struct osd_bitmap *bitmap)
 */
 #define TILEMAPS 0
 
-void suna8_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void suna8_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	palette_init_used_colors();
-	memset(palette_used_colors, PALETTE_COLOR_USED, Machine->drv->total_colors);
-	palette_recalc();
+    palette_init_used_colors();
+    memset(palette_used_colors, PALETTE_COLOR_USED, Machine->drv->total_colors);
+    palette_recalc();
 
-	/* see hardhead, hardhea2 test mode (press button 2 for both players) */
-	fillbitmap(bitmap,Machine->pens[0xff],&Machine->visible_area);
-	{
-		suna8_draw_normal_sprites(bitmap);
-		suna8_draw_text_sprites(bitmap);
-	}
+    /* see hardhead, hardhea2 test mode (press button 2 for both players) */
+    fillbitmap(bitmap, Machine->pens[0xff], &Machine->visible_area);
+    {
+        suna8_draw_normal_sprites(bitmap);
+        suna8_draw_text_sprites(bitmap);
+    }
 }

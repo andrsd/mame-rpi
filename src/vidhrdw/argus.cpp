@@ -162,151 +162,151 @@ static int prvscrollx = 0;
 
 static void argus_get_tx_tile_info(int tile_index)
 {
-	int hi, lo, color, tile;
+    int hi, lo, color, tile;
 
-	lo = argus_txram[  tile_index << 1  ];
-	hi = argus_txram[ (tile_index << 1) + 1 ];
+    lo = argus_txram[  tile_index << 1  ];
+    hi = argus_txram[(tile_index << 1) + 1 ];
 
-	tile_info.flags = 0;
-	if ( hi & 0x20 )
-		tile_info.flags |= TILE_FLIPY;
-	if ( hi & 0x10 )
-		tile_info.flags |= TILE_FLIPX;
+    tile_info.flags = 0;
+    if (hi & 0x20)
+        tile_info.flags |= TILE_FLIPY;
+    if (hi & 0x10)
+        tile_info.flags |= TILE_FLIPX;
 
-	tile = ((hi & 0xc0) << 2) | lo;
-	color = hi & 0x0f;
+    tile = ((hi & 0xc0) << 2) | lo;
+    color = hi & 0x0f;
 
-	SET_TILE_INFO(3, tile, color)
+    SET_TILE_INFO(3, tile, color)
 }
 
 static void argus_get_bg0_tile_info(int tile_index)
 {
-	int hi, lo, color, tile;
+    int hi, lo, color, tile;
 
-	lo = argus_dummy_bg0ram[  tile_index << 1  ];
-	hi = argus_dummy_bg0ram[ (tile_index << 1) + 1 ];
+    lo = argus_dummy_bg0ram[  tile_index << 1  ];
+    hi = argus_dummy_bg0ram[(tile_index << 1) + 1 ];
 
-	tile_info.flags = 0;
-	if ( hi & 0x20 )
-		tile_info.flags |= TILE_FLIPY;
-	if ( hi & 0x10 )
-		tile_info.flags |= TILE_FLIPX;
+    tile_info.flags = 0;
+    if (hi & 0x20)
+        tile_info.flags |= TILE_FLIPY;
+    if (hi & 0x10)
+        tile_info.flags |= TILE_FLIPX;
 
-	tile = ((hi & 0xc0) << 2) | lo;
-	color = hi & 0x0f;
+    tile = ((hi & 0xc0) << 2) | lo;
+    color = hi & 0x0f;
 
-	SET_TILE_INFO(1, tile, color)
+    SET_TILE_INFO(1, tile, color)
 }
 
 static void argus_get_bg1_tile_info(int tile_index)
 {
-	int hi, lo, color, tile;
+    int hi, lo, color, tile;
 
-	lo = argus_bg1ram[  tile_index << 1  ];
-	hi = argus_bg1ram[ (tile_index << 1) + 1 ];
+    lo = argus_bg1ram[  tile_index << 1  ];
+    hi = argus_bg1ram[(tile_index << 1) + 1 ];
 
-	tile_info.flags = 0;
-	if ( hi & 0x20 )
-		tile_info.flags |= TILE_FLIPY;
-	if ( hi & 0x10 )
-		tile_info.flags |= TILE_FLIPX;
+    tile_info.flags = 0;
+    if (hi & 0x20)
+        tile_info.flags |= TILE_FLIPY;
+    if (hi & 0x10)
+        tile_info.flags |= TILE_FLIPX;
 
-	tile =  lo;
-	color = hi & 0x0f;
+    tile =  lo;
+    color = hi & 0x0f;
 
-	SET_TILE_INFO(2, tile, color)
+    SET_TILE_INFO(2, tile, color)
 }
 
 static void valtric_get_tx_tile_info(int tile_index)
 {
-	int hi, lo, color, tile;
+    int hi, lo, color, tile;
 
-	lo = argus_txram[  tile_index << 1  ];
-	hi = argus_txram[ (tile_index << 1) + 1 ];
+    lo = argus_txram[  tile_index << 1  ];
+    hi = argus_txram[(tile_index << 1) + 1 ];
 
-	tile_info.flags = 0;
-	if ( hi & 0x20 )
-		tile_info.flags |= TILE_FLIPY;
-	if ( hi & 0x10 )
-		tile_info.flags |= TILE_FLIPX;
+    tile_info.flags = 0;
+    if (hi & 0x20)
+        tile_info.flags |= TILE_FLIPY;
+    if (hi & 0x10)
+        tile_info.flags |= TILE_FLIPX;
 
-	tile = ((hi & 0xc0) << 2) | lo;
-	color = hi & 0x0f;
+    tile = ((hi & 0xc0) << 2) | lo;
+    color = hi & 0x0f;
 
-	SET_TILE_INFO(2, tile, color)
+    SET_TILE_INFO(2, tile, color)
 }
 
 static void valtric_get_bg_tile_info(int tile_index)
 {
-	int hi, lo, color, tile;
+    int hi, lo, color, tile;
 
-	lo = argus_bg1ram[  tile_index << 1  ];
-	hi = argus_bg1ram[ (tile_index << 1) + 1 ];
+    lo = argus_bg1ram[  tile_index << 1  ];
+    hi = argus_bg1ram[(tile_index << 1) + 1 ];
 
-	tile = ((hi & 0xc0) << 2) | ((hi & 0x20) << 5) | lo;
-	color = hi & 0x0f;
+    tile = ((hi & 0xc0) << 2) | ((hi & 0x20) << 5) | lo;
+    color = hi & 0x0f;
 
-	SET_TILE_INFO(1, tile, color)
+    SET_TILE_INFO(1, tile, color)
 }
 
 static void butasan_get_tx_tile_info(int tile_index)
 {
-	int hi, lo, color, tile;
+    int hi, lo, color, tile;
 
-	tile_index ^= 0x3e0;
+    tile_index ^= 0x3e0;
 
-	lo = butasan_txram[  tile_index << 1  ];
-	hi = butasan_txram[ (tile_index << 1) + 1 ];
+    lo = butasan_txram[  tile_index << 1  ];
+    hi = butasan_txram[(tile_index << 1) + 1 ];
 
-	tile_info.flags = 0;
-	if ( hi & 0x20 )
-		tile_info.flags |= TILE_FLIPY;
-	if ( hi & 0x10 )
-		tile_info.flags |= TILE_FLIPX;
+    tile_info.flags = 0;
+    if (hi & 0x20)
+        tile_info.flags |= TILE_FLIPY;
+    if (hi & 0x10)
+        tile_info.flags |= TILE_FLIPX;
 
-	tile = ((hi & 0xc0) << 2) | lo;
-	color = hi & 0x0f;
+    tile = ((hi & 0xc0) << 2) | lo;
+    color = hi & 0x0f;
 
-	SET_TILE_INFO(3, tile, color)
+    SET_TILE_INFO(3, tile, color)
 }
 
 static void butasan_get_bg0_tile_info(int tile_index)
 {
-	int hi, lo, color, tile;
-	int attrib;
+    int hi, lo, color, tile;
+    int attrib;
 
-	attrib = (tile_index & 0x00f) | ((tile_index & 0x1e0) >> 1);
-	attrib |= ((tile_index & 0x200) >> 1) | ((tile_index & 0x010) << 5);
-	attrib ^= 0x0f0;
+    attrib = (tile_index & 0x00f) | ((tile_index & 0x1e0) >> 1);
+    attrib |= ((tile_index & 0x200) >> 1) | ((tile_index & 0x010) << 5);
+    attrib ^= 0x0f0;
 
-	lo = butasan_bg0ram[  attrib << 1  ];
-	hi = butasan_bg0ram[ (attrib << 1) + 1 ];
+    lo = butasan_bg0ram[  attrib << 1  ];
+    hi = butasan_bg0ram[(attrib << 1) + 1 ];
 
-	tile_info.flags = 0;
-	if ( hi & 0x20 )
-		tile_info.flags |= TILE_FLIPY;
-	if ( hi & 0x10 )
-		tile_info.flags |= TILE_FLIPX;
+    tile_info.flags = 0;
+    if (hi & 0x20)
+        tile_info.flags |= TILE_FLIPY;
+    if (hi & 0x10)
+        tile_info.flags |= TILE_FLIPX;
 
-	tile = ((hi & 0xc0) << 2) | lo;
-	color = hi & 0x0f;
+    tile = ((hi & 0xc0) << 2) | lo;
+    color = hi & 0x0f;
 
-	SET_TILE_INFO(1, tile, color)
+    SET_TILE_INFO(1, tile, color)
 }
 
 static void butasan_get_bg1_tile_info(int tile_index)
 {
-	int bank, tile, attrib, color;
+    int bank, tile, attrib, color;
 
-	attrib = (tile_index & 0x00f) | ((tile_index & 0x3e0) >> 1)
-				| ((tile_index & 0x010) << 5);
-	attrib ^= 0x0f0;
+    attrib = (tile_index & 0x00f) | ((tile_index & 0x3e0) >> 1)
+             | ((tile_index & 0x010) << 5);
+    attrib ^= 0x0f0;
 
-	bank = (butasan_bg1_status & 0x02) << 7;
-	tile = butasan_bg1ram[ attrib ] | bank;
-	color = (tile & 0x80) >> 7;
+    bank = (butasan_bg1_status & 0x02) << 7;
+    tile = butasan_bg1ram[ attrib ] | bank;
+    color = (tile & 0x80) >> 7;
 
-	SET_TILE_INFO(2, tile, color)
+    SET_TILE_INFO(2, tile, color)
 }
 
 
@@ -316,109 +316,103 @@ static void butasan_get_bg1_tile_info(int tile_index)
 
 int argus_vh_start(void)
 {
-	lowbitscroll = 0;
-	/*                           info                      offset             type                  w   h  col  row */
-	bg0_tilemap = tilemap_create(argus_get_bg0_tile_info,  tilemap_scan_cols, TILEMAP_OPAQUE,      16, 16, 32, 32);
-	bg1_tilemap = tilemap_create(argus_get_bg1_tile_info,  tilemap_scan_cols, TILEMAP_TRANSPARENT, 16, 16, 32, 32);
-	tx_tilemap  = tilemap_create(argus_get_tx_tile_info,   tilemap_scan_cols, TILEMAP_TRANSPARENT,  8,  8, 32, 32);
+    lowbitscroll = 0;
+    /*                           info                      offset             type                  w   h  col  row */
+    bg0_tilemap = tilemap_create(argus_get_bg0_tile_info,  tilemap_scan_cols, TILEMAP_OPAQUE,      16, 16, 32, 32);
+    bg1_tilemap = tilemap_create(argus_get_bg1_tile_info,  tilemap_scan_cols, TILEMAP_TRANSPARENT, 16, 16, 32, 32);
+    tx_tilemap  = tilemap_create(argus_get_tx_tile_info,   tilemap_scan_cols, TILEMAP_TRANSPARENT,  8,  8, 32, 32);
 
-	if ( !tx_tilemap || !bg0_tilemap || !bg1_tilemap )
-	{
-		return 1;
-	}
+    if (!tx_tilemap || !bg0_tilemap || !bg1_tilemap) {
+        return 1;
+    }
 
-	/* dummy RAM for back ground */
-	argus_dummy_bg0ram = (unsigned char *)malloc( 0x800 );
-	if ( argus_dummy_bg0ram == NULL )
-		return 1;
-	memset( argus_dummy_bg0ram, 0, 0x800 );
+    /* dummy RAM for back ground */
+    argus_dummy_bg0ram = (unsigned char *) malloc(0x800);
+    if (argus_dummy_bg0ram == NULL)
+        return 1;
+    memset(argus_dummy_bg0ram, 0, 0x800);
 
-	memset( argus_bg0_scrollx, 0x00, 2 );
+    memset(argus_bg0_scrollx, 0x00, 2);
 
-	tilemap_set_transparent_pen( bg0_tilemap, 15 );
-	tilemap_set_transparent_pen( bg1_tilemap, 15 );
-	tilemap_set_transparent_pen( tx_tilemap,  15 );
+    tilemap_set_transparent_pen(bg0_tilemap, 15);
+    tilemap_set_transparent_pen(bg1_tilemap, 15);
+    tilemap_set_transparent_pen(tx_tilemap,  15);
 
-	return 0;
+    return 0;
 }
 
 int valtric_vh_start(void)
 {
-	/*                           info                       offset             type                 w   h  col  row */
-	bg1_tilemap = tilemap_create(valtric_get_bg_tile_info,  tilemap_scan_cols, TILEMAP_OPAQUE,      16, 16, 32, 32);
-	tx_tilemap  = tilemap_create(valtric_get_tx_tile_info,  tilemap_scan_cols, TILEMAP_TRANSPARENT,  8,  8, 32, 32);
+    /*                           info                       offset             type                 w   h  col  row */
+    bg1_tilemap = tilemap_create(valtric_get_bg_tile_info,  tilemap_scan_cols, TILEMAP_OPAQUE,      16, 16, 32, 32);
+    tx_tilemap  = tilemap_create(valtric_get_tx_tile_info,  tilemap_scan_cols, TILEMAP_TRANSPARENT,  8,  8, 32, 32);
 
-	if ( !tx_tilemap || !bg1_tilemap )
-	{
-		return 1;
-	}
+    if (!tx_tilemap || !bg1_tilemap) {
+        return 1;
+    }
 
-	tilemap_set_transparent_pen( bg1_tilemap, 15 );
-	tilemap_set_transparent_pen( tx_tilemap,  15 );
-	return 0;
+    tilemap_set_transparent_pen(bg1_tilemap, 15);
+    tilemap_set_transparent_pen(tx_tilemap,  15);
+    return 0;
 }
 
 int butasan_vh_start(void)
 {
-	/*                           info                       offset             type                 w   h  col  row */
-	bg0_tilemap = tilemap_create(butasan_get_bg0_tile_info, tilemap_scan_rows, TILEMAP_OPAQUE,      16, 16, 32, 32);
-	bg1_tilemap = tilemap_create(butasan_get_bg1_tile_info, tilemap_scan_rows, TILEMAP_OPAQUE,      16, 16, 32, 32);
-	tx_tilemap  = tilemap_create(butasan_get_tx_tile_info,  tilemap_scan_rows, TILEMAP_TRANSPARENT,  8,  8, 32, 32);
+    /*                           info                       offset             type                 w   h  col  row */
+    bg0_tilemap = tilemap_create(butasan_get_bg0_tile_info, tilemap_scan_rows, TILEMAP_OPAQUE,      16, 16, 32, 32);
+    bg1_tilemap = tilemap_create(butasan_get_bg1_tile_info, tilemap_scan_rows, TILEMAP_OPAQUE,      16, 16, 32, 32);
+    tx_tilemap  = tilemap_create(butasan_get_tx_tile_info,  tilemap_scan_rows, TILEMAP_TRANSPARENT,  8,  8, 32, 32);
 
-	if ( !tx_tilemap || !bg0_tilemap || !bg1_tilemap )
-	{
-		return 1;
-	}
+    if (!tx_tilemap || !bg0_tilemap || !bg1_tilemap) {
+        return 1;
+    }
 
-	butasan_txram = (unsigned char *)malloc( BUTASAN_TEXT_RAMSIZE );
-	if (butasan_txram == NULL)
-		return 1;
+    butasan_txram = (unsigned char *) malloc(BUTASAN_TEXT_RAMSIZE);
+    if (butasan_txram == NULL)
+        return 1;
 
-	butasan_bg0ram = (unsigned char *)malloc( BUTASAN_BG0_RAMSIZE );
-	if (butasan_bg0ram == NULL)
-	{
-		free(butasan_txram);
-		return 1;
-	}
+    butasan_bg0ram = (unsigned char *) malloc(BUTASAN_BG0_RAMSIZE);
+    if (butasan_bg0ram == NULL) {
+        free(butasan_txram);
+        return 1;
+    }
 
-	butasan_txbackram = (unsigned char *)malloc( BUTASAN_TXBACK_RAMSIZE );
-	if (butasan_txbackram == NULL)
-	{
-		free(butasan_txram);
-		free(butasan_bg1ram);
-		return 1;
-	}
+    butasan_txbackram = (unsigned char *) malloc(BUTASAN_TXBACK_RAMSIZE);
+    if (butasan_txbackram == NULL) {
+        free(butasan_txram);
+        free(butasan_bg1ram);
+        return 1;
+    }
 
-	butasan_bg0backram = (unsigned char *)malloc( BUTASAN_BG0BACK_RAMSIZE );
-	if (butasan_bg0backram == NULL)
-	{
-		free(butasan_txram);
-		free(butasan_bg1ram);
-		free(butasan_txbackram);
-		return 1;
-	}
+    butasan_bg0backram = (unsigned char *) malloc(BUTASAN_BG0BACK_RAMSIZE);
+    if (butasan_bg0backram == NULL) {
+        free(butasan_txram);
+        free(butasan_bg1ram);
+        free(butasan_txbackram);
+        return 1;
+    }
 
-	memset( butasan_txram,      0x00, BUTASAN_TEXT_RAMSIZE );
-	memset( butasan_bg0ram,     0x00, BUTASAN_BG0_RAMSIZE );
-	memset( butasan_txbackram,  0x00, BUTASAN_TXBACK_RAMSIZE );
-	memset( butasan_bg0backram, 0x00, BUTASAN_BG0BACK_RAMSIZE );
+    memset(butasan_txram,      0x00, BUTASAN_TEXT_RAMSIZE);
+    memset(butasan_bg0ram,     0x00, BUTASAN_BG0_RAMSIZE);
+    memset(butasan_txbackram,  0x00, BUTASAN_TXBACK_RAMSIZE);
+    memset(butasan_bg0backram, 0x00, BUTASAN_BG0BACK_RAMSIZE);
 
-	tilemap_set_transparent_pen( tx_tilemap,  15 );
+    tilemap_set_transparent_pen(tx_tilemap,  15);
 
-	return 0;
+    return 0;
 }
 
 void argus_vh_stop(void)
 {
-	free(argus_dummy_bg0ram);
+    free(argus_dummy_bg0ram);
 }
 
 void butasan_vh_stop(void)
 {
-	free(butasan_txram);
-	free(butasan_bg0ram);
-	free(butasan_txbackram);
-	free(butasan_bg0backram);
+    free(butasan_txram);
+    free(butasan_bg0ram);
+    free(butasan_txbackram);
+    free(butasan_bg0backram);
 }
 
 
@@ -427,75 +421,73 @@ void butasan_vh_stop(void)
 ***************************************************************************/
 
 /* Write bg0 pattern data to dummy bg0 ram */
-static void argus_write_dummy_rams( int dramoffs, int vromoffs )
+static void argus_write_dummy_rams(int dramoffs, int vromoffs)
 {
-	int i;
-	int voffs;
-	int offs;
+    int i;
+    int voffs;
+    int offs;
 
-	unsigned char *VROM1 = memory_region( REGION_USER1 );		/* "ag_15.bin" */
-	unsigned char *VROM2 = memory_region( REGION_USER2 );		/* "ag_16.bin" */
+    unsigned char *VROM1 = memory_region(REGION_USER1);		/* "ag_15.bin" */
+    unsigned char *VROM2 = memory_region(REGION_USER2);		/* "ag_16.bin" */
 
-	/* offset in pattern data */
-	offs = VROM1[ vromoffs ] | ( VROM1[ vromoffs + 1 ] << 8 );
-	offs &= 0x7ff;
+    /* offset in pattern data */
+    offs = VROM1[ vromoffs ] | (VROM1[ vromoffs + 1 ] << 8);
+    offs &= 0x7ff;
 
-	voffs = offs * 16;
-	for (i = 0 ; i < 8 ; i ++)
-	{
-		argus_dummy_bg0ram[ dramoffs ] = VROM2[ voffs ];
-		argus_dummy_bg0ram[ dramoffs + 1 ] = VROM2[ voffs + 1 ];
-		tilemap_mark_tile_dirty( bg0_tilemap, dramoffs >> 1 );
-		dramoffs += 2;
-		voffs += 2;
-	}
+    voffs = offs * 16;
+    for (i = 0 ; i < 8 ; i ++) {
+        argus_dummy_bg0ram[ dramoffs ] = VROM2[ voffs ];
+        argus_dummy_bg0ram[ dramoffs + 1 ] = VROM2[ voffs + 1 ];
+        tilemap_mark_tile_dirty(bg0_tilemap, dramoffs >> 1);
+        dramoffs += 2;
+        voffs += 2;
+    }
 }
 
 static void argus_change_palette(int color, int data)
 {
-	int r, g, b;
+    int r, g, b;
 
-	r = (data >> 12) & 0x0f;
-	g = (data >>  8) & 0x0f;
-	b = (data >>  4) & 0x0f;
+    r = (data >> 12) & 0x0f;
+    g = (data >>  8) & 0x0f;
+    b = (data >>  4) & 0x0f;
 
-	r = (r << 4) | r;
-	g = (g << 4) | g;
-	b = (b << 4) | b;
+    r = (r << 4) | r;
+    g = (g << 4) | g;
+    b = (b << 4) | b;
 
-	palette_change_color(color, r, g, b);
+    palette_change_color(color, r, g, b);
 }
 
 static void argus_change_bg_palette(int color, int data)
 {
-	int r, g, b;
-	int ir, ig, ib;
+    int r, g, b;
+    int ir, ig, ib;
 
-	r = (data >> 12) & 0x0f;
-	g = (data >>  8) & 0x0f;
-	b = (data >>  4) & 0x0f;
+    r = (data >> 12) & 0x0f;
+    g = (data >>  8) & 0x0f;
+    b = (data >>  4) & 0x0f;
 
-	ir = (argus_palette_intensity >> 12) & 0x0f;
-	ig = (argus_palette_intensity >>  8) & 0x0f;
-	ib = (argus_palette_intensity >>  4) & 0x0f;
+    ir = (argus_palette_intensity >> 12) & 0x0f;
+    ig = (argus_palette_intensity >>  8) & 0x0f;
+    ib = (argus_palette_intensity >>  4) & 0x0f;
 
-	r = (r - ir > 0) ? r - ir : 0;
-	g = (g - ig > 0) ? g - ig : 0;
-	b = (b - ib > 0) ? b - ib : 0;
+    r = (r - ir > 0) ? r - ir : 0;
+    g = (g - ig > 0) ? g - ig : 0;
+    b = (b - ib > 0) ? b - ib : 0;
 
-	if (argus_bg_status & 2)			/* Gray / purple scale */
-	{
-		r = (r + g + b) / 3;
-		g = b = r;
-		if (argus_bg_purple == 2)		/* Purple */
-			g = 0;
-	}
+    if (argus_bg_status & 2) {		/* Gray / purple scale */
+        r = (r + g + b) / 3;
+        g = b = r;
+        if (argus_bg_purple == 2)		/* Purple */
+            g = 0;
+    }
 
-	r = (r << 4) | r;
-	g = (g << 4) | g;
-	b = (b << 4) | b;
+    r = (r << 4) | r;
+    g = (g << 4) | g;
+    b = (b << 4) | b;
 
-	palette_change_color(color, r, g, b);
+    palette_change_color(color, r, g, b);
 }
 
 
@@ -503,427 +495,376 @@ static void argus_change_bg_palette(int color, int data)
   Memory handler
 ***************************************************************************/
 
-READ_HANDLER( argus_txram_r )
+READ_HANDLER(argus_txram_r)
 {
-	return argus_txram[ offset ];
+    return argus_txram[ offset ];
 }
 
-WRITE_HANDLER( argus_txram_w )
+WRITE_HANDLER(argus_txram_w)
 {
-	if (argus_txram[ offset ] != data)
-	{
-		argus_txram[ offset ] = data;
-		tilemap_mark_tile_dirty(tx_tilemap, offset >> 1);
-	}
+    if (argus_txram[ offset ] != data) {
+        argus_txram[ offset ] = data;
+        tilemap_mark_tile_dirty(tx_tilemap, offset >> 1);
+    }
 }
 
-READ_HANDLER( butasan_txram_r )
+READ_HANDLER(butasan_txram_r)
 {
-	return butasan_txram[ offset ];
+    return butasan_txram[ offset ];
 }
 
-WRITE_HANDLER( butasan_txram_w )
+WRITE_HANDLER(butasan_txram_w)
 {
-	if (butasan_txram[ offset ] != data)
-	{
-		butasan_txram[ offset ] = data;
-		tilemap_mark_tile_dirty(tx_tilemap, (offset ^ 0x7c0) >> 1);
-	}
+    if (butasan_txram[ offset ] != data) {
+        butasan_txram[ offset ] = data;
+        tilemap_mark_tile_dirty(tx_tilemap, (offset ^ 0x7c0) >> 1);
+    }
 }
 
-READ_HANDLER( argus_bg1ram_r )
+READ_HANDLER(argus_bg1ram_r)
 {
-	return argus_bg1ram[ offset ];
+    return argus_bg1ram[ offset ];
 }
 
-WRITE_HANDLER( argus_bg1ram_w )
+WRITE_HANDLER(argus_bg1ram_w)
 {
-	if (argus_bg1ram[ offset ] != data)
-	{
-		argus_bg1ram[ offset ] = data;
-		tilemap_mark_tile_dirty(bg1_tilemap, offset >> 1);
-	}
+    if (argus_bg1ram[ offset ] != data) {
+        argus_bg1ram[ offset ] = data;
+        tilemap_mark_tile_dirty(bg1_tilemap, offset >> 1);
+    }
 }
 
-READ_HANDLER( butasan_bg0ram_r )
+READ_HANDLER(butasan_bg0ram_r)
 {
-	return butasan_bg0ram[ offset ];
+    return butasan_bg0ram[ offset ];
 }
 
-WRITE_HANDLER( butasan_bg0ram_w )
+WRITE_HANDLER(butasan_bg0ram_w)
 {
-	if (butasan_bg0ram[ offset ] != data)
-	{
-		int idx;
+    if (butasan_bg0ram[ offset ] != data) {
+        int idx;
 
-		butasan_bg0ram[ offset ] = data;
+        butasan_bg0ram[ offset ] = data;
 
-		idx = ((offset & 0x01f) >> 1) | ((offset & 0x400) >> 6);
-		idx |= (offset & 0x3e0) ^ 0x1e0;
+        idx = ((offset & 0x01f) >> 1) | ((offset & 0x400) >> 6);
+        idx |= (offset & 0x3e0) ^ 0x1e0;
 
-		tilemap_mark_tile_dirty(bg0_tilemap, idx);
-	}
+        tilemap_mark_tile_dirty(bg0_tilemap, idx);
+    }
 }
 
-READ_HANDLER( butasan_bg1ram_r )
+READ_HANDLER(butasan_bg1ram_r)
 {
-	return butasan_bg1ram[ offset ];
+    return butasan_bg1ram[ offset ];
 }
 
-WRITE_HANDLER( butasan_bg1ram_w )
+WRITE_HANDLER(butasan_bg1ram_w)
 {
-	if (butasan_bg1ram[ offset ] != data)
-	{
-		int idx;
+    if (butasan_bg1ram[ offset ] != data) {
+        int idx;
 
-		butasan_bg1ram[ offset ] = data;
+        butasan_bg1ram[ offset ] = data;
 
-		idx = (offset & 0x00f) | ((offset & 0x200) >> 5) | ((offset & 0x1f0) << 1);
-		idx ^= 0x0f0;
+        idx = (offset & 0x00f) | ((offset & 0x200) >> 5) | ((offset & 0x1f0) << 1);
+        idx ^= 0x0f0;
 
-		tilemap_mark_tile_dirty(bg1_tilemap, idx);
-	}
+        tilemap_mark_tile_dirty(bg1_tilemap, idx);
+    }
 }
 
-WRITE_HANDLER ( argus_bg0_scrollx_w )
+WRITE_HANDLER(argus_bg0_scrollx_w)
 {
-	if (argus_bg0_scrollx[ offset ] != data)
-	{
-		argus_bg0_scrollx[ offset ] = data;
-	}
+    if (argus_bg0_scrollx[ offset ] != data) {
+        argus_bg0_scrollx[ offset ] = data;
+    }
 }
 
-WRITE_HANDLER( argus_bg0_scrolly_w )
+WRITE_HANDLER(argus_bg0_scrolly_w)
 {
-	if (argus_bg0_scrolly[ offset ] != data)
-	{
-		int scrolly;
-		argus_bg0_scrolly[ offset ] = data;
-		scrolly = argus_bg0_scrolly[0] | ( (argus_bg0_scrolly[1] & 0x01) << 8);
-		if (!argus_flipscreen)
-			tilemap_set_scrolly( bg0_tilemap, 0, scrolly );
-		else
-			tilemap_set_scrolly( bg0_tilemap, 0, (scrolly + 256) & 0x1ff );
-	}
+    if (argus_bg0_scrolly[ offset ] != data) {
+        int scrolly;
+        argus_bg0_scrolly[ offset ] = data;
+        scrolly = argus_bg0_scrolly[0] | ((argus_bg0_scrolly[1] & 0x01) << 8);
+        if (!argus_flipscreen)
+            tilemap_set_scrolly(bg0_tilemap, 0, scrolly);
+        else
+            tilemap_set_scrolly(bg0_tilemap, 0, (scrolly + 256) & 0x1ff);
+    }
 }
 
-WRITE_HANDLER( butasan_bg0_scrollx_w )
+WRITE_HANDLER(butasan_bg0_scrollx_w)
 {
-	if (argus_bg0_scrollx[ offset ] != data)
-	{
-		int scrollx;
-		argus_bg0_scrollx[ offset ] = data;
-		scrollx = argus_bg0_scrollx[0] | ( (argus_bg0_scrollx[1] & 0x01) << 8);
-		if (!argus_flipscreen)
-			tilemap_set_scrollx( bg0_tilemap, 0, scrollx );
-		else
-			tilemap_set_scrollx( bg0_tilemap, 0, (scrollx + 256) & 0x1ff );
-	}
+    if (argus_bg0_scrollx[ offset ] != data) {
+        int scrollx;
+        argus_bg0_scrollx[ offset ] = data;
+        scrollx = argus_bg0_scrollx[0] | ((argus_bg0_scrollx[1] & 0x01) << 8);
+        if (!argus_flipscreen)
+            tilemap_set_scrollx(bg0_tilemap, 0, scrollx);
+        else
+            tilemap_set_scrollx(bg0_tilemap, 0, (scrollx + 256) & 0x1ff);
+    }
 }
 
-WRITE_HANDLER( argus_bg1_scrollx_w )
+WRITE_HANDLER(argus_bg1_scrollx_w)
 {
-	if (argus_bg1_scrollx[ offset ] != data)
-	{
-		int scrollx;
-		argus_bg1_scrollx[ offset ] = data;
-		scrollx = argus_bg1_scrollx[0] | ( (argus_bg1_scrollx[1] & 0x01) << 8);
-		if (!argus_flipscreen)
-			tilemap_set_scrollx( bg1_tilemap, 0, scrollx );
-		else
-			tilemap_set_scrollx( bg1_tilemap, 0, (scrollx + 256) & 0x1ff );
-	}
+    if (argus_bg1_scrollx[ offset ] != data) {
+        int scrollx;
+        argus_bg1_scrollx[ offset ] = data;
+        scrollx = argus_bg1_scrollx[0] | ((argus_bg1_scrollx[1] & 0x01) << 8);
+        if (!argus_flipscreen)
+            tilemap_set_scrollx(bg1_tilemap, 0, scrollx);
+        else
+            tilemap_set_scrollx(bg1_tilemap, 0, (scrollx + 256) & 0x1ff);
+    }
 }
 
-WRITE_HANDLER( argus_bg1_scrolly_w )
+WRITE_HANDLER(argus_bg1_scrolly_w)
 {
-	if (argus_bg1_scrolly[ offset ] != data)
-	{
-		int scrolly;
-		argus_bg1_scrolly[ offset ] = data;
-		scrolly = argus_bg1_scrolly[0] | ( (argus_bg1_scrolly[1] & 0x01) << 8);
-		if (!argus_flipscreen)
-			tilemap_set_scrolly( bg1_tilemap, 0, scrolly );
-		else
-			tilemap_set_scrolly( bg1_tilemap, 0, (scrolly + 256) & 0x1ff );
-	}
+    if (argus_bg1_scrolly[ offset ] != data) {
+        int scrolly;
+        argus_bg1_scrolly[ offset ] = data;
+        scrolly = argus_bg1_scrolly[0] | ((argus_bg1_scrolly[1] & 0x01) << 8);
+        if (!argus_flipscreen)
+            tilemap_set_scrolly(bg1_tilemap, 0, scrolly);
+        else
+            tilemap_set_scrolly(bg1_tilemap, 0, (scrolly + 256) & 0x1ff);
+    }
 }
 
-WRITE_HANDLER( argus_bg_status_w )
+WRITE_HANDLER(argus_bg_status_w)
 {
-	if (argus_bg_status != data)
-	{
-		argus_bg_status = data;
+    if (argus_bg_status != data) {
+        argus_bg_status = data;
 
-		/* Backgound enable */
-		tilemap_set_enable(bg1_tilemap, argus_bg_status & 1);
+        /* Backgound enable */
+        tilemap_set_enable(bg1_tilemap, argus_bg_status & 1);
 
-		/* Gray / purple scale */
-		if (argus_bg_status & 2)
-		{
-			int offs;
+        /* Gray / purple scale */
+        if (argus_bg_status & 2) {
+            int offs;
 
-			for (offs = 0x400 ; offs < 0x500 ; offs ++)
-			{
-				argus_change_bg_palette( (offs - 0x0400) + 128,
-					(argus_paletteram[offs] << 8) | argus_paletteram[offs + 0x0400] );
-			}
-		}
-	}
+            for (offs = 0x400 ; offs < 0x500 ; offs ++) {
+                argus_change_bg_palette((offs - 0x0400) + 128,
+                                        (argus_paletteram[offs] << 8) | argus_paletteram[offs + 0x0400]);
+            }
+        }
+    }
 }
 
-WRITE_HANDLER( valtric_bg_status_w )
+WRITE_HANDLER(valtric_bg_status_w)
 {
-	if (argus_bg_status != data)
-	{
-		argus_bg_status = data;
+    if (argus_bg_status != data) {
+        argus_bg_status = data;
 
-		/* Backgound enable */
-		tilemap_set_enable(bg1_tilemap, argus_bg_status & 1);
+        /* Backgound enable */
+        tilemap_set_enable(bg1_tilemap, argus_bg_status & 1);
 
-		/* Gray / purple scale */
-		if (argus_bg_status & 2)
-		{
-			int offs;
+        /* Gray / purple scale */
+        if (argus_bg_status & 2) {
+            int offs;
 
-			for (offs = 0x400 ; offs < 0x600 ; offs += 2)
-			{
-				argus_change_bg_palette( ((offs - 0x0400) >> 1) + 256,
-					argus_paletteram[offs | 1] | (argus_paletteram[offs & ~1] << 8));
-			}
-		}
-	}
+            for (offs = 0x400 ; offs < 0x600 ; offs += 2) {
+                argus_change_bg_palette(((offs - 0x0400) >> 1) + 256,
+                                        argus_paletteram[offs | 1] | (argus_paletteram[offs & ~1] << 8));
+            }
+        }
+    }
 }
 
-WRITE_HANDLER( butasan_bg0_status_w )
+WRITE_HANDLER(butasan_bg0_status_w)
 {
-	if (argus_bg_status != data)
-	{
-		argus_bg_status = data;
+    if (argus_bg_status != data) {
+        argus_bg_status = data;
 
-		/* Backgound enable */
-		tilemap_set_enable(bg0_tilemap, argus_bg_status & 1);
-	}
+        /* Backgound enable */
+        tilemap_set_enable(bg0_tilemap, argus_bg_status & 1);
+    }
 }
 
-WRITE_HANDLER( argus_flipscreen_w )
+WRITE_HANDLER(argus_flipscreen_w)
 {
-	if (argus_flipscreen != (data >> 7))
-	{
-		argus_flipscreen = data >> 7;
-		tilemap_set_flip( ALL_TILEMAPS, (argus_flipscreen) ? TILEMAP_FLIPY | TILEMAP_FLIPX : 0);
-		if (!argus_flipscreen)
-		{
-			int scrollx, scrolly;
+    if (argus_flipscreen != (data >> 7)) {
+        argus_flipscreen = data >> 7;
+        tilemap_set_flip(ALL_TILEMAPS, (argus_flipscreen) ? TILEMAP_FLIPY | TILEMAP_FLIPX : 0);
+        if (!argus_flipscreen) {
+            int scrollx, scrolly;
 
-			if (bg0_tilemap != NULL)
-			{
-				scrollx = argus_bg0_scrollx[0] | ( (argus_bg0_scrollx[1] & 0x01) << 8);
-				tilemap_set_scrollx(bg0_tilemap, 0, scrollx & 0x1ff);
+            if (bg0_tilemap != NULL) {
+                scrollx = argus_bg0_scrollx[0] | ((argus_bg0_scrollx[1] & 0x01) << 8);
+                tilemap_set_scrollx(bg0_tilemap, 0, scrollx & 0x1ff);
 
-				scrolly = argus_bg0_scrolly[0] | ( (argus_bg0_scrolly[1] & 0x01) << 8);
-				tilemap_set_scrolly(bg0_tilemap, 0, scrolly);
-			}
-			scrollx = argus_bg1_scrollx[0] | ( (argus_bg1_scrollx[1] & 0x01) << 8);
-			tilemap_set_scrollx(bg1_tilemap, 0, scrollx);
+                scrolly = argus_bg0_scrolly[0] | ((argus_bg0_scrolly[1] & 0x01) << 8);
+                tilemap_set_scrolly(bg0_tilemap, 0, scrolly);
+            }
+            scrollx = argus_bg1_scrollx[0] | ((argus_bg1_scrollx[1] & 0x01) << 8);
+            tilemap_set_scrollx(bg1_tilemap, 0, scrollx);
 
-			scrolly = argus_bg1_scrolly[0] | ( (argus_bg1_scrolly[1] & 0x01) << 8);
-			tilemap_set_scrolly(bg1_tilemap, 0, scrolly);
-		}
-		else
-		{
-			int scrollx, scrolly;
+            scrolly = argus_bg1_scrolly[0] | ((argus_bg1_scrolly[1] & 0x01) << 8);
+            tilemap_set_scrolly(bg1_tilemap, 0, scrolly);
+        } else {
+            int scrollx, scrolly;
 
-			if (bg0_tilemap != NULL)
-			{
-				scrollx = argus_bg0_scrollx[0] | ( (argus_bg0_scrollx[1] & 0x01) << 8);
-				tilemap_set_scrollx(bg0_tilemap, 0, (scrollx + 256) & 0x1ff);
+            if (bg0_tilemap != NULL) {
+                scrollx = argus_bg0_scrollx[0] | ((argus_bg0_scrollx[1] & 0x01) << 8);
+                tilemap_set_scrollx(bg0_tilemap, 0, (scrollx + 256) & 0x1ff);
 
-				scrolly = argus_bg0_scrolly[0] | ( (argus_bg0_scrolly[1] & 0x01) << 8);
-				tilemap_set_scrolly(bg0_tilemap, 0, (scrolly + 256) & 0x1ff);
-			}
-			scrollx = argus_bg1_scrollx[0] | ( (argus_bg1_scrollx[1] & 0x01) << 8);
-			tilemap_set_scrollx(bg1_tilemap, 0, (scrollx + 256) & 0x1ff);
+                scrolly = argus_bg0_scrolly[0] | ((argus_bg0_scrolly[1] & 0x01) << 8);
+                tilemap_set_scrolly(bg0_tilemap, 0, (scrolly + 256) & 0x1ff);
+            }
+            scrollx = argus_bg1_scrollx[0] | ((argus_bg1_scrollx[1] & 0x01) << 8);
+            tilemap_set_scrollx(bg1_tilemap, 0, (scrollx + 256) & 0x1ff);
 
-			scrolly = argus_bg1_scrolly[0] | ( (argus_bg1_scrolly[1] & 0x01) << 8);
-			tilemap_set_scrolly(bg1_tilemap, 0, (scrolly + 256) & 0x1ff);
-		}
-	}
+            scrolly = argus_bg1_scrolly[0] | ((argus_bg1_scrolly[1] & 0x01) << 8);
+            tilemap_set_scrolly(bg1_tilemap, 0, (scrolly + 256) & 0x1ff);
+        }
+    }
 }
 
-READ_HANDLER( argus_paletteram_r )
+READ_HANDLER(argus_paletteram_r)
 {
-	return argus_paletteram[ offset ];
+    return argus_paletteram[ offset ];
 }
 
-WRITE_HANDLER( argus_paletteram_w )
+WRITE_HANDLER(argus_paletteram_w)
 {
-	int offs;
+    int offs;
 
-	argus_paletteram[ offset ] = data;
+    argus_paletteram[ offset ] = data;
 
-	if (offset != 0x007f && offset != 0x00ff)
-	{
-		if (offset >= 0x0000 && offset <= 0x00ff)				/* sprite color */
-		{
-			if (offset & 0x80)
-				offset -= 0x80;
+    if (offset != 0x007f && offset != 0x00ff) {
+        if (offset >= 0x0000 && offset <= 0x00ff) {			/* sprite color */
+            if (offset & 0x80)
+                offset -= 0x80;
 
-			argus_change_palette( offset,
-				(argus_paletteram[offset] << 8) | argus_paletteram[offset + 0x80] );
-		}
+            argus_change_palette(offset,
+                                 (argus_paletteram[offset] << 8) | argus_paletteram[offset + 0x80]);
+        }
 
-		else if ( (offset >= 0x0400 && offset <= 0x04ff) ||
-				  (offset >= 0x0800 && offset <= 0x08ff) )		/* BG0 color */
-		{
-			if (offset >= 0x0800)
-				offset -= 0x0400;
+        else if ((offset >= 0x0400 && offset <= 0x04ff) ||
+                 (offset >= 0x0800 && offset <= 0x08ff)) {	/* BG0 color */
+            if (offset >= 0x0800)
+                offset -= 0x0400;
 
-			argus_change_bg_palette( (offset - 0x0400) + 128,
-				(argus_paletteram[offset] << 8) | argus_paletteram[offset + 0x0400] );
-		}
+            argus_change_bg_palette((offset - 0x0400) + 128,
+                                    (argus_paletteram[offset] << 8) | argus_paletteram[offset + 0x0400]);
+        }
 
-		else if ( (offset >= 0x0500 && offset <= 0x05ff) ||
-				  (offset >= 0x0900 && offset <= 0x09ff) )		/* BG1 color */
-		{
-			if (offset >= 0x0900)
-				offset -= 0x0400;
+        else if ((offset >= 0x0500 && offset <= 0x05ff) ||
+                 (offset >= 0x0900 && offset <= 0x09ff)) {	/* BG1 color */
+            if (offset >= 0x0900)
+                offset -= 0x0400;
 
-			argus_change_palette( (offset - 0x0500) + 384,
-				(argus_paletteram[offset] << 8) | argus_paletteram[offset + 0x0400] );
-		}
+            argus_change_palette((offset - 0x0500) + 384,
+                                 (argus_paletteram[offset] << 8) | argus_paletteram[offset + 0x0400]);
+        }
 
-		else if ( (offset >= 0x0700 && offset <= 0x07ff) ||
-				  (offset >= 0x0b00 && offset <= 0x0bff) )		/* text color */
-		{
-			if (offset >= 0x0b00)
-				offset -= 0x0400;
+        else if ((offset >= 0x0700 && offset <= 0x07ff) ||
+                 (offset >= 0x0b00 && offset <= 0x0bff)) {	/* text color */
+            if (offset >= 0x0b00)
+                offset -= 0x0400;
 
-			argus_change_palette( (offset - 0x0700) + 640,
-				(argus_paletteram[offset] << 8) | argus_paletteram[offset + 0x0400] );
-		}
-	}
-	else
-	{
-		argus_palette_intensity = (argus_paletteram[0x007f] << 8) | argus_paletteram[0x00ff];
+            argus_change_palette((offset - 0x0700) + 640,
+                                 (argus_paletteram[offset] << 8) | argus_paletteram[offset + 0x0400]);
+        }
+    } else {
+        argus_palette_intensity = (argus_paletteram[0x007f] << 8) | argus_paletteram[0x00ff];
 
-		for (offs = 0x400 ; offs < 0x500 ; offs ++)
-		{
-			argus_change_bg_palette( (offs - 0x0400) + 128,
-				(argus_paletteram[offs] << 8) | argus_paletteram[offs + 0x0400] );
-		}
+        for (offs = 0x400 ; offs < 0x500 ; offs ++) {
+            argus_change_bg_palette((offs - 0x0400) + 128,
+                                    (argus_paletteram[offs] << 8) | argus_paletteram[offs + 0x0400]);
+        }
 
-		argus_bg_purple = argus_paletteram[0x0ff] & 0x0f;
-	}
+        argus_bg_purple = argus_paletteram[0x0ff] & 0x0f;
+    }
 }
 
-WRITE_HANDLER( valtric_paletteram_w )
+WRITE_HANDLER(valtric_paletteram_w)
 {
-	int offs;
+    int offs;
 
-	argus_paletteram[ offset ] = data;
+    argus_paletteram[ offset ] = data;
 
-	if (offset != 0x01fe && offset != 0x01ff)
-	{
-		if (offset >= 0x0000 && offset <= 0x01ff)
-		{
-			argus_change_palette( offset >> 1,
-				argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-		}
-		else if (offset >= 0x0400 && offset <= 0x05ff )
-		{
-			argus_change_bg_palette( ((offset - 0x0400) >> 1) + 256,
-				argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-		}
-		else if (offset >= 0x0600 && offset <= 0x07ff )
-		{
-			argus_change_palette( ((offset - 0x0600) >> 1) + 512,
-				argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-		}
-	}
-	else
-	{
-		argus_palette_intensity = (argus_paletteram[0x01fe] << 8) | argus_paletteram[0x01ff];
+    if (offset != 0x01fe && offset != 0x01ff) {
+        if (offset >= 0x0000 && offset <= 0x01ff) {
+            argus_change_palette(offset >> 1,
+                                 argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+        } else if (offset >= 0x0400 && offset <= 0x05ff) {
+            argus_change_bg_palette(((offset - 0x0400) >> 1) + 256,
+                                    argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+        } else if (offset >= 0x0600 && offset <= 0x07ff) {
+            argus_change_palette(((offset - 0x0600) >> 1) + 512,
+                                 argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+        }
+    } else {
+        argus_palette_intensity = (argus_paletteram[0x01fe] << 8) | argus_paletteram[0x01ff];
 
-		for (offs = 0x400 ; offs < 0x600 ; offs += 2)
-		{
-			argus_change_bg_palette( ((offs - 0x0400) >> 1) + 256,
-				argus_paletteram[offs | 1] | (argus_paletteram[offs & ~1] << 8));
-		}
+        for (offs = 0x400 ; offs < 0x600 ; offs += 2) {
+            argus_change_bg_palette(((offs - 0x0400) >> 1) + 256,
+                                    argus_paletteram[offs | 1] | (argus_paletteram[offs & ~1] << 8));
+        }
 
-		argus_bg_purple = argus_paletteram[0x01ff] & 0x0f;
-	}
+        argus_bg_purple = argus_paletteram[0x01ff] & 0x0f;
+    }
 }
 
-WRITE_HANDLER( butasan_paletteram_w )
+WRITE_HANDLER(butasan_paletteram_w)
 {
-	argus_paletteram[ offset ] = data;
+    argus_paletteram[ offset ] = data;
 
-	if (offset < 0x0200 )							/* BG1 color */
-	{
-		argus_change_palette( ((offset - 0x0000) >> 1) + 256,
-			argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-	}
-	else if (offset < 0x0240 )						/* BG0 color */
-	{
-		argus_change_palette( ((offset - 0x0200) >> 1) + 192,
-			argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-	}
-	else if (offset >= 0x0400 && offset <= 0x04ff )	/* Sprite color */
-	{
-		if (offset < 0x0480)			/* 16 colors */
-			argus_change_palette( ((offset - 0x0400) >> 1) + 0,
-				argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-		else							/* 8  colors */
-		{
-			argus_change_palette( (offset & 0x70) + ((offset & 0x00f) >> 1) + 64,
-				argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-			argus_change_palette( (offset & 0x70) + ((offset & 0x00f) >> 1) + 72,
-				argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-		}
-	}
-	else if (offset >= 0x0600 && offset <= 0x07ff )	/* Text color */
-	{
-		argus_change_palette( ((offset - 0x0600) >> 1) + 512,
-			argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
-	}
+    if (offset < 0x0200) {						/* BG1 color */
+        argus_change_palette(((offset - 0x0000) >> 1) + 256,
+                             argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+    } else if (offset < 0x0240) {					/* BG0 color */
+        argus_change_palette(((offset - 0x0200) >> 1) + 192,
+                             argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+    } else if (offset >= 0x0400 && offset <= 0x04ff) {	/* Sprite color */
+        if (offset < 0x0480)			/* 16 colors */
+            argus_change_palette(((offset - 0x0400) >> 1) + 0,
+                                 argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+        else {						/* 8  colors */
+            argus_change_palette((offset & 0x70) + ((offset & 0x00f) >> 1) + 64,
+                                 argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+            argus_change_palette((offset & 0x70) + ((offset & 0x00f) >> 1) + 72,
+                                 argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+        }
+    } else if (offset >= 0x0600 && offset <= 0x07ff) {	/* Text color */
+        argus_change_palette(((offset - 0x0600) >> 1) + 512,
+                             argus_paletteram[offset | 1] | (argus_paletteram[offset & ~1] << 8));
+    }
 }
 
-READ_HANDLER( butasan_txbackram_r )
+READ_HANDLER(butasan_txbackram_r)
 {
-	return butasan_txbackram[ offset ];
+    return butasan_txbackram[ offset ];
 }
 
-WRITE_HANDLER( butasan_txbackram_w )
+WRITE_HANDLER(butasan_txbackram_w)
 {
-	if (butasan_txbackram[ offset ] != data)
-	{
-		butasan_txbackram[ offset ] = data;
-	}
+    if (butasan_txbackram[ offset ] != data) {
+        butasan_txbackram[ offset ] = data;
+    }
 }
 
-READ_HANDLER( butasan_bg0backram_r )
+READ_HANDLER(butasan_bg0backram_r)
 {
-	return butasan_bg0backram[ offset ];
+    return butasan_bg0backram[ offset ];
 }
 
-WRITE_HANDLER( butasan_bg0backram_w )
+WRITE_HANDLER(butasan_bg0backram_w)
 {
-	if (butasan_bg0backram[ offset ] != data)
-	{
-		butasan_bg0backram[ offset ] = data;
-	}
+    if (butasan_bg0backram[ offset ] != data) {
+        butasan_bg0backram[ offset ] = data;
+    }
 }
 
-WRITE_HANDLER( butasan_bg1_status_w )
+WRITE_HANDLER(butasan_bg1_status_w)
 {
-	if (butasan_bg1_status != data)
-	{
-		butasan_bg1_status = data;
+    if (butasan_bg1_status != data) {
+        butasan_bg1_status = data;
 
-		tilemap_set_enable(bg1_tilemap, butasan_bg1_status & 0x01);	/* Set enable flag */
-		tilemap_mark_all_tiles_dirty( bg1_tilemap );				/* Bank changed */
-	}
+        tilemap_set_enable(bg1_tilemap, butasan_bg1_status & 0x01);	/* Set enable flag */
+        tilemap_mark_all_tiles_dirty(bg1_tilemap);				/* Bank changed */
+    }
 }
 
 
@@ -931,617 +872,535 @@ WRITE_HANDLER( butasan_bg1_status_w )
   Screen refresh
 ***************************************************************************/
 
-static void argus_bg0_scroll_handle( void )
+static void argus_bg0_scroll_handle(void)
 {
-	int delta;
-	int scrollx;
-	int dcolumn;
+    int delta;
+    int scrollx;
+    int dcolumn;
 
-	/* Deficit between previous and current scroll value */
-	scrollx = argus_bg0_scrollx[0] | (argus_bg0_scrollx[1] << 8);
-	delta = scrollx - prvscrollx;
-	prvscrollx = scrollx;
+    /* Deficit between previous and current scroll value */
+    scrollx = argus_bg0_scrollx[0] | (argus_bg0_scrollx[1] << 8);
+    delta = scrollx - prvscrollx;
+    prvscrollx = scrollx;
 
-	if ( delta == 0 )
-		return;
+    if (delta == 0)
+        return;
 
-	if (delta > 0)
-	{
-		lowbitscroll += delta % 16;
-		dcolumn = delta / 16;
+    if (delta > 0) {
+        lowbitscroll += delta % 16;
+        dcolumn = delta / 16;
 
-		if (lowbitscroll >= 16)
-		{
-			dcolumn ++;
-			lowbitscroll -= 16;
-		}
+        if (lowbitscroll >= 16) {
+            dcolumn ++;
+            lowbitscroll -= 16;
+        }
 
-		if (dcolumn != 0)
-		{
-			int i, j;
-			int col, woffs, roffs;
+        if (dcolumn != 0) {
+            int i, j;
+            int col, woffs, roffs;
 
-			col = ( (scrollx / 16) + 16 ) % 32;
-			woffs = 32 * 2 * col;
-			roffs = ( ( (scrollx / 16) + 16 ) * 8 ) % 0x8000;
+            col = ((scrollx / 16) + 16) % 32;
+            woffs = 32 * 2 * col;
+            roffs = (((scrollx / 16) + 16) * 8) % 0x8000;
 
-			if ( dcolumn >= 18 )
-				dcolumn = 18;
+            if (dcolumn >= 18)
+                dcolumn = 18;
 
-			for ( i = 0 ; i < dcolumn ; i ++ )
-			{
-				for ( j = 0 ; j < 4 ; j ++ )
-				{
-					argus_write_dummy_rams( woffs, roffs );
-					woffs += 16;
-					roffs += 2;
-				}
-				woffs -= 128;
-				roffs -= 16;
-				if (woffs < 0)
-					woffs += 0x800;
-				if (roffs < 0)
-					roffs += 0x8000;
-			}
-		}
-	}
-	else
-	{
-		lowbitscroll += (delta % 16);
-		dcolumn = -(delta / 16);
+            for (i = 0 ; i < dcolumn ; i ++) {
+                for (j = 0 ; j < 4 ; j ++) {
+                    argus_write_dummy_rams(woffs, roffs);
+                    woffs += 16;
+                    roffs += 2;
+                }
+                woffs -= 128;
+                roffs -= 16;
+                if (woffs < 0)
+                    woffs += 0x800;
+                if (roffs < 0)
+                    roffs += 0x8000;
+            }
+        }
+    } else {
+        lowbitscroll += (delta % 16);
+        dcolumn = - (delta / 16);
 
-		if (lowbitscroll <= 0)
-		{
-			dcolumn ++;
-			lowbitscroll += 16;
-		}
+        if (lowbitscroll <= 0) {
+            dcolumn ++;
+            lowbitscroll += 16;
+        }
 
-		if (dcolumn != 0)
-		{
-			int i, j;
-			int col, woffs, roffs;
+        if (dcolumn != 0) {
+            int i, j;
+            int col, woffs, roffs;
 
-			col = ( (scrollx / 16) + 31 ) % 32;
-			woffs = 32 * 2 * col;
-			roffs = ( (scrollx / 16) - 1 ) * 8;
-			if (roffs < 0)
-				roffs += 0x08000;
+            col = ((scrollx / 16) + 31) % 32;
+            woffs = 32 * 2 * col;
+            roffs = ((scrollx / 16) - 1) * 8;
+            if (roffs < 0)
+                roffs += 0x08000;
 
-			if (dcolumn >= 18)
-				dcolumn = 18;
+            if (dcolumn >= 18)
+                dcolumn = 18;
 
-			for ( i = 0 ; i < dcolumn ; i ++ )
-			{
-				for ( j = 0 ; j < 4 ; j ++ )
-				{
-					argus_write_dummy_rams( woffs, roffs );
-					woffs += 16;
-					roffs += 2;
-				}
-				if (woffs >= 0x800)
-					woffs -= 0x800;
-				if (roffs >= 0x8000)
-					roffs -= 0x8000;
-			}
-		}
-	}
+            for (i = 0 ; i < dcolumn ; i ++) {
+                for (j = 0 ; j < 4 ; j ++) {
+                    argus_write_dummy_rams(woffs, roffs);
+                    woffs += 16;
+                    roffs += 2;
+                }
+                if (woffs >= 0x800)
+                    woffs -= 0x800;
+                if (roffs >= 0x8000)
+                    roffs -= 0x8000;
+            }
+        }
+    }
 
-	if (!argus_flipscreen)
-		tilemap_set_scrollx(bg0_tilemap, 0, scrollx & 0x1ff);
-	else
-		tilemap_set_scrollx(bg0_tilemap, 0, (scrollx + 256) & 0x1ff);
+    if (!argus_flipscreen)
+        tilemap_set_scrollx(bg0_tilemap, 0, scrollx & 0x1ff);
+    else
+        tilemap_set_scrollx(bg0_tilemap, 0, (scrollx + 256) & 0x1ff);
 
 }
 
 static void argus_mark_sprite_colors(void)
 {
-	unsigned short palette_map[16];
+    unsigned short palette_map[16];
 
-	int offs;
-	int i;
+    int offs;
+    int i;
 
-	memset ( palette_map, 0x00, sizeof(palette_map) );
+    memset(palette_map, 0x00, sizeof(palette_map));
 
-	/* Find colors used in the sprites */
-	for (offs = 11; offs < spriteram_size; offs += 16)
-	{
-		if ( !(spriteram[offs+4] == 0 && spriteram[offs] == 0xf0) )
-		{
-			int tile, color;
-			tile  = spriteram[offs+3] + ((spriteram[offs+2] & 0xc0) << 2);
-			color = spriteram[offs+4] & 0x07;
-			palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile];
-		}
-	}
+    /* Find colors used in the sprites */
+    for (offs = 11; offs < spriteram_size; offs += 16) {
+        if (!(spriteram[offs + 4] == 0 && spriteram[offs] == 0xf0)) {
+            int tile, color;
+            tile  = spriteram[offs + 3] + ((spriteram[offs + 2] & 0xc0) << 2);
+            color = spriteram[offs + 4] & 0x07;
+            palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile];
+        }
+    }
 
-	for (i = 0; i < 16; i ++)
-	{
-		int j;
+    for (i = 0; i < 16; i ++) {
+        int j;
 
-		if (palette_map[i])
-		{
-			for (j = 0 ; j < 15 ; j++)
-				if (palette_map[i] & (1 << j))
-					palette_used_colors[i * 16 + j] = PALETTE_COLOR_USED;
-				else
-					palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
-			palette_used_colors[16 * i + 15] = PALETTE_COLOR_TRANSPARENT;
-		}
-	}
+        if (palette_map[i]) {
+            for (j = 0 ; j < 15 ; j++)
+                if (palette_map[i] & (1 << j))
+                    palette_used_colors[i * 16 + j] = PALETTE_COLOR_USED;
+                else
+                    palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
+            palette_used_colors[16 * i + 15] = PALETTE_COLOR_TRANSPARENT;
+        }
+    }
 }
 
 static void valtric_mark_sprite_colors(void)
 {
-	unsigned short palette_map[16];
+    unsigned short palette_map[16];
 
-	int offs;
-	int i;
+    int offs;
+    int i;
 
-	memset ( palette_map, 0x00, sizeof(palette_map) );
+    memset(palette_map, 0x00, sizeof(palette_map));
 
-	/* Find colors used in the sprites */
-	for (offs = 11; offs < spriteram_size; offs += 16)
-	{
-		if ( !(spriteram[offs+4] == 0 && spriteram[offs] == 0xf0) )
-		{
-			int tile, color;
-			tile  = spriteram[offs+3] + ((spriteram[offs+2] & 0xc0) << 2);
-			color = spriteram[offs+4] & 0x0f;
-			palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile];
-		}
-	}
+    /* Find colors used in the sprites */
+    for (offs = 11; offs < spriteram_size; offs += 16) {
+        if (!(spriteram[offs + 4] == 0 && spriteram[offs] == 0xf0)) {
+            int tile, color;
+            tile  = spriteram[offs + 3] + ((spriteram[offs + 2] & 0xc0) << 2);
+            color = spriteram[offs + 4] & 0x0f;
+            palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile];
+        }
+    }
 
-	for (i = 0; i < 16; i ++)
-	{
-		int j;
+    for (i = 0; i < 16; i ++) {
+        int j;
 
-		if (palette_map[i])
-		{
-			for (j = 0 ; j < 15 ; j++)
-			{
-				if (palette_map[i] & (1 << j))
-					palette_used_colors[i * 16 + j] = PALETTE_COLOR_USED;
-				else
-					palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
-			}
-			palette_used_colors[16 * i + 15] = PALETTE_COLOR_TRANSPARENT;
-		}
-	}
+        if (palette_map[i]) {
+            for (j = 0 ; j < 15 ; j++) {
+                if (palette_map[i] & (1 << j))
+                    palette_used_colors[i * 16 + j] = PALETTE_COLOR_USED;
+                else
+                    palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
+            }
+            palette_used_colors[16 * i + 15] = PALETTE_COLOR_TRANSPARENT;
+        }
+    }
 }
 
 static void butasan_mark_sprite_colors(void)
 {
-	unsigned short palette_map[16];
+    unsigned short palette_map[16];
 
-	int offs;
-	int i, j;
+    int offs;
+    int i, j;
 
-	memset ( palette_map, 0x00, sizeof(palette_map) );
+    memset(palette_map, 0x00, sizeof(palette_map));
 
-	/* Find colors used in the sprites */
-	for (offs = 8 ; offs < spriteram_size ; offs += 16)
-	{
-		int tile, color;
+    /* Find colors used in the sprites */
+    for (offs = 8 ; offs < spriteram_size ; offs += 16) {
+        int tile, color;
 
-		tile	 = spriteram[offs + 6] + ((spriteram[offs + 7] & 0x0f) << 8);
-		color	 = spriteram[offs + 1] & 0x0f;
+        tile	 = spriteram[offs + 6] + ((spriteram[offs + 7] & 0x0f) << 8);
+        color	 = spriteram[offs + 1] & 0x0f;
 
-		if ( (offs >= 0x100 && offs < 0x300) || (offs >= 0x400 && offs < 0x580) )
-		{
-			palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile];
-		}
-		else if ( (offs >= 0x000 && offs < 0x100) || (offs >= 0x300 && offs < 0x400) )
-		{
-			for ( i = 0 ; i <= 1 ; i ++ )
-			{
-				palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile + i];
-			}
-		}
-		else if ( offs >= 0x580 && offs < 0x620 )
-		{
-			for ( i = 0 ; i <= 1 ; i ++ )
-			{
-				for ( j = 0 ; j <= 1 ; j ++ )
-				{
-					palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile + i * 2 + j];
-				}
-			}
-		}
-		else if ( offs >= 0x620 && offs < 0x680 )
-		{
-			for ( i = 0 ; i <= 3 ; i ++ )
-			{
-				for ( j = 0 ; j <= 3 ; j ++ )
-				{
-					palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile + i * 4 + j];
-				}
-			}
-		}
-	}
+        if ((offs >= 0x100 && offs < 0x300) || (offs >= 0x400 && offs < 0x580)) {
+            palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile];
+        } else if ((offs >= 0x000 && offs < 0x100) || (offs >= 0x300 && offs < 0x400)) {
+            for (i = 0 ; i <= 1 ; i ++) {
+                palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile + i];
+            }
+        } else if (offs >= 0x580 && offs < 0x620) {
+            for (i = 0 ; i <= 1 ; i ++) {
+                for (j = 0 ; j <= 1 ; j ++) {
+                    palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile + i * 2 + j];
+                }
+            }
+        } else if (offs >= 0x620 && offs < 0x680) {
+            for (i = 0 ; i <= 3 ; i ++) {
+                for (j = 0 ; j <= 3 ; j ++) {
+                    palette_map[color] |= Machine -> gfx[0] -> pen_usage[tile + i * 4 + j];
+                }
+            }
+        }
+    }
 
-	for (i = 0; i < 12; i ++)
-	{
-		if (palette_map[i])
-		{
-			for (j = 0 ; j < 7 ; j++)
-			{
-				if (palette_map[i] & (1 << j))
-					palette_used_colors[i * 16 + j] = PALETTE_COLOR_USED;
-				else
-					palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
-			}
-			palette_used_colors[i * 16 + 7] = PALETTE_COLOR_TRANSPARENT;
-			for (j = 8 ; j < 16 ; j++)
-			{
-				if (palette_map[i] & (1 << j))
-					palette_used_colors[i * 16 + j] = PALETTE_COLOR_USED;
-				else
-					palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
-			}
-		}
-		else
-		{
-			for (j = 0 ; j < 16 ; j++)
-			{
-				palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
-			}
-		}
-	}
+    for (i = 0; i < 12; i ++) {
+        if (palette_map[i]) {
+            for (j = 0 ; j < 7 ; j++) {
+                if (palette_map[i] & (1 << j))
+                    palette_used_colors[i * 16 + j] = PALETTE_COLOR_USED;
+                else
+                    palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
+            }
+            palette_used_colors[i * 16 + 7] = PALETTE_COLOR_TRANSPARENT;
+            for (j = 8 ; j < 16 ; j++) {
+                if (palette_map[i] & (1 << j))
+                    palette_used_colors[i * 16 + j] = PALETTE_COLOR_USED;
+                else
+                    palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
+            }
+        } else {
+            for (j = 0 ; j < 16 ; j++) {
+                palette_used_colors[i * 16 + j] = PALETTE_COLOR_UNUSED;
+            }
+        }
+    }
 }
 
 static void argus_draw_sprites(struct osd_bitmap *bitmap, int priority)
 {
-	int offs;
+    int offs;
 
-	/* Draw the sprites */
-	for (offs = 11 ; offs < spriteram_size ; offs += 16)
-	{
-		if ( !(spriteram[offs+4] == 0 && spriteram[offs] == 0xf0) )
-		{
-			int sx, sy, tile, flipx, flipy, color, pri;
+    /* Draw the sprites */
+    for (offs = 11 ; offs < spriteram_size ; offs += 16) {
+        if (!(spriteram[offs + 4] == 0 && spriteram[offs] == 0xf0)) {
+            int sx, sy, tile, flipx, flipy, color, pri;
 
-			sx = spriteram[offs + 1];
-			sy = spriteram[offs];
+            sx = spriteram[offs + 1];
+            sy = spriteram[offs];
 
-			if (argus_flipscreen)
-			{
-				sx = 240 - sx;
-				sy = 240 - sy;
-			}
+            if (argus_flipscreen) {
+                sx = 240 - sx;
+                sy = 240 - sy;
+            }
 
-			if (!argus_flipscreen)
-			{
-				if (  spriteram[offs+2] & 0x01)  sx -= 256;
-				if (!(spriteram[offs+2] & 0x02)) sy -= 256;
-			}
-			else
-			{
-				if (  spriteram[offs+2] & 0x01)  sx += 256;
-				if (!(spriteram[offs+2] & 0x02)) sy += 256;
-			}
+            if (!argus_flipscreen) {
+                if (spriteram[offs + 2] & 0x01)  sx -= 256;
+                if (!(spriteram[offs + 2] & 0x02)) sy -= 256;
+            } else {
+                if (spriteram[offs + 2] & 0x01)  sx += 256;
+                if (!(spriteram[offs + 2] & 0x02)) sy += 256;
+            }
 
-			tile	 = spriteram[offs+3] + ((spriteram[offs+2] & 0xc0) << 2);
-			flipx	 = spriteram[offs+2] & 0x10;
-			flipy	 = spriteram[offs+2] & 0x20;
-			color	 = spriteram[offs+4] & 0x07;
-			pri      = (spriteram[offs+4] & 0x08) >> 3;
+            tile	 = spriteram[offs + 3] + ((spriteram[offs + 2] & 0xc0) << 2);
+            flipx	 = spriteram[offs + 2] & 0x10;
+            flipy	 = spriteram[offs + 2] & 0x20;
+            color	 = spriteram[offs + 4] & 0x07;
+            pri      = (spriteram[offs + 4] & 0x08) >> 3;
 
-			if (argus_flipscreen)
-			{
-				flipx ^= 0x10;
-				flipy ^= 0x20;
-			}
+            if (argus_flipscreen) {
+                flipx ^= 0x10;
+                flipy ^= 0x20;
+            }
 
-			if (priority != pri)
-				drawgfx(bitmap,Machine -> gfx[0],
-							tile,
-							color,
-							flipx, flipy,
-							sx, sy,
-							&Machine -> visible_area,
-							TRANSPARENCY_PEN, 15
-				);
-		}
-	}
+            if (priority != pri)
+                drawgfx(bitmap, Machine -> gfx[0],
+                        tile,
+                        color,
+                        flipx, flipy,
+                        sx, sy,
+                        &Machine -> visible_area,
+                        TRANSPARENCY_PEN, 15
+                       );
+        }
+    }
 }
 
 static void valtric_draw_sprites(struct osd_bitmap *bitmap)
 {
-	int offs;
+    int offs;
 
-	/* Draw the sprites */
-	for (offs = 11 ; offs < spriteram_size ; offs += 16)
-	{
-		if ( !(spriteram[offs+4] == 0 && spriteram[offs] == 0xf0) )
-		{
-			int sx, sy, tile, flipx, flipy, color;
+    /* Draw the sprites */
+    for (offs = 11 ; offs < spriteram_size ; offs += 16) {
+        if (!(spriteram[offs + 4] == 0 && spriteram[offs] == 0xf0)) {
+            int sx, sy, tile, flipx, flipy, color;
 
-			sx = spriteram[offs + 1];
-			sy = spriteram[offs];
+            sx = spriteram[offs + 1];
+            sy = spriteram[offs];
 
-			if (argus_flipscreen)
-			{
-				sx = 240 - sx;
-				sy = 240 - sy;
-			}
+            if (argus_flipscreen) {
+                sx = 240 - sx;
+                sy = 240 - sy;
+            }
 
-			if (!argus_flipscreen)
-			{
-				if (  spriteram[offs+2] & 0x01)  sx -= 256;
-				if (!(spriteram[offs+2] & 0x02)) sy -= 256;
-			}
-			else
-			{
-				if (  spriteram[offs+2] & 0x01)  sx += 256;
-				if (!(spriteram[offs+2] & 0x02)) sy += 256;
-			}
+            if (!argus_flipscreen) {
+                if (spriteram[offs + 2] & 0x01)  sx -= 256;
+                if (!(spriteram[offs + 2] & 0x02)) sy -= 256;
+            } else {
+                if (spriteram[offs + 2] & 0x01)  sx += 256;
+                if (!(spriteram[offs + 2] & 0x02)) sy += 256;
+            }
 
-			tile	 = spriteram[offs+3] + ((spriteram[offs+2] & 0xc0) << 2);
-			flipx	 = spriteram[offs+2] & 0x10;
-			flipy	 = spriteram[offs+2] & 0x20;
-			color	 = spriteram[offs+4] & 0x0f;
+            tile	 = spriteram[offs + 3] + ((spriteram[offs + 2] & 0xc0) << 2);
+            flipx	 = spriteram[offs + 2] & 0x10;
+            flipy	 = spriteram[offs + 2] & 0x20;
+            color	 = spriteram[offs + 4] & 0x0f;
 
-			if (argus_flipscreen)
-			{
-				flipx ^= 0x10;
-				flipy ^= 0x20;
-			}
+            if (argus_flipscreen) {
+                flipx ^= 0x10;
+                flipy ^= 0x20;
+            }
 
-			drawgfx(bitmap,Machine -> gfx[0],
-						tile,
-						color,
-						flipx, flipy,
-						sx, sy,
-						&Machine -> visible_area,
-						TRANSPARENCY_PEN, 15);
-		}
-	}
+            drawgfx(bitmap, Machine -> gfx[0],
+                    tile,
+                    color,
+                    flipx, flipy,
+                    sx, sy,
+                    &Machine -> visible_area,
+                    TRANSPARENCY_PEN, 15);
+        }
+    }
 }
 
 void butasan_draw_sprites(struct osd_bitmap *bitmap)
 {
-	int offs;
+    int offs;
 
-	/* Draw the sprites */
-	for (offs = 8 ; offs < spriteram_size ; offs += 16)
-	{
-		int sx, sy, tile, flipx, flipy, color;
+    /* Draw the sprites */
+    for (offs = 8 ; offs < spriteram_size ; offs += 16) {
+        int sx, sy, tile, flipx, flipy, color;
 
-		sx = spriteram[offs + 2];
-		sy = 240 - spriteram[offs + 4];
+        sx = spriteram[offs + 2];
+        sy = 240 - spriteram[offs + 4];
 
-		if (spriteram[offs + 3] & 0x01) sx -= 256;
-		if (spriteram[offs + 5] & 0x01) sy += 256;
+        if (spriteram[offs + 3] & 0x01) sx -= 256;
+        if (spriteram[offs + 5] & 0x01) sy += 256;
 
-		tile	 = spriteram[offs + 6] + ((spriteram[offs + 7] & 0x0f) << 8);
-		flipx	 = spriteram[offs + 0] & 0x01;
-		flipy	 = spriteram[offs + 0] & 0x04;
-		color	 = spriteram[offs + 1] & 0x0f;
+        tile	 = spriteram[offs + 6] + ((spriteram[offs + 7] & 0x0f) << 8);
+        flipx	 = spriteram[offs + 0] & 0x01;
+        flipy	 = spriteram[offs + 0] & 0x04;
+        color	 = spriteram[offs + 1] & 0x0f;
 
-		if (!argus_flipscreen)
-		{
-			if ( (offs >= 0x100 && offs < 0x300) || (offs >= 0x400 && offs < 0x580) )
-			{
-				drawgfx(bitmap,Machine -> gfx[0],
-							tile,
-							color,
-							flipx, flipy,
-							sx, sy,
-							&Machine -> visible_area,
-							TRANSPARENCY_PEN, 7);
-			}
-			else if ( (offs >= 0x000 && offs < 0x100) || (offs >= 0x300 && offs < 0x400) )
-			{
-				int i;
+        if (!argus_flipscreen) {
+            if ((offs >= 0x100 && offs < 0x300) || (offs >= 0x400 && offs < 0x580)) {
+                drawgfx(bitmap, Machine -> gfx[0],
+                        tile,
+                        color,
+                        flipx, flipy,
+                        sx, sy,
+                        &Machine -> visible_area,
+                        TRANSPARENCY_PEN, 7);
+            } else if ((offs >= 0x000 && offs < 0x100) || (offs >= 0x300 && offs < 0x400)) {
+                int i;
 
-				for ( i = 0 ; i <= 1 ; i ++ )
-				{
-					int td;
+                for (i = 0 ; i <= 1 ; i ++) {
+                    int td;
 
-					td = (flipx) ? (1 - i) : i;
+                    td = (flipx) ? (1 - i) : i;
 
-					drawgfx(bitmap,Machine -> gfx[0],
-								tile + td,
-								color,
-								flipx, flipy,
-								sx + i * 16, sy,
-								&Machine -> visible_area,
-								TRANSPARENCY_PEN, 7);
-				}
-			}
-			else if ( offs >= 0x580 && offs < 0x620 )
-			{
-				int i, j;
+                    drawgfx(bitmap, Machine -> gfx[0],
+                            tile + td,
+                            color,
+                            flipx, flipy,
+                            sx + i * 16, sy,
+                            &Machine -> visible_area,
+                            TRANSPARENCY_PEN, 7);
+                }
+            } else if (offs >= 0x580 && offs < 0x620) {
+                int i, j;
 
-				for ( i = 0 ; i <= 1 ; i ++ )
-				{
-					for ( j = 0 ; j <= 1 ; j ++ )
-					{
-						int td;
+                for (i = 0 ; i <= 1 ; i ++) {
+                    for (j = 0 ; j <= 1 ; j ++) {
+                        int td;
 
-						if ( !flipy )
-							td = (flipx) ? (i * 2) + 1 - j : i * 2 + j;
-						else
-							td = (flipx) ? ( (1 - i) * 2 ) + 1 - j : (1 - i) * 2 + j;
+                        if (!flipy)
+                            td = (flipx) ? (i * 2) + 1 - j : i * 2 + j;
+                        else
+                            td = (flipx) ? ((1 - i) * 2) + 1 - j : (1 - i) * 2 + j;
 
-						drawgfx(bitmap,Machine -> gfx[0],
-									tile + td,
-									color,
-									flipx, flipy,
-									sx + j * 16, sy - i * 16,
-									&Machine -> visible_area,
-									TRANSPARENCY_PEN, 7);
-					}
-				}
-			}
-			else if ( offs >= 0x620 && offs < 0x680 )
-			{
-				int i, j;
+                        drawgfx(bitmap, Machine -> gfx[0],
+                                tile + td,
+                                color,
+                                flipx, flipy,
+                                sx + j * 16, sy - i * 16,
+                                &Machine -> visible_area,
+                                TRANSPARENCY_PEN, 7);
+                    }
+                }
+            } else if (offs >= 0x620 && offs < 0x680) {
+                int i, j;
 
-				for ( i = 0 ; i <= 3 ; i ++ )
-				{
-					for ( j = 0 ; j <= 3 ; j ++ )
-					{
-						int td;
+                for (i = 0 ; i <= 3 ; i ++) {
+                    for (j = 0 ; j <= 3 ; j ++) {
+                        int td;
 
-						if ( !flipy )
-							td = (flipx) ? (i * 4) + 3 - j : i * 4 + j;
-						else
-							td = (flipx) ? ( (3 - i) * 4 ) + 3 - j : (3 - i) * 4 + j;
+                        if (!flipy)
+                            td = (flipx) ? (i * 4) + 3 - j : i * 4 + j;
+                        else
+                            td = (flipx) ? ((3 - i) * 4) + 3 - j : (3 - i) * 4 + j;
 
-						drawgfx(bitmap,Machine -> gfx[0],
-									tile + td,
-									color,
-									flipx, flipy,
-									sx + j * 16, sy - i * 16,									&Machine -> visible_area,
-									TRANSPARENCY_PEN, 7);
-					}
-				}
-			}
-		}
-		else
-		{
-			sx = 240 - sx;
-			sy = 240 - sy;
-			flipx ^= 0x01;
-			flipy ^= 0x04;
+                        drawgfx(bitmap, Machine -> gfx[0],
+                                tile + td,
+                                color,
+                                flipx, flipy,
+                                sx + j * 16, sy - i * 16,									&Machine -> visible_area,
+                                TRANSPARENCY_PEN, 7);
+                    }
+                }
+            }
+        } else {
+            sx = 240 - sx;
+            sy = 240 - sy;
+            flipx ^= 0x01;
+            flipy ^= 0x04;
 
-			if ( (offs >= 0x100 && offs < 0x300) || (offs >= 0x400 && offs < 0x580) )
-			{
-				drawgfx(bitmap,Machine -> gfx[0],
-							tile,
-							color,
-							flipx, flipy,
-							sx, sy,
-							&Machine -> visible_area,
-							TRANSPARENCY_PEN, 7);
-			}
-			else if ( (offs >= 0x000 && offs < 0x100) || (offs >= 0x300 && offs < 0x400) )
-			{
-				int i;
+            if ((offs >= 0x100 && offs < 0x300) || (offs >= 0x400 && offs < 0x580)) {
+                drawgfx(bitmap, Machine -> gfx[0],
+                        tile,
+                        color,
+                        flipx, flipy,
+                        sx, sy,
+                        &Machine -> visible_area,
+                        TRANSPARENCY_PEN, 7);
+            } else if ((offs >= 0x000 && offs < 0x100) || (offs >= 0x300 && offs < 0x400)) {
+                int i;
 
-				for ( i = 0 ; i <= 1 ; i ++ )
-				{
-					int td;
+                for (i = 0 ; i <= 1 ; i ++) {
+                    int td;
 
-					td = (flipx) ? i : (1 - i);
+                    td = (flipx) ? i : (1 - i);
 
-					drawgfx(bitmap,Machine -> gfx[0],
-								tile + td,
-								color,
-								flipx, flipy,
-								sx - i * 16, sy,
-								&Machine -> visible_area,
-								TRANSPARENCY_PEN, 7);
-				}
-			}
-			else if ( offs >= 0x580 && offs < 0x620 )
-			{
-				int i, j;
+                    drawgfx(bitmap, Machine -> gfx[0],
+                            tile + td,
+                            color,
+                            flipx, flipy,
+                            sx - i * 16, sy,
+                            &Machine -> visible_area,
+                            TRANSPARENCY_PEN, 7);
+                }
+            } else if (offs >= 0x580 && offs < 0x620) {
+                int i, j;
 
-				for ( i = 0 ; i <= 1 ; i ++ )
-				{
-					for ( j = 0 ; j <= 1 ; j ++ )
-					{
-						int td;
+                for (i = 0 ; i <= 1 ; i ++) {
+                    for (j = 0 ; j <= 1 ; j ++) {
+                        int td;
 
-						if ( !flipy )
-							td = (flipx) ? (1 - i) * 2 + j : ( (1 - i) * 2 ) + 1 - j;
-						else
-							td = (flipx) ? i * 2 + j : (i * 2) + 1 - j;
+                        if (!flipy)
+                            td = (flipx) ? (1 - i) * 2 + j : ((1 - i) * 2) + 1 - j;
+                        else
+                            td = (flipx) ? i * 2 + j : (i * 2) + 1 - j;
 
-						drawgfx(bitmap,Machine -> gfx[0],
-									tile + td,
-									color,
-									flipx, flipy,
-									sx - j * 16, sy + i * 16,
-									&Machine -> visible_area,
-									TRANSPARENCY_PEN, 7);
-					}
-				}
-			}
-			else if ( offs >= 0x620 && offs < 0x680 )
-			{
-				int i, j;
+                        drawgfx(bitmap, Machine -> gfx[0],
+                                tile + td,
+                                color,
+                                flipx, flipy,
+                                sx - j * 16, sy + i * 16,
+                                &Machine -> visible_area,
+                                TRANSPARENCY_PEN, 7);
+                    }
+                }
+            } else if (offs >= 0x620 && offs < 0x680) {
+                int i, j;
 
-				for ( i = 0 ; i <= 3 ; i ++ )
-				{
-					for ( j = 0 ; j <= 3 ; j ++ )
-					{
-						int td;
+                for (i = 0 ; i <= 3 ; i ++) {
+                    for (j = 0 ; j <= 3 ; j ++) {
+                        int td;
 
-						if ( !flipy )
-							td = (flipx) ? (3 - i) * 4 + j : ( (3 - i) * 4 ) + 3 - j;
-						else
-							td = (flipx) ? i * 4 + j : (i * 4) + 3 - j;
+                        if (!flipy)
+                            td = (flipx) ? (3 - i) * 4 + j : ((3 - i) * 4) + 3 - j;
+                        else
+                            td = (flipx) ? i * 4 + j : (i * 4) + 3 - j;
 
-						drawgfx(bitmap,Machine -> gfx[0],
-									tile + td,
-									color,
-									flipx, flipy,
-									sx - j * 16, sy + i * 16,									&Machine -> visible_area,
-									TRANSPARENCY_PEN, 7);
-					}
-				}
-			}
-		}
-	}
+                        drawgfx(bitmap, Machine -> gfx[0],
+                                tile + td,
+                                color,
+                                flipx, flipy,
+                                sx - j * 16, sy + i * 16,									&Machine -> visible_area,
+                                TRANSPARENCY_PEN, 7);
+                    }
+                }
+            }
+        }
+    }
 }
 
 
-void argus_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void argus_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	/* scroll BG0 and render tile at proper position */
-	argus_bg0_scroll_handle();
+    /* scroll BG0 and render tile at proper position */
+    argus_bg0_scroll_handle();
 
-	tilemap_update(ALL_TILEMAPS);
+    tilemap_update(ALL_TILEMAPS);
 
-	palette_init_used_colors();
-	argus_mark_sprite_colors();
-	palette_recalc();
+    palette_init_used_colors();
+    argus_mark_sprite_colors();
+    palette_recalc();
 
-	fillbitmap(bitmap, palette_transparent_pen, &Machine -> visible_area);
+    fillbitmap(bitmap, palette_transparent_pen, &Machine -> visible_area);
 
-	tilemap_render(ALL_TILEMAPS);
+    tilemap_render(ALL_TILEMAPS);
 
-	tilemap_draw(bitmap, bg0_tilemap, 0);
-	argus_draw_sprites(bitmap, 0);
-	tilemap_draw(bitmap, bg1_tilemap, 0);
-	argus_draw_sprites(bitmap, 1);
-	tilemap_draw(bitmap, tx_tilemap,  0);
+    tilemap_draw(bitmap, bg0_tilemap, 0);
+    argus_draw_sprites(bitmap, 0);
+    tilemap_draw(bitmap, bg1_tilemap, 0);
+    argus_draw_sprites(bitmap, 1);
+    tilemap_draw(bitmap, tx_tilemap,  0);
 }
 
-void valtric_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void valtric_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	tilemap_update(ALL_TILEMAPS);
+    tilemap_update(ALL_TILEMAPS);
 
-	palette_init_used_colors();
-	valtric_mark_sprite_colors();
-	palette_recalc();
+    palette_init_used_colors();
+    valtric_mark_sprite_colors();
+    palette_recalc();
 
-	fillbitmap(bitmap, palette_transparent_pen, &Machine -> visible_area);
+    fillbitmap(bitmap, palette_transparent_pen, &Machine -> visible_area);
 
-	tilemap_render(ALL_TILEMAPS);
+    tilemap_render(ALL_TILEMAPS);
 
-	tilemap_draw(bitmap, bg1_tilemap, 0);
-	valtric_draw_sprites(bitmap);
-	tilemap_draw(bitmap, tx_tilemap,  0);
+    tilemap_draw(bitmap, bg1_tilemap, 0);
+    valtric_draw_sprites(bitmap);
+    tilemap_draw(bitmap, tx_tilemap,  0);
 }
 
-void butasan_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void butasan_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	tilemap_update(ALL_TILEMAPS);
+    tilemap_update(ALL_TILEMAPS);
 
-	palette_init_used_colors();
-	butasan_mark_sprite_colors();
-	palette_recalc();
+    palette_init_used_colors();
+    butasan_mark_sprite_colors();
+    palette_recalc();
 
-	fillbitmap(bitmap, palette_transparent_pen, &Machine -> visible_area);
+    fillbitmap(bitmap, palette_transparent_pen, &Machine -> visible_area);
 
-	tilemap_render(ALL_TILEMAPS);
+    tilemap_render(ALL_TILEMAPS);
 
-	tilemap_draw(bitmap, bg1_tilemap, 0);
-	tilemap_draw(bitmap, bg0_tilemap, 0);
-	butasan_draw_sprites(bitmap);
-	tilemap_draw(bitmap, tx_tilemap,  0);
+    tilemap_draw(bitmap, bg1_tilemap, 0);
+    tilemap_draw(bitmap, bg0_tilemap, 0);
+    butasan_draw_sprites(bitmap);
+    tilemap_draw(bitmap, tx_tilemap,  0);
 }

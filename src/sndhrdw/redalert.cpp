@@ -39,82 +39,81 @@ static int c030_data = 0;
 static int sound_register_IC1 = 0;
 static int sound_register_IC2 = 0;
 
-WRITE_HANDLER( redalert_c030_w )
+WRITE_HANDLER(redalert_c030_w)
 {
-	c030_data = data & 0x3F;
+    c030_data = data & 0x3F;
 
-	/* Is this some type of sound command? */
-	if (data & 0x80)
-		/* Cause an NMI on the voice CPU here? */
-		cpu_cause_interrupt(2,I8085_RST75);
+    /* Is this some type of sound command? */
+    if (data & 0x80)
+        /* Cause an NMI on the voice CPU here? */
+        cpu_cause_interrupt(2, I8085_RST75);
 }
 
-READ_HANDLER( redalert_voicecommand_r )
+READ_HANDLER(redalert_voicecommand_r)
 {
-	return c030_data;
+    return c030_data;
 }
 
-WRITE_HANDLER( redalert_soundlatch_w )
+WRITE_HANDLER(redalert_soundlatch_w)
 {
-	/* The byte is connected to Port A of the AY8910 */
-	AY8910_A_input_data = data;
+    /* The byte is connected to Port A of the AY8910 */
+    AY8910_A_input_data = data;
 
-	/* Bit D7 is also connected to the NMI input of the CPU */
-	if ((data & 0x80)!=0x80)
-		cpu_cause_interrupt(1,M6502_INT_NMI);
+    /* Bit D7 is also connected to the NMI input of the CPU */
+    if ((data & 0x80) != 0x80)
+        cpu_cause_interrupt(1, M6502_INT_NMI);
 }
 
-READ_HANDLER( redalert_AY8910_A_r )
+READ_HANDLER(redalert_AY8910_A_r)
 {
-	return AY8910_A_input_data;
+    return AY8910_A_input_data;
 }
 
-WRITE_HANDLER( redalert_AY8910_w )
+WRITE_HANDLER(redalert_AY8910_w)
 {
-	/* BC2 is connected to a pull-up resistor, so BC2=1 always */
-	switch (data)
-	{
-		case 0x00:
-			/* BC1=0, BDIR=0 : INACTIVE */
-			break;
-		case 0x01:
-			/* BC1=1, BDIR=0 : READ FROM PSG */
-			sound_register_IC1 = AY8910_read_port_0_r(offset);
-			break;
-		case 0x02:
-			/* BC1=0, BDIR=1 : WRITE TO PSG */
-			AY8910_write_port_0_w(offset,sound_register_IC2);
-			break;
-		case 0x03:
-			/* BC1=1, BDIR=1 : LATCH ADDRESS */
-			AY8910_control_port_0_w(offset,sound_register_IC2);
-			break;
-		default:
-			//logerror("Invalid Sound Command: %02X\n",data);
-			break;
-	}
+    /* BC2 is connected to a pull-up resistor, so BC2=1 always */
+    switch (data) {
+    case 0x00:
+        /* BC1=0, BDIR=0 : INACTIVE */
+        break;
+    case 0x01:
+        /* BC1=1, BDIR=0 : READ FROM PSG */
+        sound_register_IC1 = AY8910_read_port_0_r(offset);
+        break;
+    case 0x02:
+        /* BC1=0, BDIR=1 : WRITE TO PSG */
+        AY8910_write_port_0_w(offset, sound_register_IC2);
+        break;
+    case 0x03:
+        /* BC1=1, BDIR=1 : LATCH ADDRESS */
+        AY8910_control_port_0_w(offset, sound_register_IC2);
+        break;
+    default:
+        //logerror("Invalid Sound Command: %02X\n",data);
+        break;
+    }
 }
 
-READ_HANDLER( redalert_sound_register_IC1_r )
+READ_HANDLER(redalert_sound_register_IC1_r)
 {
-	return sound_register_IC1;
+    return sound_register_IC1;
 }
 
-WRITE_HANDLER( redalert_sound_register_IC2_w )
+WRITE_HANDLER(redalert_sound_register_IC2_w)
 {
-	sound_register_IC2 = data;
+    sound_register_IC2 = data;
 }
 
-WRITE_HANDLER( redalert_AY8910_B_w )
+WRITE_HANDLER(redalert_AY8910_B_w)
 {
-	/* I'm fairly certain this port triggers analog sounds */
-	//logerror("Port B Trigger: %02X\n",data);
-	/* D0 = Formation Aircraft? */
-	/* D1 = Dive bombers? */
-	/* D2 = Helicopters? */
-	/* D3 = Launcher firing? */
-	/* D4 = Explosion #1? */
-	/* D5 = Explosion #2? */
-	/* D6 = Explosion #3? */
+    /* I'm fairly certain this port triggers analog sounds */
+    //logerror("Port B Trigger: %02X\n",data);
+    /* D0 = Formation Aircraft? */
+    /* D1 = Dive bombers? */
+    /* D2 = Helicopters? */
+    /* D3 = Launcher firing? */
+    /* D4 = Explosion #1? */
+    /* D5 = Explosion #2? */
+    /* D6 = Explosion #3? */
 }
 

@@ -38,58 +38,53 @@ static void ticket_dispenser_toggle(int parm);
 ***************************************************************************/
 void ticket_dispenser_init(int msec, int motoronhigh, int statusactivehigh)
 {
-	time_msec          = msec;
-	motoron            = motoronhigh  ? active_bit : 0;
-	ticketdispensed    = statusactivehigh ? active_bit : 0;
-	ticketnotdispensed = ticketdispensed ^ active_bit;
+    time_msec          = msec;
+    motoron            = motoronhigh  ? active_bit : 0;
+    ticketdispensed    = statusactivehigh ? active_bit : 0;
+    ticketnotdispensed = ticketdispensed ^ active_bit;
 
-	status = ticketnotdispensed;
-	dispensed_tickets = 0;
-	power  = 0x00;
+    status = ticketnotdispensed;
+    dispensed_tickets = 0;
+    power  = 0x00;
 }
 
 /***************************************************************************
   ticket_dispenser_r
 ***************************************************************************/
-READ_HANDLER( ticket_dispenser_r )
+READ_HANDLER(ticket_dispenser_r)
 {
 #ifdef DEBUG_TICKET
-	logerror("PC: %04X  Ticket Status Read = %02X\n", cpu_get_pc(), status);
+    logerror("PC: %04X  Ticket Status Read = %02X\n", cpu_get_pc(), status);
 #endif
-	return status;
+    return status;
 }
 
 /***************************************************************************
   ticket_dispenser_w
 ***************************************************************************/
-WRITE_HANDLER( ticket_dispenser_w )
+WRITE_HANDLER(ticket_dispenser_w)
 {
-	/* On an activate signal, start dispensing! */
-	if ((data & active_bit) == motoron)
-	{
-		if (!power)
-		{
+    /* On an activate signal, start dispensing! */
+    if ((data & active_bit) == motoron) {
+        if (!power) {
 #ifdef DEBUG_TICKET
-			logerror("PC: %04X  Ticket Power On\n", cpu_get_pc());
+            logerror("PC: %04X  Ticket Power On\n", cpu_get_pc());
 #endif
-			timer = timer_set (TIME_IN_MSEC(time_msec), 0, ticket_dispenser_toggle);
-			power = 1;
+            timer = timer_set(TIME_IN_MSEC(time_msec), 0, ticket_dispenser_toggle);
+            power = 1;
 
-			status = ticketnotdispensed;
-		}
-	}
-	else
-	{
-		if (power)
-		{
+            status = ticketnotdispensed;
+        }
+    } else {
+        if (power) {
 #ifdef DEBUG_TICKET
-			logerror("PC: %04X  Ticket Power Off\n", cpu_get_pc());
+            logerror("PC: %04X  Ticket Power Off\n", cpu_get_pc());
 #endif
-			timer_remove(timer);
-			osd_led_w(2,0);
-			power = 0;
-		}
-	}
+            timer_remove(timer);
+            osd_led_w(2, 0);
+            power = 0;
+        }
+    }
 }
 
 
@@ -103,27 +98,23 @@ WRITE_HANDLER( ticket_dispenser_w )
 static void ticket_dispenser_toggle(int parm)
 {
 
-	/* If we still have power, keep toggling ticket states. */
-	if (power)
-	{
-		status ^= active_bit;
+    /* If we still have power, keep toggling ticket states. */
+    if (power) {
+        status ^= active_bit;
 #ifdef DEBUG_TICKET
-		logerror("Ticket Status Changed to %02X\n", status);
+        logerror("Ticket Status Changed to %02X\n", status);
 #endif
-		timer = timer_set (TIME_IN_MSEC(time_msec), 0, ticket_dispenser_toggle);
-	}
+        timer = timer_set(TIME_IN_MSEC(time_msec), 0, ticket_dispenser_toggle);
+    }
 
-	if (status == ticketdispensed)
-	{
-		osd_led_w(2,1);
-		dispensed_tickets++;
+    if (status == ticketdispensed) {
+        osd_led_w(2, 1);
+        dispensed_tickets++;
 
 #ifdef DEBUG_TICKET
-		logerror("Ticket Dispensed\n");
+        logerror("Ticket Dispensed\n");
 #endif
-	}
-	else
-	{
-		osd_led_w(2,0);
-	}
+    } else {
+        osd_led_w(2, 0);
+    }
 }

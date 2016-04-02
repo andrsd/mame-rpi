@@ -16,25 +16,24 @@
 static int flipscreen;
 
 
-WRITE_HANDLER( skychut_vh_flipscreen_w )
+WRITE_HANDLER(skychut_vh_flipscreen_w)
 {
-/*	if (flipscreen != (data & 0x8f))
-	{
-		flipscreen = (data & 0x8f);
-		memset(dirtybuffer,1,videoram_size);
-	}
-*/
+    /*	if (flipscreen != (data & 0x8f))
+    	{
+    		flipscreen = (data & 0x8f);
+    		memset(dirtybuffer,1,videoram_size);
+    	}
+    */
 }
 
 
-WRITE_HANDLER( skychut_colorram_w )
+WRITE_HANDLER(skychut_colorram_w)
 {
-	if (colorram[offset] != data)
-	{
-		dirtybuffer[offset] = 1;
+    if (colorram[offset] != data) {
+        dirtybuffer[offset] = 1;
 
-		colorram[offset] = data;
-	}
+        colorram[offset] = data;
+    }
 }
 
 
@@ -46,33 +45,31 @@ WRITE_HANDLER( skychut_colorram_w )
   the main emulation engine.
 
 ***************************************************************************/
-void skychut_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void skychut_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int offs;
-	if (full_refresh)
-		memset (dirtybuffer, 1, videoram_size);
+    int offs;
+    if (full_refresh)
+        memset(dirtybuffer, 1, videoram_size);
 
-	for (offs = videoram_size - 1;offs >= 0;offs--)
-	{
-		if (dirtybuffer[offs])
-		{
-			int sx,sy;
+    for (offs = videoram_size - 1; offs >= 0; offs--) {
+        if (dirtybuffer[offs]) {
+            int sx, sy;
 
 
-			dirtybuffer[offs] = 0;
+            dirtybuffer[offs] = 0;
 
-			sx = offs % 32;
-			sy = offs / 32;
+            sx = offs % 32;
+            sy = offs / 32;
 
-			drawgfx(bitmap,Machine->gfx[0],
-					videoram[offs],
-					 colorram[offs],
-					flipscreen,flipscreen,
-					8*sx,8*sy,
-					&Machine->visible_area,TRANSPARENCY_NONE,0);
+            drawgfx(bitmap, Machine->gfx[0],
+                    videoram[offs],
+                    colorram[offs],
+                    flipscreen, flipscreen,
+                    8 * sx, 8 * sy,
+                    &Machine->visible_area, TRANSPARENCY_NONE, 0);
 
 
-		}
-	}
+        }
+    }
 
 }

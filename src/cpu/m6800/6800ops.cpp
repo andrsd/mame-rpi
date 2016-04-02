@@ -14,17 +14,17 @@ HNZVC
 */
 
 //INLINE void illegal( void )
-static void illegal( void )
+static void illegal(void)
 {
-	logerror("M6808: illegal opcode: address %04X, op %02X\n",PC,(int) M_RDOP_ARG(PC)&0xFF);
+    logerror("M6808: illegal opcode: address %04X, op %02X\n", PC, (int) M_RDOP_ARG(PC) & 0xFF);
 }
 
 /* HD63701 only */
 //INLINE void trap( void )
-static void trap( void )
+static void trap(void)
 {
-	logerror("M6808: illegal opcode: address %04X, op %02X\n",PC,(int) M_RDOP_ARG(PC)&0xFF);
-	TAKE_TRAP;
+    logerror("M6808: illegal opcode: address %04X, op %02X\n", PC, (int) M_RDOP_ARG(PC) & 0xFF);
+    TAKE_TRAP;
 }
 
 #if macintosh
@@ -34,7 +34,7 @@ static void trap( void )
 /* $00 ILLEGAL */
 
 /* $01 NOP */
-INLINE void nop( void )
+INLINE void nop(void)
 {
 }
 
@@ -43,89 +43,97 @@ INLINE void nop( void )
 /* $03 ILLEGAL */
 
 /* $04 LSRD inherent -0*-* */
-INLINE void lsrd (void)
+INLINE void lsrd(void)
 {
-	UINT16 t;
-	CLR_NZC; t = D; CC|=(t&0x0001);
-	t>>=1; SET_Z16(t); D=t;
+    UINT16 t;
+    CLR_NZC;
+    t = D;
+    CC |= (t & 0x0001);
+    t >>= 1;
+    SET_Z16(t);
+    D = t;
 }
 
 /* $05 ASLD inherent ?**** */
-INLINE void asld (void)
+INLINE void asld(void)
 {
-	int r;
-	UINT16 t;
-	t = D; r=t<<1;
-	CLR_NZVC; SET_FLAGS16(t,t,r);
-	D=r;
+    int r;
+    UINT16 t;
+    t = D;
+    r = t << 1;
+    CLR_NZVC;
+    SET_FLAGS16(t, t, r);
+    D = r;
 }
 
 /* $06 TAP inherent ##### */
-INLINE void tap (void)
+INLINE void tap(void)
 {
-	CC=A;
-	ONE_MORE_INSN();
-	CHECK_IRQ_LINES(); /* HJB 990417 */
+    CC = A;
+    ONE_MORE_INSN();
+    CHECK_IRQ_LINES(); /* HJB 990417 */
 }
 
 /* $07 TPA inherent ----- */
-INLINE void tpa (void)
+INLINE void tpa(void)
 {
-	A=CC;
+    A = CC;
 }
 
 /* $08 INX inherent --*-- */
-INLINE void inx (void)
+INLINE void inx(void)
 {
-	++X;
-	CLR_Z; SET_Z16(X);
+    ++X;
+    CLR_Z;
+    SET_Z16(X);
 }
 
 /* $09 DEX inherent --*-- */
-INLINE void dex (void)
+INLINE void dex(void)
 {
-	--X;
-	CLR_Z; SET_Z16(X);
+    --X;
+    CLR_Z;
+    SET_Z16(X);
 }
 
 /* $0a CLV */
-INLINE void clv (void)
+INLINE void clv(void)
 {
-	CLV;
+    CLV;
 }
 
 /* $0b SEV */
-INLINE void sev (void)
+INLINE void sev(void)
 {
-	SEV;
+    SEV;
 }
 
 /* $0c CLC */
-INLINE void clc (void)
+INLINE void clc(void)
 {
-	CLC;
+    CLC;
 }
 
 /* $0d SEC */
-INLINE void sec (void)
+INLINE void sec(void)
 {
-	SEC;
+    SEC;
 }
 
 /* $0e CLI */
-INLINE void cli (void)
+INLINE void cli(void)
 {
-	CLI;
-	ONE_MORE_INSN();
-	CHECK_IRQ_LINES(); /* HJB 990417 */
+    CLI;
+    ONE_MORE_INSN();
+    CHECK_IRQ_LINES(); /* HJB 990417 */
 }
 
 /* $0f SEI */
-INLINE void sei (void)
+INLINE void sei(void)
 {
-	SEI;
-	ONE_MORE_INSN();
-	CHECK_IRQ_LINES(); /* HJB 990417 */
+    SEI;
+    ONE_MORE_INSN();
+    CHECK_IRQ_LINES(); /* HJB 990417 */
 }
 
 #if macintosh
@@ -133,32 +141,34 @@ INLINE void sei (void)
 #endif
 
 /* $10 SBA inherent -**** */
-INLINE void sba (void)
+INLINE void sba(void)
 {
-	UINT16 t;
-	t=A-B;
-	CLR_NZVC; SET_FLAGS8(A,B,t);
-	A=t;
+    UINT16 t;
+    t = A - B;
+    CLR_NZVC;
+    SET_FLAGS8(A, B, t);
+    A = t;
 }
 
 /* $11 CBA inherent -**** */
-INLINE void cba (void)
+INLINE void cba(void)
 {
-	UINT16 t;
-	t=A-B;
-	CLR_NZVC; SET_FLAGS8(A,B,t);
+    UINT16 t;
+    t = A - B;
+    CLR_NZVC;
+    SET_FLAGS8(A, B, t);
 }
 
 /* $12 ILLEGAL */
-INLINE void undoc1 (void)
+INLINE void undoc1(void)
 {
-	X += RM( S + 1 );
+    X += RM(S + 1);
 }
 
 /* $13 ILLEGAL */
-INLINE void undoc2 (void)
+INLINE void undoc2(void)
 {
-	X += RM( S + 1 );
+    X += RM(S + 1);
 }
 
 
@@ -167,61 +177,67 @@ INLINE void undoc2 (void)
 /* $15 ILLEGAL */
 
 /* $16 TAB inherent -**0- */
-INLINE void tab (void)
+INLINE void tab(void)
 {
-	B=A;
-	CLR_NZV; SET_NZ8(B);
+    B = A;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $17 TBA inherent -**0- */
-INLINE void tba (void)
+INLINE void tba(void)
 {
-	A=B;
-	CLR_NZV; SET_NZ8(A);
+    A = B;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $18 XGDX inherent ----- */ /* HD63701YO only */
-INLINE void xgdx( void )
+INLINE void xgdx(void)
 {
-	UINT16 t = X;
-	X = D;
-	D=t;
+    UINT16 t = X;
+    X = D;
+    D = t;
 }
 
 /* $19 DAA inherent (A) -**0* */
-INLINE void daa( void )
+INLINE void daa(void)
 {
-	UINT8 msn, lsn;
-	UINT16 t, cf = 0;
-	msn=A & 0xf0; lsn=A & 0x0f;
-	if( lsn>0x09 || CC&0x20 ) cf |= 0x06;
-	if( msn>0x80 && lsn>0x09 ) cf |= 0x60;
-	if( msn>0x90 || CC&0x01 ) cf |= 0x60;
-	t = cf + A;
-	CLR_NZV; /* keep carry from previous operation */
-	SET_NZ8((UINT8)t); SET_C8(t);
-	A = t;
+    UINT8 msn, lsn;
+    UINT16 t, cf = 0;
+    msn = A & 0xf0;
+    lsn = A & 0x0f;
+    if (lsn > 0x09 || CC & 0x20) cf |= 0x06;
+    if (msn > 0x80 && lsn > 0x09) cf |= 0x60;
+    if (msn > 0x90 || CC & 0x01) cf |= 0x60;
+    t = cf + A;
+    CLR_NZV; /* keep carry from previous operation */
+    SET_NZ8((UINT8) t);
+    SET_C8(t);
+    A = t;
 }
 
 /* $1a ILLEGAL */
 
 #if (HAS_HD63701)
 /* $1a SLP */ /* HD63701YO only */
-INLINE void slp (void)
+INLINE void slp(void)
 {
-	/* wait for next IRQ (same as waiting of wai) */
-	m6808.wai_state |= HD63701_SLP;
-	EAT_CYCLES;
+    /* wait for next IRQ (same as waiting of wai) */
+    m6808.wai_state |= HD63701_SLP;
+    EAT_CYCLES;
 }
 #endif
 
 /* $1b ABA inherent ***** */
-INLINE void aba (void)
+INLINE void aba(void)
 {
-	UINT16 t;
-	t=A+B;
-	CLR_HNZVC; SET_FLAGS8(A,B,t); SET_H(A,B,t);
-	A=t;
+    UINT16 t;
+    t = A + B;
+    CLR_HNZVC;
+    SET_FLAGS8(A, B, t);
+    SET_H(A, B, t);
+    A = t;
 }
 
 /* $1c ILLEGAL */
@@ -237,117 +253,119 @@ INLINE void aba (void)
 #endif
 
 /* $20 BRA relative ----- */
-INLINE void bra( void )
+INLINE void bra(void)
 {
-	UINT8 t;
-	IMMBYTE(t);PC+=SIGNED(t);CHANGE_PC();
-	/* speed up busy loops */
-	if (t==0xfe) EAT_CYCLES;
+    UINT8 t;
+    IMMBYTE(t);
+    PC += SIGNED(t);
+    CHANGE_PC();
+    /* speed up busy loops */
+    if (t == 0xfe) EAT_CYCLES;
 }
 
 /* $21 BRN relative ----- */
-INLINE void brn( void )
+INLINE void brn(void)
 {
-	UINT8 t;
-	IMMBYTE(t);
+    UINT8 t;
+    IMMBYTE(t);
 }
 
 /* $22 BHI relative ----- */
-INLINE void bhi( void )
+INLINE void bhi(void)
 {
-	UINT8 t;
-	BRANCH(!(CC&0x05));
+    UINT8 t;
+    BRANCH(!(CC & 0x05));
 }
 
 /* $23 BLS relative ----- */
-INLINE void bls( void )
+INLINE void bls(void)
 {
-	UINT8 t;
-	BRANCH(CC&0x05);
+    UINT8 t;
+    BRANCH(CC & 0x05);
 }
 
 /* $24 BCC relative ----- */
-INLINE void bcc( void )
+INLINE void bcc(void)
 {
-	UINT8 t;
-	BRANCH(!(CC&0x01));
+    UINT8 t;
+    BRANCH(!(CC & 0x01));
 }
 
 /* $25 BCS relative ----- */
-INLINE void bcs( void )
+INLINE void bcs(void)
 {
-	UINT8 t;
-	BRANCH(CC&0x01);
+    UINT8 t;
+    BRANCH(CC & 0x01);
 }
 
 /* $26 BNE relative ----- */
-INLINE void bne( void )
+INLINE void bne(void)
 {
-	UINT8 t;
-	BRANCH(!(CC&0x04));
+    UINT8 t;
+    BRANCH(!(CC & 0x04));
 }
 
 /* $27 BEQ relative ----- */
-INLINE void beq( void )
+INLINE void beq(void)
 {
-	UINT8 t;
-	BRANCH(CC&0x04);
+    UINT8 t;
+    BRANCH(CC & 0x04);
 }
 
 /* $28 BVC relative ----- */
-INLINE void bvc( void )
+INLINE void bvc(void)
 {
-	UINT8 t;
-	BRANCH(!(CC&0x02));
+    UINT8 t;
+    BRANCH(!(CC & 0x02));
 }
 
 /* $29 BVS relative ----- */
-INLINE void bvs( void )
+INLINE void bvs(void)
 {
-	UINT8 t;
-	BRANCH(CC&0x02);
+    UINT8 t;
+    BRANCH(CC & 0x02);
 }
 
 /* $2a BPL relative ----- */
-INLINE void bpl( void )
+INLINE void bpl(void)
 {
-	UINT8 t;
-	BRANCH(!(CC&0x08));
+    UINT8 t;
+    BRANCH(!(CC & 0x08));
 }
 
 /* $2b BMI relative ----- */
-INLINE void bmi( void )
+INLINE void bmi(void)
 {
-	UINT8 t;
-	BRANCH(CC&0x08);
+    UINT8 t;
+    BRANCH(CC & 0x08);
 }
 
 /* $2c BGE relative ----- */
-INLINE void bge( void )
+INLINE void bge(void)
 {
-	UINT8 t;
-	BRANCH(!NXORV);
+    UINT8 t;
+    BRANCH(!NXORV);
 }
 
 /* $2d BLT relative ----- */
-INLINE void blt( void )
+INLINE void blt(void)
 {
-	UINT8 t;
-	BRANCH(NXORV);
+    UINT8 t;
+    BRANCH(NXORV);
 }
 
 /* $2e BGT relative ----- */
-INLINE void bgt( void )
+INLINE void bgt(void)
 {
-	UINT8 t;
-	BRANCH(!(NXORV||CC&0x04));
+    UINT8 t;
+    BRANCH(!(NXORV || CC & 0x04));
 }
 
 /* $2f BLE relative ----- */
-INLINE void ble( void )
+INLINE void ble(void)
 {
-	UINT8 t;
-	BRANCH(NXORV||CC&0x04);
+    UINT8 t;
+    BRANCH(NXORV || CC & 0x04);
 }
 
 
@@ -356,127 +374,128 @@ INLINE void ble( void )
 #endif
 
 /* $30 TSX inherent ----- */
-INLINE void tsx (void)
+INLINE void tsx(void)
 {
-	X = ( S + 1 );
+    X = (S + 1);
 }
 
 /* $31 INS inherent ----- */
-INLINE void ins (void)
+INLINE void ins(void)
 {
-	++S;
+    ++S;
 }
 
 /* $32 PULA inherent ----- */
-INLINE void pula (void)
+INLINE void pula(void)
 {
-	PULLBYTE(m6808.d.b.h);
+    PULLBYTE(m6808.d.b.h);
 }
 
 /* $33 PULB inherent ----- */
-INLINE void pulb (void)
+INLINE void pulb(void)
 {
-	PULLBYTE(m6808.d.b.l);
+    PULLBYTE(m6808.d.b.l);
 }
 
 /* $34 DES inherent ----- */
-INLINE void des (void)
+INLINE void des(void)
 {
-	--S;
+    --S;
 }
 
 /* $35 TXS inherent ----- */
-INLINE void txs (void)
+INLINE void txs(void)
 {
-	S = ( X - 1 );
+    S = (X - 1);
 }
 
 /* $36 PSHA inherent ----- */
-INLINE void psha (void)
+INLINE void psha(void)
 {
-	PUSHBYTE(m6808.d.b.h);
+    PUSHBYTE(m6808.d.b.h);
 }
 
 /* $37 PSHB inherent ----- */
-INLINE void pshb (void)
+INLINE void pshb(void)
 {
-	PUSHBYTE(m6808.d.b.l);
+    PUSHBYTE(m6808.d.b.l);
 }
 
 /* $38 PULX inherent ----- */
-INLINE void pulx (void)
+INLINE void pulx(void)
 {
-	PULLWORD(pX);
+    PULLWORD(pX);
 }
 
 /* $39 RTS inherent ----- */
-INLINE void rts( void )
+INLINE void rts(void)
 {
-	PULLWORD(pPC);
-	CHANGE_PC();
+    PULLWORD(pPC);
+    CHANGE_PC();
 }
 
 /* $3a ABX inherent ----- */
-INLINE void abx( void )
+INLINE void abx(void)
 {
-	X += B;
+    X += B;
 }
 
 /* $3b RTI inherent ##### */
-INLINE void rti( void )
+INLINE void rti(void)
 {
-	PULLBYTE(CC);
-	PULLBYTE(B);
-	PULLBYTE(A);
-	PULLWORD(pX);
-	PULLWORD(pPC);
-	CHANGE_PC();
-	CHECK_IRQ_LINES(); /* HJB 990417 */
+    PULLBYTE(CC);
+    PULLBYTE(B);
+    PULLBYTE(A);
+    PULLWORD(pX);
+    PULLWORD(pPC);
+    CHANGE_PC();
+    CHECK_IRQ_LINES(); /* HJB 990417 */
 }
 
 /* $3c PSHX inherent ----- */
-INLINE void pshx (void)
+INLINE void pshx(void)
 {
-	PUSHWORD(pX);
+    PUSHWORD(pX);
 }
 
 /* $3d MUL inherent --*-@ */
-INLINE void mul( void )
+INLINE void mul(void)
 {
-	UINT16 t;
-	t=A*B;
-	CLR_C; if(t&0x80) SEC;
-	D=t;
+    UINT16 t;
+    t = A * B;
+    CLR_C;
+    if (t & 0x80) SEC;
+    D = t;
 }
 
 /* $3e WAI inherent ----- */
-INLINE void wai( void )
+INLINE void wai(void)
 {
-	/*
-	 * WAI stacks the entire machine state on the
-	 * hardware stack, then waits for an interrupt.
-	 */
-	m6808.wai_state |= M6808_WAI;
-	PUSHWORD(pPC);
-	PUSHWORD(pX);
-	PUSHBYTE(A);
-	PUSHBYTE(B);
-	PUSHBYTE(CC);
-	CHECK_IRQ_LINES();
-	if (m6808.wai_state & M6808_WAI) EAT_CYCLES;
+    /*
+     * WAI stacks the entire machine state on the
+     * hardware stack, then waits for an interrupt.
+     */
+    m6808.wai_state |= M6808_WAI;
+    PUSHWORD(pPC);
+    PUSHWORD(pX);
+    PUSHBYTE(A);
+    PUSHBYTE(B);
+    PUSHBYTE(CC);
+    CHECK_IRQ_LINES();
+    if (m6808.wai_state & M6808_WAI) EAT_CYCLES;
 }
 
 /* $3f SWI absolute indirect ----- */
-INLINE void swi( void )
+INLINE void swi(void)
 {
-	PUSHWORD(pPC);
-	PUSHWORD(pX);
-	PUSHBYTE(A);
-	PUSHBYTE(B);
+    PUSHWORD(pPC);
+    PUSHWORD(pX);
+    PUSHBYTE(A);
+    PUSHBYTE(B);
     PUSHBYTE(CC);
     SEI;
-	PCD = RM16(0xfffa);
-	CHANGE_PC();
+    PCD = RM16(0xfffa);
+    CHANGE_PC();
 }
 
 #if macintosh
@@ -484,12 +503,13 @@ INLINE void swi( void )
 #endif
 
 /* $40 NEGA inherent ?**** */
-INLINE void nega( void )
+INLINE void nega(void)
 {
-	UINT16 r;
-	r=-A;
-	CLR_NZVC; SET_FLAGS8(0,A,r);
-	A=r;
+    UINT16 r;
+    r = -A;
+    CLR_NZVC;
+    SET_FLAGS8(0, A, r);
+    A = r;
 }
 
 /* $41 ILLEGAL */
@@ -497,86 +517,102 @@ INLINE void nega( void )
 /* $42 ILLEGAL */
 
 /* $43 COMA inherent -**01 */
-INLINE void coma( void )
+INLINE void coma(void)
 {
-	A = ~A;
-	CLR_NZV; SET_NZ8(A); SEC;
+    A = ~A;
+    CLR_NZV;
+    SET_NZ8(A);
+    SEC;
 }
 
 /* $44 LSRA inherent -0*-* */
-INLINE void lsra( void )
+INLINE void lsra(void)
 {
-	CLR_NZC; CC|=(A&0x01);
-	A>>=1; SET_Z8(A);
+    CLR_NZC;
+    CC |= (A & 0x01);
+    A >>= 1;
+    SET_Z8(A);
 }
 
 /* $45 ILLEGAL */
 
 /* $46 RORA inherent -**-* */
-INLINE void rora( void )
+INLINE void rora(void)
 {
-	UINT8 r;
-	r=(CC&0x01)<<7;
-	CLR_NZC; CC|=(A&0x01);
-	r |= A>>1; SET_NZ8(r);
-	A=r;
+    UINT8 r;
+    r = (CC & 0x01) << 7;
+    CLR_NZC;
+    CC |= (A & 0x01);
+    r |= A >> 1;
+    SET_NZ8(r);
+    A = r;
 }
 
 /* $47 ASRA inherent ?**-* */
-INLINE void asra( void )
+INLINE void asra(void)
 {
-	CLR_NZC; CC|=(A&0x01);
-	A>>=1; A|=((A&0x40)<<1);
-	SET_NZ8(A);
+    CLR_NZC;
+    CC |= (A & 0x01);
+    A >>= 1;
+    A |= ((A & 0x40) << 1);
+    SET_NZ8(A);
 }
 
 /* $48 ASLA inherent ?**** */
-INLINE void asla( void )
+INLINE void asla(void)
 {
-	UINT16 r;
-	r=A<<1;
-	CLR_NZVC; SET_FLAGS8(A,A,r);
-	A=r;
+    UINT16 r;
+    r = A << 1;
+    CLR_NZVC;
+    SET_FLAGS8(A, A, r);
+    A = r;
 }
 
 /* $49 ROLA inherent -**** */
-INLINE void rola( void )
+INLINE void rola(void)
 {
-	UINT16 t,r;
-	t = A; r = CC&0x01; r |= t<<1;
-	CLR_NZVC; SET_FLAGS8(t,t,r);
-	A=r;
+    UINT16 t, r;
+    t = A;
+    r = CC & 0x01;
+    r |= t << 1;
+    CLR_NZVC;
+    SET_FLAGS8(t, t, r);
+    A = r;
 }
 
 /* $4a DECA inherent -***- */
-INLINE void deca( void )
+INLINE void deca(void)
 {
-	--A;
-	CLR_NZV; SET_FLAGS8D(A);
+    --A;
+    CLR_NZV;
+    SET_FLAGS8D(A);
 }
 
 /* $4b ILLEGAL */
 
 /* $4c INCA inherent -***- */
-INLINE void inca( void )
+INLINE void inca(void)
 {
-	++A;
-	CLR_NZV; SET_FLAGS8I(A);
+    ++A;
+    CLR_NZV;
+    SET_FLAGS8I(A);
 }
 
 /* $4d TSTA inherent -**0- */
-INLINE void tsta( void )
+INLINE void tsta(void)
 {
-	CLR_NZVC; SET_NZ8(A);
+    CLR_NZVC;
+    SET_NZ8(A);
 }
 
 /* $4e ILLEGAL */
 
 /* $4f CLRA inherent -0100 */
-INLINE void clra( void )
+INLINE void clra(void)
 {
-	A=0;
-	CLR_NZVC; SEZ;
+    A = 0;
+    CLR_NZVC;
+    SEZ;
 }
 
 
@@ -586,12 +622,13 @@ INLINE void clra( void )
 
 
 /* $50 NEGB inherent ?**** */
-INLINE void negb( void )
+INLINE void negb(void)
 {
-	UINT16 r;
-	r=-B;
-	CLR_NZVC; SET_FLAGS8(0,B,r);
-	B=r;
+    UINT16 r;
+    r = -B;
+    CLR_NZVC;
+    SET_FLAGS8(0, B, r);
+    B = r;
 }
 
 /* $51 ILLEGAL */
@@ -599,86 +636,102 @@ INLINE void negb( void )
 /* $52 ILLEGAL */
 
 /* $53 COMB inherent -**01 */
-INLINE void comb( void )
+INLINE void comb(void)
 {
-	B = ~B;
-	CLR_NZV; SET_NZ8(B); SEC;
+    B = ~B;
+    CLR_NZV;
+    SET_NZ8(B);
+    SEC;
 }
 
 /* $54 LSRB inherent -0*-* */
-INLINE void lsrb( void )
+INLINE void lsrb(void)
 {
-	CLR_NZC; CC|=(B&0x01);
-	B>>=1; SET_Z8(B);
+    CLR_NZC;
+    CC |= (B & 0x01);
+    B >>= 1;
+    SET_Z8(B);
 }
 
 /* $55 ILLEGAL */
 
 /* $56 RORB inherent -**-* */
-INLINE void rorb( void )
+INLINE void rorb(void)
 {
-	UINT8 r;
-	r=(CC&0x01)<<7;
-	CLR_NZC; CC|=(B&0x01);
-	r |= B>>1; SET_NZ8(r);
-	B=r;
+    UINT8 r;
+    r = (CC & 0x01) << 7;
+    CLR_NZC;
+    CC |= (B & 0x01);
+    r |= B >> 1;
+    SET_NZ8(r);
+    B = r;
 }
 
 /* $57 ASRB inherent ?**-* */
-INLINE void asrb( void )
+INLINE void asrb(void)
 {
-	CLR_NZC; CC|=(B&0x01);
-	B>>=1; B|=((B&0x40)<<1);
-	SET_NZ8(B);
+    CLR_NZC;
+    CC |= (B & 0x01);
+    B >>= 1;
+    B |= ((B & 0x40) << 1);
+    SET_NZ8(B);
 }
 
 /* $58 ASLB inherent ?**** */
-INLINE void aslb( void )
+INLINE void aslb(void)
 {
-	UINT16 r;
-	r=B<<1;
-	CLR_NZVC; SET_FLAGS8(B,B,r);
-	B=r;
+    UINT16 r;
+    r = B << 1;
+    CLR_NZVC;
+    SET_FLAGS8(B, B, r);
+    B = r;
 }
 
 /* $59 ROLB inherent -**** */
-INLINE void rolb( void )
+INLINE void rolb(void)
 {
-	UINT16 t,r;
-	t = B; r = CC&0x01; r |= t<<1;
-	CLR_NZVC; SET_FLAGS8(t,t,r);
-	B=r;
+    UINT16 t, r;
+    t = B;
+    r = CC & 0x01;
+    r |= t << 1;
+    CLR_NZVC;
+    SET_FLAGS8(t, t, r);
+    B = r;
 }
 
 /* $5a DECB inherent -***- */
-INLINE void decb( void )
+INLINE void decb(void)
 {
-	--B;
-	CLR_NZV; SET_FLAGS8D(B);
+    --B;
+    CLR_NZV;
+    SET_FLAGS8D(B);
 }
 
 /* $5b ILLEGAL */
 
 /* $5c INCB inherent -***- */
-INLINE void incb( void )
+INLINE void incb(void)
 {
-	++B;
-	CLR_NZV; SET_FLAGS8I(B);
+    ++B;
+    CLR_NZV;
+    SET_FLAGS8I(B);
 }
 
 /* $5d TSTB inherent -**0- */
-INLINE void tstb( void )
+INLINE void tstb(void)
 {
-	CLR_NZVC; SET_NZ8(B);
+    CLR_NZVC;
+    SET_NZ8(B);
 }
 
 /* $5e ILLEGAL */
 
 /* $5f CLRB inherent -0100 */
-INLINE void clrb( void )
+INLINE void clrb(void)
 {
-	B=0;
-	CLR_NZVC; SEZ;
+    B = 0;
+    CLR_NZVC;
+    SEZ;
 }
 
 #if macintosh
@@ -686,149 +739,182 @@ INLINE void clrb( void )
 #endif
 
 /* $60 NEG indexed ?**** */
-INLINE void neg_ix( void )
+INLINE void neg_ix(void)
 {
-	UINT16 r,t;
-	IDXBYTE(t); r=-t;
-	CLR_NZVC; SET_FLAGS8(0,t,r);
-	WM(EAD,r);
+    UINT16 r, t;
+    IDXBYTE(t);
+    r = -t;
+    CLR_NZVC;
+    SET_FLAGS8(0, t, r);
+    WM(EAD, r);
 }
 
 /* $61 AIM --**0- */ /* HD63701YO only */
-INLINE void aim_ix( void )
+INLINE void aim_ix(void)
 {
-	UINT8 t, r;
-	IMMBYTE(t);
-	IDXBYTE(r);
-	r &= t;
-	CLR_NZV; SET_NZ8(r);
-	WM(EAD,r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    IDXBYTE(r);
+    r &= t;
+    CLR_NZV;
+    SET_NZ8(r);
+    WM(EAD, r);
 }
 
 /* $62 OIM --**0- */ /* HD63701YO only */
-INLINE void oim_ix( void )
+INLINE void oim_ix(void)
 {
-	UINT8 t, r;
-	IMMBYTE(t);
-	IDXBYTE(r);
-	r |= t;
-	CLR_NZV; SET_NZ8(r);
-	WM(EAD,r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    IDXBYTE(r);
+    r |= t;
+    CLR_NZV;
+    SET_NZ8(r);
+    WM(EAD, r);
 }
 
 /* $63 COM indexed -**01 */
-INLINE void com_ix( void )
+INLINE void com_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); t = ~t;
-	CLR_NZV; SET_NZ8(t); SEC;
-	WM(EAD,t);
+    UINT8 t;
+    IDXBYTE(t);
+    t = ~t;
+    CLR_NZV;
+    SET_NZ8(t);
+    SEC;
+    WM(EAD, t);
 }
 
 /* $64 LSR indexed -0*-* */
-INLINE void lsr_ix( void )
+INLINE void lsr_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); CLR_NZC; CC|=(t&0x01);
-	t>>=1; SET_Z8(t);
-	WM(EAD,t);
+    UINT8 t;
+    IDXBYTE(t);
+    CLR_NZC;
+    CC |= (t & 0x01);
+    t >>= 1;
+    SET_Z8(t);
+    WM(EAD, t);
 }
 
 /* $65 EIM --**0- */ /* HD63701YO only */
-INLINE void eim_ix( void )
+INLINE void eim_ix(void)
 {
-	UINT8 t, r;
-	IMMBYTE(t);
-	IDXBYTE(r);
-	r ^= t;
-	CLR_NZV; SET_NZ8(r);
-	WM(EAD,r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    IDXBYTE(r);
+    r ^= t;
+    CLR_NZV;
+    SET_NZ8(r);
+    WM(EAD, r);
 }
 
 /* $66 ROR indexed -**-* */
-INLINE void ror_ix( void )
+INLINE void ror_ix(void)
 {
-	UINT8 t,r;
-	IDXBYTE(t); r=(CC&0x01)<<7;
-	CLR_NZC; CC|=(t&0x01);
-	r |= t>>1; SET_NZ8(r);
-	WM(EAD,r);
+    UINT8 t, r;
+    IDXBYTE(t);
+    r = (CC & 0x01) << 7;
+    CLR_NZC;
+    CC |= (t & 0x01);
+    r |= t >> 1;
+    SET_NZ8(r);
+    WM(EAD, r);
 }
 
 /* $67 ASR indexed ?**-* */
-INLINE void asr_ix( void )
+INLINE void asr_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); CLR_NZC; CC|=(t&0x01);
-	t>>=1; t|=((t&0x40)<<1);
-	SET_NZ8(t);
-	WM(EAD,t);
+    UINT8 t;
+    IDXBYTE(t);
+    CLR_NZC;
+    CC |= (t & 0x01);
+    t >>= 1;
+    t |= ((t & 0x40) << 1);
+    SET_NZ8(t);
+    WM(EAD, t);
 }
 
 /* $68 ASL indexed ?**** */
-INLINE void asl_ix( void )
+INLINE void asl_ix(void)
 {
-	UINT16 t,r;
-	IDXBYTE(t); r=t<<1;
-	CLR_NZVC; SET_FLAGS8(t,t,r);
-	WM(EAD,r);
+    UINT16 t, r;
+    IDXBYTE(t);
+    r = t << 1;
+    CLR_NZVC;
+    SET_FLAGS8(t, t, r);
+    WM(EAD, r);
 }
 
 /* $69 ROL indexed -**** */
-INLINE void rol_ix( void )
+INLINE void rol_ix(void)
 {
-	UINT16 t,r;
-	IDXBYTE(t); r = CC&0x01; r |= t<<1;
-	CLR_NZVC; SET_FLAGS8(t,t,r);
-	WM(EAD,r);
+    UINT16 t, r;
+    IDXBYTE(t);
+    r = CC & 0x01;
+    r |= t << 1;
+    CLR_NZVC;
+    SET_FLAGS8(t, t, r);
+    WM(EAD, r);
 }
 
 /* $6a DEC indexed -***- */
-INLINE void dec_ix( void )
+INLINE void dec_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); --t;
-	CLR_NZV; SET_FLAGS8D(t);
-	WM(EAD,t);
+    UINT8 t;
+    IDXBYTE(t);
+    --t;
+    CLR_NZV;
+    SET_FLAGS8D(t);
+    WM(EAD, t);
 }
 
 /* $6b TIM --**0- */ /* HD63701YO only */
-INLINE void tim_ix( void )
+INLINE void tim_ix(void)
 {
-	UINT8 t, r;
-	IMMBYTE(t);
-	IDXBYTE(r);
-	r &= t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    IDXBYTE(r);
+    r &= t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $6c INC indexed -***- */
-INLINE void inc_ix( void )
+INLINE void inc_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); ++t;
-	CLR_NZV; SET_FLAGS8I(t);
-	WM(EAD,t);
+    UINT8 t;
+    IDXBYTE(t);
+    ++t;
+    CLR_NZV;
+    SET_FLAGS8I(t);
+    WM(EAD, t);
 }
 
 /* $6d TST indexed -**0- */
-INLINE void tst_ix( void )
+INLINE void tst_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); CLR_NZVC; SET_NZ8(t);
+    UINT8 t;
+    IDXBYTE(t);
+    CLR_NZVC;
+    SET_NZ8(t);
 }
 
 /* $6e JMP indexed ----- */
-INLINE void jmp_ix( void )
+INLINE void jmp_ix(void)
 {
-	INDEXED; PC=EA; CHANGE_PC();
+    INDEXED;
+    PC = EA;
+    CHANGE_PC();
 }
 
 /* $6f CLR indexed -0100 */
-INLINE void clr_ix( void )
+INLINE void clr_ix(void)
 {
-	INDEXED; WM(EAD,0);
-	CLR_NZVC; SEZ;
+    INDEXED;
+    WM(EAD, 0);
+    CLR_NZVC;
+    SEZ;
 }
 
 #if macintosh
@@ -836,152 +922,182 @@ INLINE void clr_ix( void )
 #endif
 
 /* $70 NEG extended ?**** */
-INLINE void neg_ex( void )
+INLINE void neg_ex(void)
 {
-	UINT16 r,t;
-	EXTBYTE(t); r=-t;
-	CLR_NZVC; SET_FLAGS8(0,t,r);
-	WM(EAD,r);
+    UINT16 r, t;
+    EXTBYTE(t);
+    r = -t;
+    CLR_NZVC;
+    SET_FLAGS8(0, t, r);
+    WM(EAD, r);
 }
 
 /* $71 AIM --**0- */ /* HD63701YO only */
-INLINE void aim_di( void )
+INLINE void aim_di(void)
 {
-	UINT8 t, r;
-	IMMBYTE(t);
-	DIRBYTE(r);
-	r &= t;
-	CLR_NZV; SET_NZ8(r);
-	WM(EAD,r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    DIRBYTE(r);
+    r &= t;
+    CLR_NZV;
+    SET_NZ8(r);
+    WM(EAD, r);
 }
 
 /* $72 OIM --**0- */ /* HD63701YO only */
-INLINE void oim_di( void )
+INLINE void oim_di(void)
 {
-	UINT8 t, r;
-	IMMBYTE(t);
-	DIRBYTE(r);
-	r |= t;
-	CLR_NZV; SET_NZ8(r);
-	WM(EAD,r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    DIRBYTE(r);
+    r |= t;
+    CLR_NZV;
+    SET_NZ8(r);
+    WM(EAD, r);
 }
 
 /* $73 COM extended -**01 */
-INLINE void com_ex( void )
+INLINE void com_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); t = ~t;
-	CLR_NZV; SET_NZ8(t); SEC;
-	WM(EAD,t);
+    UINT8 t;
+    EXTBYTE(t);
+    t = ~t;
+    CLR_NZV;
+    SET_NZ8(t);
+    SEC;
+    WM(EAD, t);
 }
 
 /* $74 LSR extended -0*-* */
-INLINE void lsr_ex( void )
+INLINE void lsr_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t);
-	CLR_NZC;
-	CC|=(t&0x01);
-	t>>=1;
-	SET_Z8(t);
-	WM(EAD,t);
+    UINT8 t;
+    EXTBYTE(t);
+    CLR_NZC;
+    CC |= (t & 0x01);
+    t >>= 1;
+    SET_Z8(t);
+    WM(EAD, t);
 }
 
 /* $75 EIM --**0- */ /* HD63701YO only */
-INLINE void eim_di( void )
+INLINE void eim_di(void)
 {
-	UINT8 t, r;
-	IMMBYTE(t);
-	DIRBYTE(r);
-	r ^= t;
-	CLR_NZV; SET_NZ8(r);
-	WM(EAD,r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    DIRBYTE(r);
+    r ^= t;
+    CLR_NZV;
+    SET_NZ8(r);
+    WM(EAD, r);
 }
 
 /* $76 ROR extended -**-* */
-INLINE void ror_ex( void )
+INLINE void ror_ex(void)
 {
-	UINT8 t,r;
-	EXTBYTE(t); r=(CC&0x01)<<7;
-	CLR_NZC; CC|=(t&0x01);
-	r |= t>>1; SET_NZ8(r);
-	WM(EAD,r);
+    UINT8 t, r;
+    EXTBYTE(t);
+    r = (CC & 0x01) << 7;
+    CLR_NZC;
+    CC |= (t & 0x01);
+    r |= t >> 1;
+    SET_NZ8(r);
+    WM(EAD, r);
 }
 
 /* $77 ASR extended ?**-* */
-INLINE void asr_ex( void )
+INLINE void asr_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); CLR_NZC; CC|=(t&0x01);
-	t>>=1; t|=((t&0x40)<<1);
-	SET_NZ8(t);
-	WM(EAD,t);
+    UINT8 t;
+    EXTBYTE(t);
+    CLR_NZC;
+    CC |= (t & 0x01);
+    t >>= 1;
+    t |= ((t & 0x40) << 1);
+    SET_NZ8(t);
+    WM(EAD, t);
 }
 
 /* $78 ASL extended ?**** */
-INLINE void asl_ex( void )
+INLINE void asl_ex(void)
 {
-	UINT16 t,r;
-	EXTBYTE(t); r=t<<1;
-	CLR_NZVC; SET_FLAGS8(t,t,r);
-	WM(EAD,r);
+    UINT16 t, r;
+    EXTBYTE(t);
+    r = t << 1;
+    CLR_NZVC;
+    SET_FLAGS8(t, t, r);
+    WM(EAD, r);
 }
 
 /* $79 ROL extended -**** */
-INLINE void rol_ex( void )
+INLINE void rol_ex(void)
 {
-	UINT16 t,r;
-	EXTBYTE(t); r = CC&0x01; r |= t<<1;
-	CLR_NZVC; SET_FLAGS8(t,t,r);
-	WM(EAD,r);
+    UINT16 t, r;
+    EXTBYTE(t);
+    r = CC & 0x01;
+    r |= t << 1;
+    CLR_NZVC;
+    SET_FLAGS8(t, t, r);
+    WM(EAD, r);
 }
 
 /* $7a DEC extended -***- */
-INLINE void dec_ex( void )
+INLINE void dec_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); --t;
-	CLR_NZV; SET_FLAGS8D(t);
-	WM(EAD,t);
+    UINT8 t;
+    EXTBYTE(t);
+    --t;
+    CLR_NZV;
+    SET_FLAGS8D(t);
+    WM(EAD, t);
 }
 
 /* $7b TIM --**0- */ /* HD63701YO only */
-INLINE void tim_di( void )
+INLINE void tim_di(void)
 {
-	UINT8 t, r;
-	IMMBYTE(t);
-	DIRBYTE(r);
-	r &= t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    DIRBYTE(r);
+    r &= t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $7c INC extended -***- */
-INLINE void inc_ex( void )
+INLINE void inc_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); ++t;
-	CLR_NZV; SET_FLAGS8I(t);
-	WM(EAD,t);
+    UINT8 t;
+    EXTBYTE(t);
+    ++t;
+    CLR_NZV;
+    SET_FLAGS8I(t);
+    WM(EAD, t);
 }
 
 /* $7d TST extended -**0- */
-INLINE void tst_ex( void )
+INLINE void tst_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); CLR_NZVC; SET_NZ8(t);
+    UINT8 t;
+    EXTBYTE(t);
+    CLR_NZVC;
+    SET_NZ8(t);
 }
 
 /* $7e JMP extended ----- */
-INLINE void jmp_ex( void )
+INLINE void jmp_ex(void)
 {
-	EXTENDED; PC=EA; CHANGE_PC(); /* TS 971002 */
+    EXTENDED;
+    PC = EA;
+    CHANGE_PC(); /* TS 971002 */
 }
 
 /* $7f CLR extended -0100 */
-INLINE void clr_ex( void )
+INLINE void clr_ex(void)
 {
-	EXTENDED; WM(EAD,0);
-	CLR_NZVC; SEZ;
+    EXTENDED;
+    WM(EAD, 0);
+    CLR_NZVC;
+    SEZ;
 }
 
 
@@ -990,158 +1106,183 @@ INLINE void clr_ex( void )
 #endif
 
 /* $80 SUBA immediate ?**** */
-INLINE void suba_im( void )
+INLINE void suba_im(void)
 {
-	UINT16	  t,r;
-	IMMBYTE(t); r = A-t;
-	CLR_NZVC; SET_FLAGS8(A,t,r);
-	A = r;
+    UINT16	  t, r;
+    IMMBYTE(t);
+    r = A - t;
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
+    A = r;
 }
 
 /* $81 CMPA immediate ?**** */
-INLINE void cmpa_im( void )
+INLINE void cmpa_im(void)
 {
-	UINT16	  t,r;
-	IMMBYTE(t); r = A-t;
-	CLR_NZVC; SET_FLAGS8(A,t,r);
+    UINT16	  t, r;
+    IMMBYTE(t);
+    r = A - t;
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
 }
 
 /* $82 SBCA immediate ?**** */
-INLINE void sbca_im( void )
+INLINE void sbca_im(void)
 {
-	UINT16	  t,r;
-	IMMBYTE(t); r = A-t-(CC&0x01);
-	CLR_NZVC; SET_FLAGS8(A,t,r);
-	A = r;
+    UINT16	  t, r;
+    IMMBYTE(t);
+    r = A - t - (CC & 0x01);
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
+    A = r;
 }
 
 /* $83 SUBD immediate -**** */
-INLINE void subd_im( void )
+INLINE void subd_im(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	IMMWORD(b);
-	d = D;
-	r = d - b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	D = r;
+    UINT32 r, d;
+    PAIR b;
+    IMMWORD(b);
+    d = D;
+    r = d - b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    D = r;
 }
 
 /* $84 ANDA immediate -**0- */
-INLINE void anda_im( void )
+INLINE void anda_im(void)
 {
-	UINT8 t;
-	IMMBYTE(t); A &= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    IMMBYTE(t);
+    A &= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $85 BITA immediate -**0- */
-INLINE void bita_im( void )
+INLINE void bita_im(void)
 {
-	UINT8 t,r;
-	IMMBYTE(t); r = A&t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    r = A & t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $86 LDA immediate -**0- */
-INLINE void lda_im( void )
+INLINE void lda_im(void)
 {
-	IMMBYTE(A);
-	CLR_NZV; SET_NZ8(A);
+    IMMBYTE(A);
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* is this a legal instruction? */
 /* $87 STA immediate -**0- */
-INLINE void sta_im( void )
+INLINE void sta_im(void)
 {
-	CLR_NZV; SET_NZ8(A);
-	IMM8; WM(EAD,A);
+    CLR_NZV;
+    SET_NZ8(A);
+    IMM8;
+    WM(EAD, A);
 }
 
 /* $88 EORA immediate -**0- */
-INLINE void eora_im( void )
+INLINE void eora_im(void)
 {
-	UINT8 t;
-	IMMBYTE(t); A ^= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    IMMBYTE(t);
+    A ^= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $89 ADCA immediate ***** */
-INLINE void adca_im( void )
+INLINE void adca_im(void)
 {
-	UINT16 t,r;
-	IMMBYTE(t); r = A+t+(CC&0x01);
-	CLR_HNZVC; SET_FLAGS8(A,t,r); SET_H(A,t,r);
-	A = r;
+    UINT16 t, r;
+    IMMBYTE(t);
+    r = A + t + (CC & 0x01);
+    CLR_HNZVC;
+    SET_FLAGS8(A, t, r);
+    SET_H(A, t, r);
+    A = r;
 }
 
 /* $8a ORA immediate -**0- */
-INLINE void ora_im( void )
+INLINE void ora_im(void)
 {
-	UINT8 t;
-	IMMBYTE(t); A |= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    IMMBYTE(t);
+    A |= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $8b ADDA immediate ***** */
-INLINE void adda_im( void )
+INLINE void adda_im(void)
 {
-	UINT16 t,r;
-	IMMBYTE(t); r = A+t;
-	CLR_HNZVC; SET_FLAGS8(A,t,r); SET_H(A,t,r);
-	A = r;
+    UINT16 t, r;
+    IMMBYTE(t);
+    r = A + t;
+    CLR_HNZVC;
+    SET_FLAGS8(A, t, r);
+    SET_H(A, t, r);
+    A = r;
 }
 
 /* $8c CMPX immediate -***- */
-INLINE void cmpx_im( void )
+INLINE void cmpx_im(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	IMMWORD(b);
-	d = X;
-	r = d - b.d;
-	CLR_NZV;
-	SET_NZ16(r); SET_V16(d,b.d,r);
+    UINT32 r, d;
+    PAIR b;
+    IMMWORD(b);
+    d = X;
+    r = d - b.d;
+    CLR_NZV;
+    SET_NZ16(r);
+    SET_V16(d, b.d, r);
 }
 
 /* $8c CPX immediate -**** (6803) */
-INLINE void cpx_im( void )
+INLINE void cpx_im(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	IMMWORD(b);
-	d = X;
-	r = d - b.d;
-	CLR_NZVC; SET_FLAGS16(d,b.d,r);
+    UINT32 r, d;
+    PAIR b;
+    IMMWORD(b);
+    d = X;
+    r = d - b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
 }
 
 
 /* $8d BSR ----- */
-INLINE void bsr( void )
+INLINE void bsr(void)
 {
-	UINT8 t;
-	IMMBYTE(t);
-	PUSHWORD(pPC);
-	PC += SIGNED(t);
-	CHANGE_PC();	 /* TS 971002 */
+    UINT8 t;
+    IMMBYTE(t);
+    PUSHWORD(pPC);
+    PC += SIGNED(t);
+    CHANGE_PC();	 /* TS 971002 */
 }
 
 /* $8e LDS immediate -**0- */
-INLINE void lds_im( void )
+INLINE void lds_im(void)
 {
-	IMMWORD(m6808.s);
-	CLR_NZV;
-	SET_NZ16(S);
+    IMMWORD(m6808.s);
+    CLR_NZV;
+    SET_NZ16(S);
 }
 
 /* $8f STS immediate -**0- */
-INLINE void sts_im( void )
+INLINE void sts_im(void)
 {
-	CLR_NZV;
-	SET_NZ16(S);
-	IMM16;
-	WM16(EAD,&m6808.s);
+    CLR_NZV;
+    SET_NZ16(S);
+    IMM16;
+    WM16(EAD, &m6808.s);
 }
 
 #if macintosh
@@ -1149,155 +1290,180 @@ INLINE void sts_im( void )
 #endif
 
 /* $90 SUBA direct ?**** */
-INLINE void suba_di( void )
+INLINE void suba_di(void)
 {
-	UINT16	  t,r;
-	DIRBYTE(t); r = A-t;
-	CLR_NZVC; SET_FLAGS8(A,t,r);
-	A = r;
+    UINT16	  t, r;
+    DIRBYTE(t);
+    r = A - t;
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
+    A = r;
 }
 
 /* $91 CMPA direct ?**** */
-INLINE void cmpa_di( void )
+INLINE void cmpa_di(void)
 {
-	UINT16	  t,r;
-	DIRBYTE(t); r = A-t;
-	CLR_NZVC; SET_FLAGS8(A,t,r);
+    UINT16	  t, r;
+    DIRBYTE(t);
+    r = A - t;
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
 }
 
 /* $92 SBCA direct ?**** */
-INLINE void sbca_di( void )
+INLINE void sbca_di(void)
 {
-	UINT16	  t,r;
-	DIRBYTE(t); r = A-t-(CC&0x01);
-	CLR_NZVC; SET_FLAGS8(A,t,r);
-	A = r;
+    UINT16	  t, r;
+    DIRBYTE(t);
+    r = A - t - (CC & 0x01);
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
+    A = r;
 }
 
 /* $93 SUBD direct -**** */
-INLINE void subd_di( void )
+INLINE void subd_di(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	DIRWORD(b);
-	d = D;
-	r = d - b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	D=r;
+    UINT32 r, d;
+    PAIR b;
+    DIRWORD(b);
+    d = D;
+    r = d - b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    D = r;
 }
 
 /* $94 ANDA direct -**0- */
-INLINE void anda_di( void )
+INLINE void anda_di(void)
 {
-	UINT8 t;
-	DIRBYTE(t); A &= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    DIRBYTE(t);
+    A &= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $95 BITA direct -**0- */
-INLINE void bita_di( void )
+INLINE void bita_di(void)
 {
-	UINT8 t,r;
-	DIRBYTE(t); r = A&t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    DIRBYTE(t);
+    r = A & t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $96 LDA direct -**0- */
-INLINE void lda_di( void )
+INLINE void lda_di(void)
 {
-	DIRBYTE(A);
-	CLR_NZV; SET_NZ8(A);
+    DIRBYTE(A);
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $97 STA direct -**0- */
-INLINE void sta_di( void )
+INLINE void sta_di(void)
 {
-	CLR_NZV; SET_NZ8(A);
-	DIRECT; WM(EAD,A);
+    CLR_NZV;
+    SET_NZ8(A);
+    DIRECT;
+    WM(EAD, A);
 }
 
 /* $98 EORA direct -**0- */
-INLINE void eora_di( void )
+INLINE void eora_di(void)
 {
-	UINT8 t;
-	DIRBYTE(t); A ^= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    DIRBYTE(t);
+    A ^= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $99 ADCA direct ***** */
-INLINE void adca_di( void )
+INLINE void adca_di(void)
 {
-	UINT16 t,r;
-	DIRBYTE(t); r = A+t+(CC&0x01);
-	CLR_HNZVC; SET_FLAGS8(A,t,r); SET_H(A,t,r);
-	A = r;
+    UINT16 t, r;
+    DIRBYTE(t);
+    r = A + t + (CC & 0x01);
+    CLR_HNZVC;
+    SET_FLAGS8(A, t, r);
+    SET_H(A, t, r);
+    A = r;
 }
 
 /* $9a ORA direct -**0- */
-INLINE void ora_di( void )
+INLINE void ora_di(void)
 {
-	UINT8 t;
-	DIRBYTE(t); A |= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    DIRBYTE(t);
+    A |= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $9b ADDA direct ***** */
-INLINE void adda_di( void )
+INLINE void adda_di(void)
 {
-	UINT16 t,r;
-	DIRBYTE(t); r = A+t;
-	CLR_HNZVC; SET_FLAGS8(A,t,r); SET_H(A,t,r);
-	A = r;
+    UINT16 t, r;
+    DIRBYTE(t);
+    r = A + t;
+    CLR_HNZVC;
+    SET_FLAGS8(A, t, r);
+    SET_H(A, t, r);
+    A = r;
 }
 
 /* $9c CMPX direct -***- */
-INLINE void cmpx_di( void )
+INLINE void cmpx_di(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	DIRWORD(b);
-	d = X;
-	r = d - b.d;
-	CLR_NZV;
-	SET_NZ16(r); SET_V16(d,b.d,r);
+    UINT32 r, d;
+    PAIR b;
+    DIRWORD(b);
+    d = X;
+    r = d - b.d;
+    CLR_NZV;
+    SET_NZ16(r);
+    SET_V16(d, b.d, r);
 }
 
 /* $9c CPX direct -**** (6803) */
-INLINE void cpx_di( void )
+INLINE void cpx_di(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	DIRWORD(b);
-	d = X;
-	r = d - b.d;
-	CLR_NZVC; SET_FLAGS16(d,b.d,r);
+    UINT32 r, d;
+    PAIR b;
+    DIRWORD(b);
+    d = X;
+    r = d - b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
 }
 
 /* $9d JSR direct ----- */
-INLINE void jsr_di( void )
+INLINE void jsr_di(void)
 {
-	DIRECT;
-	PUSHWORD(pPC);
+    DIRECT;
+    PUSHWORD(pPC);
     PC = EA;
-	CHANGE_PC();
+    CHANGE_PC();
 }
 
 /* $9e LDS direct -**0- */
-INLINE void lds_di( void )
+INLINE void lds_di(void)
 {
-	DIRWORD(m6808.s);
-	CLR_NZV;
-	SET_NZ16(S);
+    DIRWORD(m6808.s);
+    CLR_NZV;
+    SET_NZ16(S);
 }
 
 /* $9f STS direct -**0- */
-INLINE void sts_di( void )
+INLINE void sts_di(void)
 {
-	CLR_NZV;
-	SET_NZ16(S);
-	DIRECT;
-	WM16(EAD,&m6808.s);
+    CLR_NZV;
+    SET_NZ16(S);
+    DIRECT;
+    WM16(EAD, &m6808.s);
 }
 
 #if macintosh
@@ -1306,155 +1472,180 @@ INLINE void sts_di( void )
 
 
 /* $a0 SUBA indexed ?**** */
-INLINE void suba_ix( void )
+INLINE void suba_ix(void)
 {
-	UINT16	  t,r;
-	IDXBYTE(t); r = A-t;
-	CLR_NZVC; SET_FLAGS8(A,t,r);
-	A = r;
+    UINT16	  t, r;
+    IDXBYTE(t);
+    r = A - t;
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
+    A = r;
 }
 
 /* $a1 CMPA indexed ?**** */
-INLINE void cmpa_ix( void )
+INLINE void cmpa_ix(void)
 {
-	UINT16	  t,r;
-	IDXBYTE(t); r = A-t;
-	CLR_NZVC; SET_FLAGS8(A,t,r);
+    UINT16	  t, r;
+    IDXBYTE(t);
+    r = A - t;
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
 }
 
 /* $a2 SBCA indexed ?**** */
-INLINE void sbca_ix( void )
+INLINE void sbca_ix(void)
 {
-	UINT16	  t,r;
-	IDXBYTE(t); r = A-t-(CC&0x01);
-	CLR_NZVC; SET_FLAGS8(A,t,r);
-	A = r;
+    UINT16	  t, r;
+    IDXBYTE(t);
+    r = A - t - (CC & 0x01);
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
+    A = r;
 }
 
 /* $a3 SUBD indexed -**** */
-INLINE void subd_ix( void )
+INLINE void subd_ix(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	IDXWORD(b);
-	d = D;
-	r = d - b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	D = r;
+    UINT32 r, d;
+    PAIR b;
+    IDXWORD(b);
+    d = D;
+    r = d - b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    D = r;
 }
 
 /* $a4 ANDA indexed -**0- */
-INLINE void anda_ix( void )
+INLINE void anda_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); A &= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    IDXBYTE(t);
+    A &= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $a5 BITA indexed -**0- */
-INLINE void bita_ix( void )
+INLINE void bita_ix(void)
 {
-	UINT8 t,r;
-	IDXBYTE(t); r = A&t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    IDXBYTE(t);
+    r = A & t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $a6 LDA indexed -**0- */
-INLINE void lda_ix( void )
+INLINE void lda_ix(void)
 {
-	IDXBYTE(A);
-	CLR_NZV; SET_NZ8(A);
+    IDXBYTE(A);
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $a7 STA indexed -**0- */
-INLINE void sta_ix( void )
+INLINE void sta_ix(void)
 {
-	CLR_NZV; SET_NZ8(A);
-	INDEXED; WM(EAD,A);
+    CLR_NZV;
+    SET_NZ8(A);
+    INDEXED;
+    WM(EAD, A);
 }
 
 /* $a8 EORA indexed -**0- */
-INLINE void eora_ix( void )
+INLINE void eora_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); A ^= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    IDXBYTE(t);
+    A ^= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $a9 ADCA indexed ***** */
-INLINE void adca_ix( void )
+INLINE void adca_ix(void)
 {
-	UINT16 t,r;
-	IDXBYTE(t); r = A+t+(CC&0x01);
-	CLR_HNZVC; SET_FLAGS8(A,t,r); SET_H(A,t,r);
-	A = r;
+    UINT16 t, r;
+    IDXBYTE(t);
+    r = A + t + (CC & 0x01);
+    CLR_HNZVC;
+    SET_FLAGS8(A, t, r);
+    SET_H(A, t, r);
+    A = r;
 }
 
 /* $aa ORA indexed -**0- */
-INLINE void ora_ix( void )
+INLINE void ora_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); A |= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    IDXBYTE(t);
+    A |= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $ab ADDA indexed ***** */
-INLINE void adda_ix( void )
+INLINE void adda_ix(void)
 {
-	UINT16 t,r;
-	IDXBYTE(t); r = A+t;
-	CLR_HNZVC; SET_FLAGS8(A,t,r); SET_H(A,t,r);
-	A = r;
+    UINT16 t, r;
+    IDXBYTE(t);
+    r = A + t;
+    CLR_HNZVC;
+    SET_FLAGS8(A, t, r);
+    SET_H(A, t, r);
+    A = r;
 }
 
 /* $ac CMPX indexed -***- */
-INLINE void cmpx_ix( void )
+INLINE void cmpx_ix(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	IDXWORD(b);
-	d = X;
-	r = d - b.d;
-	CLR_NZV;
-	SET_NZ16(r); SET_V16(d,b.d,r);
+    UINT32 r, d;
+    PAIR b;
+    IDXWORD(b);
+    d = X;
+    r = d - b.d;
+    CLR_NZV;
+    SET_NZ16(r);
+    SET_V16(d, b.d, r);
 }
 
 /* $ac CPX indexed -**** (6803)*/
-INLINE void cpx_ix( void )
+INLINE void cpx_ix(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	IDXWORD(b);
-	d = X;
-	r = d - b.d;
-	CLR_NZVC; SET_FLAGS16(d,b.d,r);
+    UINT32 r, d;
+    PAIR b;
+    IDXWORD(b);
+    d = X;
+    r = d - b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
 }
 
 /* $ad JSR indexed ----- */
-INLINE void jsr_ix( void )
+INLINE void jsr_ix(void)
 {
-	INDEXED;
-	PUSHWORD(pPC);
+    INDEXED;
+    PUSHWORD(pPC);
     PC = EA;
-	CHANGE_PC();
+    CHANGE_PC();
 }
 
 /* $ae LDS indexed -**0- */
-INLINE void lds_ix( void )
+INLINE void lds_ix(void)
 {
-	IDXWORD(m6808.s);
-	CLR_NZV;
-	SET_NZ16(S);
+    IDXWORD(m6808.s);
+    CLR_NZV;
+    SET_NZ16(S);
 }
 
 /* $af STS indexed -**0- */
-INLINE void sts_ix( void )
+INLINE void sts_ix(void)
 {
-	CLR_NZV;
-	SET_NZ16(S);
-	INDEXED;
-	WM16(EAD,&m6808.s);
+    CLR_NZV;
+    SET_NZ16(S);
+    INDEXED;
+    WM16(EAD, &m6808.s);
 }
 
 #if macintosh
@@ -1462,155 +1653,180 @@ INLINE void sts_ix( void )
 #endif
 
 /* $b0 SUBA extended ?**** */
-INLINE void suba_ex( void )
+INLINE void suba_ex(void)
 {
-	UINT16	  t,r;
-	EXTBYTE(t); r = A-t;
-	CLR_NZVC; SET_FLAGS8(A,t,r);
-	A = r;
+    UINT16	  t, r;
+    EXTBYTE(t);
+    r = A - t;
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
+    A = r;
 }
 
 /* $b1 CMPA extended ?**** */
-INLINE void cmpa_ex( void )
+INLINE void cmpa_ex(void)
 {
-	UINT16	  t,r;
-	EXTBYTE(t); r = A-t;
-	CLR_NZVC; SET_FLAGS8(A,t,r);
+    UINT16	  t, r;
+    EXTBYTE(t);
+    r = A - t;
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
 }
 
 /* $b2 SBCA extended ?**** */
-INLINE void sbca_ex( void )
+INLINE void sbca_ex(void)
 {
-	UINT16	  t,r;
-	EXTBYTE(t); r = A-t-(CC&0x01);
-	CLR_NZVC; SET_FLAGS8(A,t,r);
-	A = r;
+    UINT16	  t, r;
+    EXTBYTE(t);
+    r = A - t - (CC & 0x01);
+    CLR_NZVC;
+    SET_FLAGS8(A, t, r);
+    A = r;
 }
 
 /* $b3 SUBD extended -**** */
-INLINE void subd_ex( void )
+INLINE void subd_ex(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	EXTWORD(b);
-	d = D;
-	r = d - b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	D=r;
+    UINT32 r, d;
+    PAIR b;
+    EXTWORD(b);
+    d = D;
+    r = d - b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    D = r;
 }
 
 /* $b4 ANDA extended -**0- */
-INLINE void anda_ex( void )
+INLINE void anda_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); A &= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    EXTBYTE(t);
+    A &= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $b5 BITA extended -**0- */
-INLINE void bita_ex( void )
+INLINE void bita_ex(void)
 {
-	UINT8 t,r;
-	EXTBYTE(t); r = A&t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    EXTBYTE(t);
+    r = A & t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $b6 LDA extended -**0- */
-INLINE void lda_ex( void )
+INLINE void lda_ex(void)
 {
-	EXTBYTE(A);
-	CLR_NZV; SET_NZ8(A);
+    EXTBYTE(A);
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $b7 STA extended -**0- */
-INLINE void sta_ex( void )
+INLINE void sta_ex(void)
 {
-	CLR_NZV; SET_NZ8(A);
-	EXTENDED; WM(EAD,A);
+    CLR_NZV;
+    SET_NZ8(A);
+    EXTENDED;
+    WM(EAD, A);
 }
 
 /* $b8 EORA extended -**0- */
-INLINE void eora_ex( void )
+INLINE void eora_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); A ^= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    EXTBYTE(t);
+    A ^= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $b9 ADCA extended ***** */
-INLINE void adca_ex( void )
+INLINE void adca_ex(void)
 {
-	UINT16 t,r;
-	EXTBYTE(t); r = A+t+(CC&0x01);
-	CLR_HNZVC; SET_FLAGS8(A,t,r); SET_H(A,t,r);
-	A = r;
+    UINT16 t, r;
+    EXTBYTE(t);
+    r = A + t + (CC & 0x01);
+    CLR_HNZVC;
+    SET_FLAGS8(A, t, r);
+    SET_H(A, t, r);
+    A = r;
 }
 
 /* $ba ORA extended -**0- */
-INLINE void ora_ex( void )
+INLINE void ora_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); A |= t;
-	CLR_NZV; SET_NZ8(A);
+    UINT8 t;
+    EXTBYTE(t);
+    A |= t;
+    CLR_NZV;
+    SET_NZ8(A);
 }
 
 /* $bb ADDA extended ***** */
-INLINE void adda_ex( void )
+INLINE void adda_ex(void)
 {
-	UINT16 t,r;
-	EXTBYTE(t); r = A+t;
-	CLR_HNZVC; SET_FLAGS8(A,t,r); SET_H(A,t,r);
-	A = r;
+    UINT16 t, r;
+    EXTBYTE(t);
+    r = A + t;
+    CLR_HNZVC;
+    SET_FLAGS8(A, t, r);
+    SET_H(A, t, r);
+    A = r;
 }
 
 /* $bc CMPX extended -***- */
-INLINE void cmpx_ex( void )
+INLINE void cmpx_ex(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	EXTWORD(b);
-	d = X;
-	r = d - b.d;
-	CLR_NZV;
-	SET_NZ16(r); SET_V16(d,b.d,r);
+    UINT32 r, d;
+    PAIR b;
+    EXTWORD(b);
+    d = X;
+    r = d - b.d;
+    CLR_NZV;
+    SET_NZ16(r);
+    SET_V16(d, b.d, r);
 }
 
 /* $bc CPX extended -**** (6803) */
-INLINE void cpx_ex( void )
+INLINE void cpx_ex(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	EXTWORD(b);
-	d = X;
-	r = d - b.d;
-	CLR_NZVC; SET_FLAGS16(d,b.d,r);
+    UINT32 r, d;
+    PAIR b;
+    EXTWORD(b);
+    d = X;
+    r = d - b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
 }
 
 /* $bd JSR extended ----- */
-INLINE void jsr_ex( void )
+INLINE void jsr_ex(void)
 {
-	EXTENDED;
-	PUSHWORD(pPC);
+    EXTENDED;
+    PUSHWORD(pPC);
     PC = EA;
-	CHANGE_PC();
+    CHANGE_PC();
 }
 
 /* $be LDS extended -**0- */
-INLINE void lds_ex( void )
+INLINE void lds_ex(void)
 {
-	EXTWORD(m6808.s);
-	CLR_NZV;
-	SET_NZ16(S);
+    EXTWORD(m6808.s);
+    CLR_NZV;
+    SET_NZ16(S);
 }
 
 /* $bf STS extended -**0- */
-INLINE void sts_ex( void )
+INLINE void sts_ex(void)
 {
-	CLR_NZV;
-	SET_NZ16(S);
-	EXTENDED;
-	WM16(EAD,&m6808.s);
+    CLR_NZV;
+    SET_NZ16(S);
+    EXTENDED;
+    WM16(EAD, &m6808.s);
 }
 
 
@@ -1619,142 +1835,165 @@ INLINE void sts_ex( void )
 #endif
 
 /* $c0 SUBB immediate ?**** */
-INLINE void subb_im( void )
+INLINE void subb_im(void)
 {
-	UINT16	  t,r;
-	IMMBYTE(t); r = B-t;
-	CLR_NZVC; SET_FLAGS8(B,t,r);
-	B = r;
+    UINT16	  t, r;
+    IMMBYTE(t);
+    r = B - t;
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
+    B = r;
 }
 
 /* $c1 CMPB immediate ?**** */
-INLINE void cmpb_im( void )
+INLINE void cmpb_im(void)
 {
-	UINT16	  t,r;
-	IMMBYTE(t); r = B-t;
-	CLR_NZVC; SET_FLAGS8(B,t,r);
+    UINT16	  t, r;
+    IMMBYTE(t);
+    r = B - t;
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
 }
 
 /* $c2 SBCB immediate ?**** */
-INLINE void sbcb_im( void )
+INLINE void sbcb_im(void)
 {
-	UINT16	  t,r;
-	IMMBYTE(t); r = B-t-(CC&0x01);
-	CLR_NZVC; SET_FLAGS8(B,t,r);
-	B = r;
+    UINT16	  t, r;
+    IMMBYTE(t);
+    r = B - t - (CC & 0x01);
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
+    B = r;
 }
 
 /* $c3 ADDD immediate -**** */
-INLINE void addd_im( void )
+INLINE void addd_im(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	IMMWORD(b);
-	d = D;
-	r = d + b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	D = r;
+    UINT32 r, d;
+    PAIR b;
+    IMMWORD(b);
+    d = D;
+    r = d + b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    D = r;
 }
 
 /* $c4 ANDB immediate -**0- */
-INLINE void andb_im( void )
+INLINE void andb_im(void)
 {
-	UINT8 t;
-	IMMBYTE(t); B &= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    IMMBYTE(t);
+    B &= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $c5 BITB immediate -**0- */
-INLINE void bitb_im( void )
+INLINE void bitb_im(void)
 {
-	UINT8 t,r;
-	IMMBYTE(t); r = B&t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    IMMBYTE(t);
+    r = B & t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $c6 LDB immediate -**0- */
-INLINE void ldb_im( void )
+INLINE void ldb_im(void)
 {
-	IMMBYTE(B);
-	CLR_NZV; SET_NZ8(B);
+    IMMBYTE(B);
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* is this a legal instruction? */
 /* $c7 STB immediate -**0- */
-INLINE void stb_im( void )
+INLINE void stb_im(void)
 {
-	CLR_NZV; SET_NZ8(B);
-	IMM8; WM(EAD,B);
+    CLR_NZV;
+    SET_NZ8(B);
+    IMM8;
+    WM(EAD, B);
 }
 
 /* $c8 EORB immediate -**0- */
-INLINE void eorb_im( void )
+INLINE void eorb_im(void)
 {
-	UINT8 t;
-	IMMBYTE(t); B ^= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    IMMBYTE(t);
+    B ^= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $c9 ADCB immediate ***** */
-INLINE void adcb_im( void )
+INLINE void adcb_im(void)
 {
-	UINT16 t,r;
-	IMMBYTE(t); r = B+t+(CC&0x01);
-	CLR_HNZVC; SET_FLAGS8(B,t,r); SET_H(B,t,r);
-	B = r;
+    UINT16 t, r;
+    IMMBYTE(t);
+    r = B + t + (CC & 0x01);
+    CLR_HNZVC;
+    SET_FLAGS8(B, t, r);
+    SET_H(B, t, r);
+    B = r;
 }
 
 /* $ca ORB immediate -**0- */
-INLINE void orb_im( void )
+INLINE void orb_im(void)
 {
-	UINT8 t;
-	IMMBYTE(t); B |= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    IMMBYTE(t);
+    B |= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $cb ADDB immediate ***** */
-INLINE void addb_im( void )
+INLINE void addb_im(void)
 {
-	UINT16 t,r;
-	IMMBYTE(t); r = B+t;
-	CLR_HNZVC; SET_FLAGS8(B,t,r); SET_H(B,t,r);
-	B = r;
+    UINT16 t, r;
+    IMMBYTE(t);
+    r = B + t;
+    CLR_HNZVC;
+    SET_FLAGS8(B, t, r);
+    SET_H(B, t, r);
+    B = r;
 }
 
 /* $CC LDD immediate -**0- */
-INLINE void ldd_im( void )
+INLINE void ldd_im(void)
 {
-	IMMWORD(m6808.d);
-	CLR_NZV;
-	SET_NZ16(D);
+    IMMWORD(m6808.d);
+    CLR_NZV;
+    SET_NZ16(D);
 }
 
 /* is this a legal instruction? */
 /* $cd STD immediate -**0- */
-INLINE void std_im( void )
+INLINE void std_im(void)
 {
-	IMM16;
-	CLR_NZV;
-	SET_NZ16(D);
-	WM16(EAD,&m6808.d);
+    IMM16;
+    CLR_NZV;
+    SET_NZ16(D);
+    WM16(EAD, &m6808.d);
 }
 
 /* $ce LDX immediate -**0- */
-INLINE void ldx_im( void )
+INLINE void ldx_im(void)
 {
-	IMMWORD(m6808.x);
-	CLR_NZV;
-	SET_NZ16(X);
+    IMMWORD(m6808.x);
+    CLR_NZV;
+    SET_NZ16(X);
 }
 
 /* $cf STX immediate -**0- */
-INLINE void stx_im( void )
+INLINE void stx_im(void)
 {
-	CLR_NZV;
-	SET_NZ16(X);
-	IMM16;
-	WM16(EAD,&m6808.x);
+    CLR_NZV;
+    SET_NZ16(X);
+    IMM16;
+    WM16(EAD, &m6808.x);
 }
 
 
@@ -1763,140 +2002,163 @@ INLINE void stx_im( void )
 #endif
 
 /* $d0 SUBB direct ?**** */
-INLINE void subb_di( void )
+INLINE void subb_di(void)
 {
-	UINT16	  t,r;
-	DIRBYTE(t); r = B-t;
-	CLR_NZVC; SET_FLAGS8(B,t,r);
-	B = r;
+    UINT16	  t, r;
+    DIRBYTE(t);
+    r = B - t;
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
+    B = r;
 }
 
 /* $d1 CMPB direct ?**** */
-INLINE void cmpb_di( void )
+INLINE void cmpb_di(void)
 {
-	UINT16	  t,r;
-	DIRBYTE(t); r = B-t;
-	CLR_NZVC; SET_FLAGS8(B,t,r);
+    UINT16	  t, r;
+    DIRBYTE(t);
+    r = B - t;
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
 }
 
 /* $d2 SBCB direct ?**** */
-INLINE void sbcb_di( void )
+INLINE void sbcb_di(void)
 {
-	UINT16	  t,r;
-	DIRBYTE(t); r = B-t-(CC&0x01);
-	CLR_NZVC; SET_FLAGS8(B,t,r);
-	B = r;
+    UINT16	  t, r;
+    DIRBYTE(t);
+    r = B - t - (CC & 0x01);
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
+    B = r;
 }
 
 /* $d3 ADDD direct -**** */
-INLINE void addd_di( void )
+INLINE void addd_di(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	DIRWORD(b);
-	d = D;
-	r = d + b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	D = r;
+    UINT32 r, d;
+    PAIR b;
+    DIRWORD(b);
+    d = D;
+    r = d + b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    D = r;
 }
 
 /* $d4 ANDB direct -**0- */
-INLINE void andb_di( void )
+INLINE void andb_di(void)
 {
-	UINT8 t;
-	DIRBYTE(t); B &= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    DIRBYTE(t);
+    B &= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $d5 BITB direct -**0- */
-INLINE void bitb_di( void )
+INLINE void bitb_di(void)
 {
-	UINT8 t,r;
-	DIRBYTE(t); r = B&t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    DIRBYTE(t);
+    r = B & t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $d6 LDB direct -**0- */
-INLINE void ldb_di( void )
+INLINE void ldb_di(void)
 {
-	DIRBYTE(B);
-	CLR_NZV; SET_NZ8(B);
+    DIRBYTE(B);
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $d7 STB direct -**0- */
-INLINE void stb_di( void )
+INLINE void stb_di(void)
 {
-	CLR_NZV; SET_NZ8(B);
-	DIRECT; WM(EAD,B);
+    CLR_NZV;
+    SET_NZ8(B);
+    DIRECT;
+    WM(EAD, B);
 }
 
 /* $d8 EORB direct -**0- */
-INLINE void eorb_di( void )
+INLINE void eorb_di(void)
 {
-	UINT8 t;
-	DIRBYTE(t); B ^= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    DIRBYTE(t);
+    B ^= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $d9 ADCB direct ***** */
-INLINE void adcb_di( void )
+INLINE void adcb_di(void)
 {
-	UINT16 t,r;
-	DIRBYTE(t); r = B+t+(CC&0x01);
-	CLR_HNZVC; SET_FLAGS8(B,t,r); SET_H(B,t,r);
-	B = r;
+    UINT16 t, r;
+    DIRBYTE(t);
+    r = B + t + (CC & 0x01);
+    CLR_HNZVC;
+    SET_FLAGS8(B, t, r);
+    SET_H(B, t, r);
+    B = r;
 }
 
 /* $da ORB direct -**0- */
-INLINE void orb_di( void )
+INLINE void orb_di(void)
 {
-	UINT8 t;
-	DIRBYTE(t); B |= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    DIRBYTE(t);
+    B |= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $db ADDB direct ***** */
-INLINE void addb_di( void )
+INLINE void addb_di(void)
 {
-	UINT16 t,r;
-	DIRBYTE(t); r = B+t;
-	CLR_HNZVC; SET_FLAGS8(B,t,r); SET_H(B,t,r);
-	B = r;
+    UINT16 t, r;
+    DIRBYTE(t);
+    r = B + t;
+    CLR_HNZVC;
+    SET_FLAGS8(B, t, r);
+    SET_H(B, t, r);
+    B = r;
 }
 
 /* $dc LDD direct -**0- */
-INLINE void ldd_di( void )
+INLINE void ldd_di(void)
 {
-	DIRWORD(m6808.d);
-	CLR_NZV;
-	SET_NZ16(D);
+    DIRWORD(m6808.d);
+    CLR_NZV;
+    SET_NZ16(D);
 }
 
 /* $dd STD direct -**0- */
-INLINE void std_di( void )
+INLINE void std_di(void)
 {
-	DIRECT;
-	CLR_NZV;
-	SET_NZ16(D);
-	WM16(EAD,&m6808.d);
+    DIRECT;
+    CLR_NZV;
+    SET_NZ16(D);
+    WM16(EAD, &m6808.d);
 }
 
 /* $de LDX direct -**0- */
-INLINE void ldx_di( void )
+INLINE void ldx_di(void)
 {
-	DIRWORD(m6808.x);
-	CLR_NZV;
-	SET_NZ16(X);
+    DIRWORD(m6808.x);
+    CLR_NZV;
+    SET_NZ16(X);
 }
 
 /* $dF STX direct -**0- */
-INLINE void stx_di( void )
+INLINE void stx_di(void)
 {
-	CLR_NZV;
-	SET_NZ16(X);
-	DIRECT;
-	WM16(EAD,&m6808.x);
+    CLR_NZV;
+    SET_NZ16(X);
+    DIRECT;
+    WM16(EAD, &m6808.x);
 }
 
 #if macintosh
@@ -1905,140 +2167,163 @@ INLINE void stx_di( void )
 
 
 /* $e0 SUBB indexed ?**** */
-INLINE void subb_ix( void )
+INLINE void subb_ix(void)
 {
-	UINT16	  t,r;
-	IDXBYTE(t); r = B-t;
-	CLR_NZVC; SET_FLAGS8(B,t,r);
-	B = r;
+    UINT16	  t, r;
+    IDXBYTE(t);
+    r = B - t;
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
+    B = r;
 }
 
 /* $e1 CMPB indexed ?**** */
-INLINE void cmpb_ix( void )
+INLINE void cmpb_ix(void)
 {
-	UINT16	  t,r;
-	IDXBYTE(t); r = B-t;
-	CLR_NZVC; SET_FLAGS8(B,t,r);
+    UINT16	  t, r;
+    IDXBYTE(t);
+    r = B - t;
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
 }
 
 /* $e2 SBCB indexed ?**** */
-INLINE void sbcb_ix( void )
+INLINE void sbcb_ix(void)
 {
-	UINT16	  t,r;
-	IDXBYTE(t); r = B-t-(CC&0x01);
-	CLR_NZVC; SET_FLAGS8(B,t,r);
-	B = r;
+    UINT16	  t, r;
+    IDXBYTE(t);
+    r = B - t - (CC & 0x01);
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
+    B = r;
 }
 
 /* $e3 ADDD indexed -**** */
-INLINE void addd_ix( void )
+INLINE void addd_ix(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	IDXWORD(b);
-	d = D;
-	r = d + b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	D = r;
+    UINT32 r, d;
+    PAIR b;
+    IDXWORD(b);
+    d = D;
+    r = d + b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    D = r;
 }
 
 /* $e4 ANDB indexed -**0- */
-INLINE void andb_ix( void )
+INLINE void andb_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); B &= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    IDXBYTE(t);
+    B &= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $e5 BITB indexed -**0- */
-INLINE void bitb_ix( void )
+INLINE void bitb_ix(void)
 {
-	UINT8 t,r;
-	IDXBYTE(t); r = B&t;
-	CLR_NZV; SET_NZ8(r);
+    UINT8 t, r;
+    IDXBYTE(t);
+    r = B & t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $e6 LDB indexed -**0- */
-INLINE void ldb_ix( void )
+INLINE void ldb_ix(void)
 {
-	IDXBYTE(B);
-	CLR_NZV; SET_NZ8(B);
+    IDXBYTE(B);
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $e7 STB indexed -**0- */
-INLINE void stb_ix( void )
+INLINE void stb_ix(void)
 {
-	CLR_NZV; SET_NZ8(B);
-	INDEXED; WM(EAD,B);
+    CLR_NZV;
+    SET_NZ8(B);
+    INDEXED;
+    WM(EAD, B);
 }
 
 /* $e8 EORB indexed -**0- */
-INLINE void eorb_ix( void )
+INLINE void eorb_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); B ^= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    IDXBYTE(t);
+    B ^= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $e9 ADCB indexed ***** */
-INLINE void adcb_ix( void )
+INLINE void adcb_ix(void)
 {
-	UINT16 t,r;
-	IDXBYTE(t); r = B+t+(CC&0x01);
-	CLR_HNZVC; SET_FLAGS8(B,t,r); SET_H(B,t,r);
-	B = r;
+    UINT16 t, r;
+    IDXBYTE(t);
+    r = B + t + (CC & 0x01);
+    CLR_HNZVC;
+    SET_FLAGS8(B, t, r);
+    SET_H(B, t, r);
+    B = r;
 }
 
 /* $ea ORB indexed -**0- */
-INLINE void orb_ix( void )
+INLINE void orb_ix(void)
 {
-	UINT8 t;
-	IDXBYTE(t); B |= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    IDXBYTE(t);
+    B |= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $eb ADDB indexed ***** */
-INLINE void addb_ix( void )
+INLINE void addb_ix(void)
 {
-	UINT16 t,r;
-	IDXBYTE(t); r = B+t;
-	CLR_HNZVC; SET_FLAGS8(B,t,r); SET_H(B,t,r);
-	B = r;
+    UINT16 t, r;
+    IDXBYTE(t);
+    r = B + t;
+    CLR_HNZVC;
+    SET_FLAGS8(B, t, r);
+    SET_H(B, t, r);
+    B = r;
 }
 
 /* $ec LDD indexed -**0- */
-INLINE void ldd_ix( void )
+INLINE void ldd_ix(void)
 {
-	IDXWORD(m6808.d);
-	CLR_NZV;
-	SET_NZ16(D);
+    IDXWORD(m6808.d);
+    CLR_NZV;
+    SET_NZ16(D);
 }
 
 /* $ed STD indexed -**0- */
-INLINE void std_ix( void )
+INLINE void std_ix(void)
 {
-	INDEXED;
-	CLR_NZV;
-	SET_NZ16(D);
-	WM16(EAD,&m6808.d);
+    INDEXED;
+    CLR_NZV;
+    SET_NZ16(D);
+    WM16(EAD, &m6808.d);
 }
 
 /* $ee LDX indexed -**0- */
-INLINE void ldx_ix( void )
+INLINE void ldx_ix(void)
 {
-	IDXWORD(m6808.x);
-	CLR_NZV;
-	SET_NZ16(X);
+    IDXWORD(m6808.x);
+    CLR_NZV;
+    SET_NZ16(X);
 }
 
 /* $ef STX indexed -**0- */
-INLINE void stx_ix( void )
+INLINE void stx_ix(void)
 {
-	CLR_NZV;
-	SET_NZ16(X);
-	INDEXED;
-	WM16(EAD,&m6808.x);
+    CLR_NZV;
+    SET_NZ16(X);
+    INDEXED;
+    WM16(EAD, &m6808.x);
 }
 
 #if macintosh
@@ -2046,156 +2331,174 @@ INLINE void stx_ix( void )
 #endif
 
 /* $f0 SUBB extended ?**** */
-INLINE void subb_ex( void )
+INLINE void subb_ex(void)
 {
-	UINT16	  t,r;
-	EXTBYTE(t); r = B-t;
-	CLR_NZVC; SET_FLAGS8(B,t,r);
-	B = r;
+    UINT16	  t, r;
+    EXTBYTE(t);
+    r = B - t;
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
+    B = r;
 }
 
 /* $f1 CMPB extended ?**** */
-INLINE void cmpb_ex( void )
+INLINE void cmpb_ex(void)
 {
-	UINT16	  t,r;
-	EXTBYTE(t); r = B-t;
-	CLR_NZVC; SET_FLAGS8(B,t,r);
+    UINT16	  t, r;
+    EXTBYTE(t);
+    r = B - t;
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
 }
 
 /* $f2 SBCB extended ?**** */
-INLINE void sbcb_ex( void )
+INLINE void sbcb_ex(void)
 {
-	UINT16	  t,r;
-	EXTBYTE(t); r = B-t-(CC&0x01);
-	CLR_NZVC; SET_FLAGS8(B,t,r);
-	B = r;
+    UINT16	  t, r;
+    EXTBYTE(t);
+    r = B - t - (CC & 0x01);
+    CLR_NZVC;
+    SET_FLAGS8(B, t, r);
+    B = r;
 }
 
 /* $f3 ADDD extended -**** */
-INLINE void addd_ex( void )
+INLINE void addd_ex(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	EXTWORD(b);
-	d = D;
-	r = d + b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	D = r;
+    UINT32 r, d;
+    PAIR b;
+    EXTWORD(b);
+    d = D;
+    r = d + b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    D = r;
 }
 
 /* $f4 ANDB extended -**0- */
-INLINE void andb_ex( void )
+INLINE void andb_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t);
-	B &= t;
-	CLR_NZV;
-	SET_NZ8(B);
+    UINT8 t;
+    EXTBYTE(t);
+    B &= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $f5 BITB extended -**0- */
-INLINE void bitb_ex( void )
+INLINE void bitb_ex(void)
 {
-	UINT8 t,r;
-	EXTBYTE(t);
-	r = B & t;
-	CLR_NZV;
-	SET_NZ8(r);
+    UINT8 t, r;
+    EXTBYTE(t);
+    r = B & t;
+    CLR_NZV;
+    SET_NZ8(r);
 }
 
 /* $f6 LDB extended -**0- */
-INLINE void ldb_ex( void )
+INLINE void ldb_ex(void)
 {
-	EXTBYTE(B);
-	CLR_NZV;
-	SET_NZ8(B);
+    EXTBYTE(B);
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $f7 STB extended -**0- */
-INLINE void stb_ex( void )
+INLINE void stb_ex(void)
 {
-	CLR_NZV; SET_NZ8(B);
-	EXTENDED; WM(EAD,B);
+    CLR_NZV;
+    SET_NZ8(B);
+    EXTENDED;
+    WM(EAD, B);
 }
 
 /* $f8 EORB extended -**0- */
-INLINE void eorb_ex( void )
+INLINE void eorb_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); B ^= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    EXTBYTE(t);
+    B ^= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $f9 ADCB extended ***** */
-INLINE void adcb_ex( void )
+INLINE void adcb_ex(void)
 {
-	UINT16 t,r;
-	EXTBYTE(t); r = B+t+(CC&0x01);
-	CLR_HNZVC; SET_FLAGS8(B,t,r); SET_H(B,t,r);
-	B = r;
+    UINT16 t, r;
+    EXTBYTE(t);
+    r = B + t + (CC & 0x01);
+    CLR_HNZVC;
+    SET_FLAGS8(B, t, r);
+    SET_H(B, t, r);
+    B = r;
 }
 
 /* $fa ORB extended -**0- */
-INLINE void orb_ex( void )
+INLINE void orb_ex(void)
 {
-	UINT8 t;
-	EXTBYTE(t); B |= t;
-	CLR_NZV; SET_NZ8(B);
+    UINT8 t;
+    EXTBYTE(t);
+    B |= t;
+    CLR_NZV;
+    SET_NZ8(B);
 }
 
 /* $fb ADDB extended ***** */
-INLINE void addb_ex( void )
+INLINE void addb_ex(void)
 {
-	UINT16 t,r;
-	EXTBYTE(t); r = B+t;
-	CLR_HNZVC; SET_FLAGS8(B,t,r); SET_H(B,t,r);
-	B = r;
+    UINT16 t, r;
+    EXTBYTE(t);
+    r = B + t;
+    CLR_HNZVC;
+    SET_FLAGS8(B, t, r);
+    SET_H(B, t, r);
+    B = r;
 }
 
 /* $fc LDD extended -**0- */
-INLINE void ldd_ex( void )
+INLINE void ldd_ex(void)
 {
-	EXTWORD(m6808.d);
-	CLR_NZV;
-	SET_NZ16(D);
+    EXTWORD(m6808.d);
+    CLR_NZV;
+    SET_NZ16(D);
 }
 
 /* $fc ADDX extended -****    NSC8105 only.  Flags are a guess */
-INLINE void addx_ex( void )
+INLINE void addx_ex(void)
 {
-	UINT32 r,d;
-	PAIR b;
-	EXTWORD(b);
-	d = X;
-	r = d + b.d;
-	CLR_NZVC;
-	SET_FLAGS16(d,b.d,r);
-	X = r;
+    UINT32 r, d;
+    PAIR b;
+    EXTWORD(b);
+    d = X;
+    r = d + b.d;
+    CLR_NZVC;
+    SET_FLAGS16(d, b.d, r);
+    X = r;
 }
 
 /* $fd STD extended -**0- */
-INLINE void std_ex( void )
+INLINE void std_ex(void)
 {
-	EXTENDED;
-	CLR_NZV;
-	SET_NZ16(D);
-	WM16(EAD,&m6808.d);
+    EXTENDED;
+    CLR_NZV;
+    SET_NZ16(D);
+    WM16(EAD, &m6808.d);
 }
 
 /* $fe LDX extended -**0- */
-INLINE void ldx_ex( void )
+INLINE void ldx_ex(void)
 {
-	EXTWORD(m6808.x);
-	CLR_NZV;
-	SET_NZ16(X);
+    EXTWORD(m6808.x);
+    CLR_NZV;
+    SET_NZ16(X);
 }
 
 /* $ff STX extended -**0- */
-INLINE void stx_ex( void )
+INLINE void stx_ex(void)
 {
-	CLR_NZV;
-	SET_NZ16(X);
-	EXTENDED;
-	WM16(EAD,&m6808.x);
+    CLR_NZV;
+    SET_NZ16(X);
+    EXTENDED;
+    WM16(EAD, &m6808.x);
 }

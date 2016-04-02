@@ -37,65 +37,63 @@ unsigned char *seibu_shared_sound_ram;
 
 /***************************************************************************/
 
-enum
-{
-	VECTOR_INIT,
-	RST10_ASSERT,
-	RST10_CLEAR,
-	RST18_ASSERT,
-	RST18_CLEAR
+enum {
+    VECTOR_INIT,
+    RST10_ASSERT,
+    RST10_CLEAR,
+    RST18_ASSERT,
+    RST18_CLEAR
 };
 
 static void setvector_callback(int param)
 {
-	static int irq1,irq2;
+    static int irq1, irq2;
 
-	switch(param)
-	{
-		case VECTOR_INIT:
-			irq1 = irq2 = 0xff;
-			break;
+    switch (param) {
+    case VECTOR_INIT:
+        irq1 = irq2 = 0xff;
+        break;
 
-		case RST10_ASSERT:
-			irq1 = 0xd7;
-			break;
+    case RST10_ASSERT:
+        irq1 = 0xd7;
+        break;
 
-		case RST10_CLEAR:
-			irq1 = 0xff;
-			break;
+    case RST10_CLEAR:
+        irq1 = 0xff;
+        break;
 
-		case RST18_ASSERT:
-			irq2 = 0xdf;
-			break;
+    case RST18_ASSERT:
+        irq2 = 0xdf;
+        break;
 
-		case RST18_CLEAR:
-			irq2 = 0xff;
-			break;
-	}
+    case RST18_CLEAR:
+        irq2 = 0xff;
+        break;
+    }
 
-	cpu_irq_line_vector_w(sound_cpu,0,irq1 & irq2);
-	if ((irq1 & irq2) == 0xff)	/* no IRQs pending */
-		cpu_set_irq_line(sound_cpu,0,CLEAR_LINE);
-	else	/* IRQ pending */
-		cpu_set_irq_line(sound_cpu,0,ASSERT_LINE);
+    cpu_irq_line_vector_w(sound_cpu, 0, irq1 & irq2);
+    if ((irq1 & irq2) == 0xff)	/* no IRQs pending */
+        cpu_set_irq_line(sound_cpu, 0, CLEAR_LINE);
+    else	/* IRQ pending */
+        cpu_set_irq_line(sound_cpu, 0, ASSERT_LINE);
 }
 
-WRITE_HANDLER( seibu_rst10_ack_w )
+WRITE_HANDLER(seibu_rst10_ack_w)
 {
-	/* Unused for now */
+    /* Unused for now */
 }
 
-WRITE_HANDLER( seibu_rst18_ack_w )
+WRITE_HANDLER(seibu_rst18_ack_w)
 {
-	timer_set(TIME_NOW,RST18_CLEAR,setvector_callback);
+    timer_set(TIME_NOW, RST18_CLEAR, setvector_callback);
 }
 
 void seibu_ym3812_irqhandler(int linestate)
 {
-	if (linestate)
-		timer_set(TIME_NOW,RST10_ASSERT,setvector_callback);
-	else
-		timer_set(TIME_NOW,RST10_CLEAR,setvector_callback);
+    if (linestate)
+        timer_set(TIME_NOW, RST10_ASSERT, setvector_callback);
+    else
+        timer_set(TIME_NOW, RST10_CLEAR, setvector_callback);
 }
 
 /***************************************************************************/
@@ -103,70 +101,73 @@ void seibu_ym3812_irqhandler(int linestate)
 /* Use this if the sound cpu is cpu 1 */
 void seibu_sound_init_1(void)
 {
-	sound_cpu=1;
-	setvector_callback(VECTOR_INIT);
+    sound_cpu = 1;
+    setvector_callback(VECTOR_INIT);
 }
 
 /* Use this if the sound cpu is cpu 2 */
 void seibu_sound_init_2(void)
 {
-	sound_cpu=2;
-	setvector_callback(VECTOR_INIT);
+    sound_cpu = 2;
+    setvector_callback(VECTOR_INIT);
 }
 
 /***************************************************************************/
 
-WRITE_HANDLER( seibu_bank_w )
+WRITE_HANDLER(seibu_bank_w)
 {
-	unsigned char *RAM;
+    unsigned char *RAM;
 
-	if (sound_cpu==1) RAM = memory_region(REGION_CPU2);
-	else RAM = memory_region(REGION_CPU3);
+    if (sound_cpu == 1) RAM = memory_region(REGION_CPU2);
+    else RAM = memory_region(REGION_CPU3);
 
-	if (data&1) { cpu_setbank(1,&RAM[0x0000]); }
-	else { cpu_setbank(1,&RAM[0x10000]); }
+    if (data & 1) {
+        cpu_setbank(1, &RAM[0x0000]);
+    } else {
+        cpu_setbank(1, &RAM[0x10000]);
+    }
 }
 
-READ_HANDLER( seibu_soundlatch_r )
+READ_HANDLER(seibu_soundlatch_r)
 {
-	return seibu_shared_sound_ram[offset<<1];
+    return seibu_shared_sound_ram[offset << 1];
 }
 
-WRITE_HANDLER( seibu_soundclear_w )
+WRITE_HANDLER(seibu_soundclear_w)
 {
-	seibu_shared_sound_ram[0]=data;
+    seibu_shared_sound_ram[0] = data;
 }
 
-WRITE_HANDLER( seibu_soundlatch_w )
+WRITE_HANDLER(seibu_soundlatch_w)
 {
-	seibu_shared_sound_ram[offset]=data;
-	if (offset==0xc && seibu_shared_sound_ram[0]!=0)
-		timer_set(TIME_NOW,RST18_ASSERT,setvector_callback);
+    seibu_shared_sound_ram[offset] = data;
+    if (offset == 0xc && seibu_shared_sound_ram[0] != 0)
+        timer_set(TIME_NOW, RST18_ASSERT, setvector_callback);
 }
 
-WRITE_HANDLER( seibu_main_data_w )
+WRITE_HANDLER(seibu_main_data_w)
 {
-	seibu_shared_sound_ram[offset<<1]=data;
+    seibu_shared_sound_ram[offset << 1] = data;
 }
 
 /***************************************************************************/
 
-static READ_HANDLER( sound_cpu_spin_r )
+static READ_HANDLER(sound_cpu_spin_r)
 {
-	unsigned char *RAM;
+    unsigned char *RAM;
 
-	if (sound_cpu==1) RAM = memory_region(REGION_CPU2);
-	else RAM = memory_region(REGION_CPU3);
+    if (sound_cpu == 1) RAM = memory_region(REGION_CPU2);
+    else RAM = memory_region(REGION_CPU3);
 
-	if (cpu_get_pc()==0x129 && RAM[0x201c]==0)
-		cpu_spinuntil_int();
+    if (cpu_get_pc() == 0x129 && RAM[0x201c] == 0)
+        cpu_spinuntil_int();
 
-	return RAM[0x201c+offset];
+    return RAM[0x201c + offset];
 }
 
 void install_seibu_sound_speedup(int cpu)
 {
-	install_mem_read_handler(cpu, 0x201c, 0x201d, sound_cpu_spin_r);
+    install_mem_read_handler(cpu, 0x201c, 0x201d, sound_cpu_spin_r);
 }
 
 /***************************************************************************/
@@ -183,34 +184,34 @@ There is also a 0xff fill at the end of the rom.
 /* Game using encrypted sound cpu - Raiden, Dynamite Duke, Dead Angle */
 void seibu_sound_decrypt(void)
 {
-	unsigned char *RAM = memory_region(REGION_CPU3);
-	int xor_table[128]={
-		0x00,0x00,0x10,0x10,0x08,0x00,0x00,0x18,
-		0x00,0x00,0x10,0x10,0x08,0x08,0x18,0x18,
+    unsigned char *RAM = memory_region(REGION_CPU3);
+    int xor_table[128] = {
+        0x00, 0x00, 0x10, 0x10, 0x08, 0x00, 0x00, 0x18,
+        0x00, 0x00, 0x10, 0x10, 0x08, 0x08, 0x18, 0x18,
 
-		0x00,0x00,0x00,0x10,0x08,0x08,0x18,0x18,
-		0x00,0x00,0x00,0x10,0x08,0x08,0x18,0x18,
+        0x00, 0x00, 0x00, 0x10, 0x08, 0x08, 0x18, 0x18,
+        0x00, 0x00, 0x00, 0x10, 0x08, 0x08, 0x18, 0x18,
 
-		0x00,0x00,0x10,0x10,0x08,0x08,0x18,0x18,
-		0x00,0x00,0x10,0x10,0x08,0x08,0x18,0x18,
+        0x00, 0x00, 0x10, 0x10, 0x08, 0x08, 0x18, 0x18,
+        0x00, 0x00, 0x10, 0x10, 0x08, 0x08, 0x18, 0x18,
 
-		0x00,0x00,0x10,0x10,0x08,0x08,0x18,0x18,
-		0x00,0x00,0x10,0x10,0x08,0x08,0x18,0x18,
+        0x00, 0x00, 0x10, 0x10, 0x08, 0x08, 0x18, 0x18,
+        0x00, 0x00, 0x10, 0x10, 0x08, 0x08, 0x18, 0x18,
 
-		0x00,0x00,0x00,0x00,0x08,0x08,0x08,0x08,
-		0x00,0x00,0x00,0x00,0x08,0x08,0x08,0x08,
+        0x00, 0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08,
+        0x00, 0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08,
 
-		0x00,0x00,0x00,0x00,0x08,0x08,0x08,0x08,
-		0x00,0x00,0x00,0x00,0x08,0x08,0x08,0x08,
+        0x00, 0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08,
+        0x00, 0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08,
 
-		0x00,0x00,0x00,0x00,0x08,0x08,0x08,0x08,
-		0x00,0x00,0x00,0x00,0x08,0x08,0x08,0x08,
+        0x00, 0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08,
+        0x00, 0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08,
 
-		0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x08,
-		0x00,0x00,0x00,0x00,0x08,0x08,0x08,0x08,
-	};
-	int i;
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x08,
+        0x00, 0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08,
+    };
+    int i;
 
-	for (i=0; i<0x18000; i++)
-		RAM[i]=RAM[i]^xor_table[i%128];
+    for (i = 0; i < 0x18000; i++)
+        RAM[i] = RAM[i] ^ xor_table[i % 128];
 }

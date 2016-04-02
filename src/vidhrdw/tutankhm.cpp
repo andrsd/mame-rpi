@@ -19,53 +19,50 @@ static int flipscreen[2];
 
 
 
-static void videowrite(int offset,int data)
+static void videowrite(int offset, int data)
 {
-	unsigned char x1,x2,y1,y2;
+    unsigned char x1, x2, y1, y2;
 
 
-	x1 = ( offset & 0x7f ) << 1;
-	y1 = ( offset >> 7 );
-	x2 = x1 + 1;
-	y2 = y1;
+    x1 = (offset & 0x7f) << 1;
+    y1 = (offset >> 7);
+    x2 = x1 + 1;
+    y2 = y1;
 
-	if (flipscreen[0])
-	{
-		x1 = 255 - x1;
-		x2 = 255 - x2;
-	}
-	if (flipscreen[1])
-	{
-		y1 = 255 - y1;
-		y2 = 255 - y2;
-	}
+    if (flipscreen[0]) {
+        x1 = 255 - x1;
+        x2 = 255 - x2;
+    }
+    if (flipscreen[1]) {
+        y1 = 255 - y1;
+        y2 = 255 - y2;
+    }
 
-	plot_pixel(tmpbitmap,x1,y1,Machine->pens[data & 0x0f]);
-	plot_pixel(tmpbitmap,x2,y2,Machine->pens[data >> 4]);
+    plot_pixel(tmpbitmap, x1, y1, Machine->pens[data & 0x0f]);
+    plot_pixel(tmpbitmap, x2, y2, Machine->pens[data >> 4]);
 }
 
 
 
-WRITE_HANDLER( tutankhm_videoram_w )
+WRITE_HANDLER(tutankhm_videoram_w)
 {
-	videoram[offset] = data;
-	videowrite(offset,data);
+    videoram[offset] = data;
+    videowrite(offset, data);
 }
 
 
 
-WRITE_HANDLER( tutankhm_flipscreen_w )
+WRITE_HANDLER(tutankhm_flipscreen_w)
 {
-	if (flipscreen[offset] != (data & 1))
-	{
-		int offs;
+    if (flipscreen[offset] != (data & 1)) {
+        int offs;
 
 
-		flipscreen[offset] = data & 1;
-		/* refresh the display */
-		for (offs = 0;offs < videoram_size;offs++)
-			videowrite(offs,videoram[offs]);
-	}
+        flipscreen[offset] = data & 1;
+        /* refresh the display */
+        for (offs = 0; offs < videoram_size; offs++)
+            videowrite(offs, videoram[offs]);
+    }
 }
 
 
@@ -77,44 +74,38 @@ WRITE_HANDLER( tutankhm_flipscreen_w )
   the main emulation engine.
 
 ***************************************************************************/
-void tutankhm_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void tutankhm_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	if (palette_recalc())
-	{
-		int offs;
+    if (palette_recalc()) {
+        int offs;
 
-		for (offs = 0;offs < videoram_size;offs++)
-			tutankhm_videoram_w(offs,videoram[offs]);
-	}
+        for (offs = 0; offs < videoram_size; offs++)
+            tutankhm_videoram_w(offs, videoram[offs]);
+    }
 
-	/* copy the temporary bitmap to the screen */
-	{
-		int scroll[32], i;
+    /* copy the temporary bitmap to the screen */
+    {
+        int scroll[32], i;
 
 
-		if (flipscreen[0])
-		{
-			for (i = 0;i < 8;i++)
-				scroll[i] = 0;
-			for (i = 8;i < 32;i++)
-			{
-				scroll[i] = -*tutankhm_scrollx;
-				if (flipscreen[1]) scroll[i] = -scroll[i];
-			}
-		}
-		else
-		{
-			for (i = 0;i < 24;i++)
-			{
-				scroll[i] = -*tutankhm_scrollx;
-				if (flipscreen[1]) scroll[i] = -scroll[i];
-			}
-			for (i = 24;i < 32;i++)
-				scroll[i] = 0;
-		}
+        if (flipscreen[0]) {
+            for (i = 0; i < 8; i++)
+                scroll[i] = 0;
+            for (i = 8; i < 32; i++) {
+                scroll[i] = -*tutankhm_scrollx;
+                if (flipscreen[1]) scroll[i] = -scroll[i];
+            }
+        } else {
+            for (i = 0; i < 24; i++) {
+                scroll[i] = -*tutankhm_scrollx;
+                if (flipscreen[1]) scroll[i] = -scroll[i];
+            }
+            for (i = 24; i < 32; i++)
+                scroll[i] = 0;
+        }
 
-		copyscrollbitmap(bitmap,tmpbitmap,0,0,32,scroll,&Machine->visible_area,TRANSPARENCY_NONE,0);
-	}
+        copyscrollbitmap(bitmap, tmpbitmap, 0, 0, 32, scroll, &Machine->visible_area, TRANSPARENCY_NONE, 0);
+    }
 }
 
 
@@ -143,36 +134,35 @@ void tutankhm_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
 		The clear works properly.
 */
 
-WRITE_HANDLER( junofrst_blitter_w )
+WRITE_HANDLER(junofrst_blitter_w)
 {
-	static unsigned char blitterdata[4];
+    static unsigned char blitterdata[4];
 
 
-	blitterdata[offset] = data;
+    blitterdata[offset] = data;
 
-	/* Blitter is triggered by $8073 */
-	if (offset==3)
-	{
-		int i;
-		unsigned long srcaddress;
-		unsigned long destaddress;
-		unsigned char srcflag;
-		unsigned char destflag;
-		unsigned char *JunoBLTRom = memory_region(REGION_GFX1);
+    /* Blitter is triggered by $8073 */
+    if (offset == 3) {
+        int i;
+        unsigned long srcaddress;
+        unsigned long destaddress;
+        unsigned char srcflag;
+        unsigned char destflag;
+        unsigned char *JunoBLTRom = memory_region(REGION_GFX1);
 
-		srcaddress = (blitterdata[0x2]<<8) | (blitterdata[0x3]);
-		srcflag = srcaddress & 1;
-		srcaddress >>= 1;
-		srcaddress &= 0x7FFE;
-		destaddress = (blitterdata[0x0]<<8)  | (blitterdata[0x1]);
+        srcaddress = (blitterdata[0x2] << 8) | (blitterdata[0x3]);
+        srcflag = srcaddress & 1;
+        srcaddress >>= 1;
+        srcaddress &= 0x7FFE;
+        destaddress = (blitterdata[0x0] << 8)  | (blitterdata[0x1]);
 
-		destflag = destaddress & 1;
+        destflag = destaddress & 1;
 
-		destaddress >>= 1;
-		destaddress &= 0x7fff;
+        destaddress >>= 1;
+        destaddress &= 0x7fff;
 
-		if (srcflag) {
-			for (i=0;i<16;i++) {
+        if (srcflag) {
+            for (i = 0; i < 16; i++) {
 
 #define JUNOBLITPIXEL(x)									\
 	if (JunoBLTRom[srcaddress+x])							\
@@ -180,20 +170,20 @@ WRITE_HANDLER( junofrst_blitter_w )
 			((JunoBLTRom[srcaddress+x] & 0xf0) >> 4)		\
 			| ((JunoBLTRom[srcaddress+x] & 0x0f) << 4));
 
-				JUNOBLITPIXEL(0);
-				JUNOBLITPIXEL(1);
-				JUNOBLITPIXEL(2);
-				JUNOBLITPIXEL(3);
-				JUNOBLITPIXEL(4);
-				JUNOBLITPIXEL(5);
-				JUNOBLITPIXEL(6);
-				JUNOBLITPIXEL(7);
+                JUNOBLITPIXEL(0);
+                JUNOBLITPIXEL(1);
+                JUNOBLITPIXEL(2);
+                JUNOBLITPIXEL(3);
+                JUNOBLITPIXEL(4);
+                JUNOBLITPIXEL(5);
+                JUNOBLITPIXEL(6);
+                JUNOBLITPIXEL(7);
 
-				destaddress += 128;
-				srcaddress += 8;
-			}
-		} else {
-			for (i=0;i<16;i++) {
+                destaddress += 128;
+                srcaddress += 8;
+            }
+        } else {
+            for (i = 0; i < 16; i++) {
 
 #define JUNOCLEARPIXEL(x) 						\
 	if ((JunoBLTRom[srcaddress+x] & 0xF0)) 		\
@@ -203,17 +193,17 @@ WRITE_HANDLER( junofrst_blitter_w )
 		tutankhm_videoram_w( destaddress+x,		\
 			videoram[destaddress+x] & 0x0F);
 
-				JUNOCLEARPIXEL(0);
-				JUNOCLEARPIXEL(1);
-				JUNOCLEARPIXEL(2);
-				JUNOCLEARPIXEL(3);
-				JUNOCLEARPIXEL(4);
-				JUNOCLEARPIXEL(5);
-				JUNOCLEARPIXEL(6);
-				JUNOCLEARPIXEL(7);
-				destaddress += 128;
-				srcaddress+= 8;
-			}
-		}
-	}
+                JUNOCLEARPIXEL(0);
+                JUNOCLEARPIXEL(1);
+                JUNOCLEARPIXEL(2);
+                JUNOCLEARPIXEL(3);
+                JUNOCLEARPIXEL(4);
+                JUNOCLEARPIXEL(5);
+                JUNOCLEARPIXEL(6);
+                JUNOCLEARPIXEL(7);
+                destaddress += 128;
+                srcaddress += 8;
+            }
+        }
+    }
 }

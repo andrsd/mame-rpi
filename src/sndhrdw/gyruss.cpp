@@ -20,68 +20,66 @@
 /* Bit 3 comes from the QA output of the LS90 producing a sequence of	*/
 /*		 0, 0, 0, 0, 0, 1, 1, 1, 1, 1			 						*/
 
-static int gyruss_timer[10] =
-{
-	0x00, 0x01, 0x02, 0x03, 0x04, 0x09, 0x0a, 0x0b, 0x0a, 0x0d
+static int gyruss_timer[10] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x09, 0x0a, 0x0b, 0x0a, 0x0d
 };
 
-READ_HANDLER( gyruss_portA_r )
+READ_HANDLER(gyruss_portA_r)
 {
-	/* need to protect from totalcycles overflow */
-	static int last_totalcycles = 0;
+    /* need to protect from totalcycles overflow */
+    static int last_totalcycles = 0;
 
-	/* number of Z80 clock cycles to count */
-	static int clock;
+    /* number of Z80 clock cycles to count */
+    static int clock;
 
-	int current_totalcycles;
+    int current_totalcycles;
 
-	current_totalcycles = cpu_gettotalcycles();
-	clock = (clock + (current_totalcycles-last_totalcycles)) % 10240;
+    current_totalcycles = cpu_gettotalcycles();
+    clock = (clock + (current_totalcycles - last_totalcycles)) % 10240;
 
-	last_totalcycles = current_totalcycles;
+    last_totalcycles = current_totalcycles;
 
-	return gyruss_timer[clock/1024];
+    return gyruss_timer[clock / 1024];
 }
 
 
 
-static void filter_w(int chip,int data)
+static void filter_w(int chip, int data)
 {
-	int i;
+    int i;
 
 
-	for (i = 0;i < 3;i++)
-	{
-		int C;
+    for (i = 0; i < 3; i++) {
+        int C;
 
 
-		C = 0;
-		if (data & 1) C += 47000;	/* 47000pF = 0.047uF */
-		if (data & 2) C += 220000;	/* 220000pF = 0.22uF */
-		data >>= 2;
-		set_RC_filter(3*chip + i,1000,2200,200,C);
-	}
+        C = 0;
+        if (data & 1) C += 47000;	/* 47000pF = 0.047uF */
+        if (data & 2) C += 220000;	/* 220000pF = 0.22uF */
+        data >>= 2;
+        set_RC_filter(3 * chip + i, 1000, 2200, 200, C);
+    }
 }
 
-WRITE_HANDLER( gyruss_filter0_w )
+WRITE_HANDLER(gyruss_filter0_w)
 {
-	filter_w(0,data);
+    filter_w(0, data);
 }
 
-WRITE_HANDLER( gyruss_filter1_w )
+WRITE_HANDLER(gyruss_filter1_w)
 {
-	filter_w(1,data);
+    filter_w(1, data);
 }
 
 
 
-WRITE_HANDLER( gyruss_sh_irqtrigger_w )
+WRITE_HANDLER(gyruss_sh_irqtrigger_w)
 {
-	/* writing to this register triggers IRQ on the sound CPU */
-	cpu_cause_interrupt(1,0xff);
+    /* writing to this register triggers IRQ on the sound CPU */
+    cpu_cause_interrupt(1, 0xff);
 }
 
-WRITE_HANDLER( gyruss_i8039_irq_w )
+WRITE_HANDLER(gyruss_i8039_irq_w)
 {
-	cpu_cause_interrupt(2,I8039_EXT_INT);
+    cpu_cause_interrupt(2, I8039_EXT_INT);
 }

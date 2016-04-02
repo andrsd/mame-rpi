@@ -18,55 +18,52 @@
 /* Bit 7 comes from the QA output of the LS90 producing a sequence of	*/
 /*		 0, 0, 0, 0, 0, 1, 1, 1, 1, 1			 						*/
 
-static int frogger_timer[10] =
-{
-	0x00, 0x10, 0x08, 0x18, 0x40, 0x90, 0x88, 0x98, 0x88, 0xd0
+static int frogger_timer[10] = {
+    0x00, 0x10, 0x08, 0x18, 0x40, 0x90, 0x88, 0x98, 0x88, 0xd0
 };
 
-READ_HANDLER( frogger_portB_r )
+READ_HANDLER(frogger_portB_r)
 {
-	/* need to protect from totalcycles overflow */
-	static int last_totalcycles = 0;
+    /* need to protect from totalcycles overflow */
+    static int last_totalcycles = 0;
 
-	/* number of Z80 clock cycles to count */
-	static int clock;
+    /* number of Z80 clock cycles to count */
+    static int clock;
 
-	int current_totalcycles;
+    int current_totalcycles;
 
-	current_totalcycles = cpu_gettotalcycles();
-	clock = (clock + (current_totalcycles-last_totalcycles)) % 5120;
+    current_totalcycles = cpu_gettotalcycles();
+    clock = (clock + (current_totalcycles - last_totalcycles)) % 5120;
 
-	last_totalcycles = current_totalcycles;
+    last_totalcycles = current_totalcycles;
 
-	return frogger_timer[clock/512];
+    return frogger_timer[clock / 512];
 }
 
 
 
-WRITE_HANDLER( frogger_sh_irqtrigger_w )
+WRITE_HANDLER(frogger_sh_irqtrigger_w)
 {
-	static int last;
+    static int last;
 
 
-	if (last == 0 && (data & 0x08) != 0)
-	{
-		/* setting bit 3 low then high triggers IRQ on the sound CPU */
-		cpu_cause_interrupt(1,0xff);
-	}
+    if (last == 0 && (data & 0x08) != 0) {
+        /* setting bit 3 low then high triggers IRQ on the sound CPU */
+        cpu_cause_interrupt(1, 0xff);
+    }
 
-	last = data & 0x08;
+    last = data & 0x08;
 }
 
-WRITE_HANDLER( frogger2_sh_irqtrigger_w )
+WRITE_HANDLER(frogger2_sh_irqtrigger_w)
 {
-	static int last;
+    static int last;
 
 
-	if (last == 0 && (data & 0x01) != 0)
-	{
-		/* setting bit 0 low then high triggers IRQ on the sound CPU */
-		cpu_cause_interrupt(1,0xff);
-	}
+    if (last == 0 && (data & 0x01) != 0) {
+        /* setting bit 0 low then high triggers IRQ on the sound CPU */
+        cpu_cause_interrupt(1, 0xff);
+    }
 
-	last = data & 0x01;
+    last = data & 0x01;
 }

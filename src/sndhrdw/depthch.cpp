@@ -17,63 +17,56 @@
 
 
 /* sample file names */
-const char *depthch_sample_names[] =
-{
-	"*depthch",
-	"longex.wav",
-	"shortex.wav",
-	"spray.wav",
-	"sonar.wav",
-	"sonarena.wav",	/* currently not used */
-	0
+const char *depthch_sample_names[] = {
+    "*depthch",
+    "longex.wav",
+    "shortex.wav",
+    "spray.wav",
+    "sonar.wav",
+    "sonarena.wav",	/* currently not used */
+    0
 };
 
 /* sample sound IDs - must match sample file name table above */
-enum
-{
-	SND_LONGEXPL = 0,
-	SND_SHRTEXPL,
-	SND_SPRAY,
-	SND_SONAR,
-	SND_SONARENA
+enum {
+    SND_LONGEXPL = 0,
+    SND_SHRTEXPL,
+    SND_SPRAY,
+    SND_SONAR,
+    SND_SONARENA
 };
 
 
-WRITE_HANDLER( depthch_sh_port1_w )
+WRITE_HANDLER(depthch_sh_port1_w)
 {
-	static int port1State = 0;
-	int bitsChanged;
-	int bitsGoneHigh;
-	int bitsGoneLow;
+    static int port1State = 0;
+    int bitsChanged;
+    int bitsGoneHigh;
+    int bitsGoneLow;
 
 
-	bitsChanged  = port1State ^ data;
-	bitsGoneHigh = bitsChanged & data;
-	bitsGoneLow  = bitsChanged & ~data;
+    bitsChanged  = port1State ^ data;
+    bitsGoneHigh = bitsChanged & data;
+    bitsGoneLow  = bitsChanged & ~data;
 
-	port1State = data;
+    port1State = data;
 
-	if ( bitsGoneHigh & OUT_PORT_1_LONGEXPL )
-	{
-		PLAY( SND_LONGEXPL, 0 );
-	}
+    if (bitsGoneHigh & OUT_PORT_1_LONGEXPL) {
+        PLAY(SND_LONGEXPL, 0);
+    }
 
-	if ( bitsGoneHigh & OUT_PORT_1_SHRTEXPL )
-	{
-		PLAY( SND_SHRTEXPL, 0 );
-	}
+    if (bitsGoneHigh & OUT_PORT_1_SHRTEXPL) {
+        PLAY(SND_SHRTEXPL, 0);
+    }
 
-	if ( bitsGoneHigh & OUT_PORT_1_SPRAY )
-	{
-		PLAY( SND_SPRAY, 0 );
-	}
+    if (bitsGoneHigh & OUT_PORT_1_SPRAY) {
+        PLAY(SND_SPRAY, 0);
+    }
 
-	if ( bitsGoneHigh & OUT_PORT_1_SONAR )
-	{
-		PLAY( SND_SONAR, 1 );
-	}
-	if ( bitsGoneLow & OUT_PORT_1_SONAR )
-	{
-		STOP( SND_SONAR );
-	}
+    if (bitsGoneHigh & OUT_PORT_1_SONAR) {
+        PLAY(SND_SONAR, 1);
+    }
+    if (bitsGoneLow & OUT_PORT_1_SONAR) {
+        STOP(SND_SONAR);
+    }
 }

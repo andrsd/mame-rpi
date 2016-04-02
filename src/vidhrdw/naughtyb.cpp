@@ -11,7 +11,7 @@
 
 
 /* from sndhrdw/pleiads.c */
-WRITE_HANDLER( pleiads_sound_control_c_w );
+WRITE_HANDLER(pleiads_sound_control_c_w);
 
 unsigned char *naughtyb_videoram2;
 
@@ -27,22 +27,19 @@ static unsigned char palreg;
 static int bankreg;
 
 
-static struct rectangle scrollvisiblearea =
-{
-	2*8, 34*8-1,
-	0*8, 28*8-1
+static struct rectangle scrollvisiblearea = {
+    2 * 8, 34 * 8 - 1,
+    0 * 8, 28 * 8 - 1
 };
 
-static struct rectangle leftvisiblearea =
-{
-	0*8, 2*8-1,
-	0*8, 28*8-1
+static struct rectangle leftvisiblearea = {
+    0 * 8, 2 * 8 - 1,
+    0 * 8, 28 * 8 - 1
 };
 
-static struct rectangle rightvisiblearea =
-{
-	34*8, 36*8-1,
-	0*8, 28*8-1
+static struct rectangle rightvisiblearea = {
+    34 * 8, 36 * 8 - 1,
+    0 * 8, 28 * 8 - 1
 };
 
 
@@ -68,60 +65,55 @@ static struct rectangle rightvisiblearea =
   plus 270 ohm pullup and pulldown resistors on all lines
 
 ***************************************************************************/
-void naughtyb_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void naughtyb_vh_convert_color_prom(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-	int i;
-	#define TOTAL_COLORS(gfxn) (Machine->gfx[gfxn]->total_colors * Machine->gfx[gfxn]->color_granularity)
-	#define COLOR(gfxn,offs) (colortable[Machine->drv->gfxdecodeinfo[gfxn].color_codes_start + offs])
+    int i;
+#define TOTAL_COLORS(gfxn) (Machine->gfx[gfxn]->total_colors * Machine->gfx[gfxn]->color_granularity)
+#define COLOR(gfxn,offs) (colortable[Machine->drv->gfxdecodeinfo[gfxn].color_codes_start + offs])
 
 
-	for (i = 0;i < Machine->drv->total_colors;i++)
-	{
-		int bit0,bit1;
+    for (i = 0; i < Machine->drv->total_colors; i++) {
+        int bit0, bit1;
 
 
-		bit0 = (color_prom[0] >> 0) & 0x01;
-		bit1 = (color_prom[Machine->drv->total_colors] >> 0) & 0x01;
-		*(palette++) = 0x55 * bit0 + 0xaa * bit1;
-		bit0 = (color_prom[0] >> 2) & 0x01;
-		bit1 = (color_prom[Machine->drv->total_colors] >> 2) & 0x01;
-		*(palette++) = 0x55 * bit0 + 0xaa * bit1;
-		bit0 = (color_prom[0] >> 1) & 0x01;
-		bit1 = (color_prom[Machine->drv->total_colors] >> 1) & 0x01;
-		*(palette++) = 0x55 * bit0 + 0xaa * bit1;
+        bit0 = (color_prom[0] >> 0) & 0x01;
+        bit1 = (color_prom[Machine->drv->total_colors] >> 0) & 0x01;
+        * (palette++) = 0x55 * bit0 + 0xaa * bit1;
+        bit0 = (color_prom[0] >> 2) & 0x01;
+        bit1 = (color_prom[Machine->drv->total_colors] >> 2) & 0x01;
+        * (palette++) = 0x55 * bit0 + 0xaa * bit1;
+        bit0 = (color_prom[0] >> 1) & 0x01;
+        bit1 = (color_prom[Machine->drv->total_colors] >> 1) & 0x01;
+        * (palette++) = 0x55 * bit0 + 0xaa * bit1;
 
-		color_prom++;
-	}
+        color_prom++;
+    }
 
-	/* first bank of characters use colors 0-31, 64-95, 128-159 and 192-223 */
-	for (i = 0;i < 8;i++)
-	{
-		int j;
-
-
-		for (j = 0;j < 4;j++)
-		{
-			COLOR(0,4*i + j*4*8) = i + j*64;
-			COLOR(0,4*i + j*4*8 + 1) = 8 + i + j*64;
-			COLOR(0,4*i + j*4*8 + 2) = 2*8 + i + j*64;
-			COLOR(0,4*i + j*4*8 + 3) = 3*8 + i + j*64;
-		}
-	}
-
-	/* second bank of characters use colors 32-63, 96-127, 160-191 and 224-255 */
-	for (i = 0;i < 8;i++)
-	{
-		int j;
+    /* first bank of characters use colors 0-31, 64-95, 128-159 and 192-223 */
+    for (i = 0; i < 8; i++) {
+        int j;
 
 
-		for (j = 0;j < 4;j++)
-		{
-			COLOR(1,4*i + j*4*8) = i + 32 + j*64;
-			COLOR(1,4*i + j*4*8 + 1) = 8 + i + 32 + j*64;
-			COLOR(1,4*i + j*4*8 + 2) = 2*8 + i + 32 + j*64;
-			COLOR(1,4*i + j*4*8 + 3) = 3*8 + i + 32 + j*64;
-		}
-	}
+        for (j = 0; j < 4; j++) {
+            COLOR(0, 4 * i + j * 4 * 8) = i + j * 64;
+            COLOR(0, 4 * i + j * 4 * 8 + 1) = 8 + i + j * 64;
+            COLOR(0, 4 * i + j * 4 * 8 + 2) = 2 * 8 + i + j * 64;
+            COLOR(0, 4 * i + j * 4 * 8 + 3) = 3 * 8 + i + j * 64;
+        }
+    }
+
+    /* second bank of characters use colors 32-63, 96-127, 160-191 and 224-255 */
+    for (i = 0; i < 8; i++) {
+        int j;
+
+
+        for (j = 0; j < 4; j++) {
+            COLOR(1, 4 * i + j * 4 * 8) = i + 32 + j * 64;
+            COLOR(1, 4 * i + j * 4 * 8 + 1) = 8 + i + 32 + j * 64;
+            COLOR(1, 4 * i + j * 4 * 8 + 2) = 2 * 8 + i + 32 + j * 64;
+            COLOR(1, 4 * i + j * 4 * 8 + 3) = 3 * 8 + i + 32 + j * 64;
+        }
+    }
 }
 
 
@@ -133,20 +125,19 @@ void naughtyb_vh_convert_color_prom(unsigned char *palette, unsigned short *colo
 ***************************************************************************/
 int naughtyb_vh_start(void)
 {
-	videoreg = palreg = bankreg = 0;
+    videoreg = palreg = bankreg = 0;
 
-	/* Naughty Boy has a virtual screen twice as large as the visible screen */
-	if ((dirtybuffer = (unsigned char*)malloc(videoram_size)) == 0)
-		return 1;
-	memset(dirtybuffer, 1, videoram_size);
+    /* Naughty Boy has a virtual screen twice as large as the visible screen */
+    if ((dirtybuffer = (unsigned char*) malloc(videoram_size)) == 0)
+        return 1;
+    memset(dirtybuffer, 1, videoram_size);
 
-	if ((tmpbitmap = bitmap_alloc(68*8,28*8)) == 0)
-	{
-		free(dirtybuffer);
-		return 1;
-	}
+    if ((tmpbitmap = bitmap_alloc(68 * 8, 28 * 8)) == 0) {
+        free(dirtybuffer);
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -158,54 +149,51 @@ int naughtyb_vh_start(void)
 ***************************************************************************/
 void naughtyb_vh_stop(void)
 {
-	bitmap_free(tmpbitmap);
-	free(dirtybuffer);
+    bitmap_free(tmpbitmap);
+    free(dirtybuffer);
 }
 
 
 
-WRITE_HANDLER( naughtyb_videoram2_w )
+WRITE_HANDLER(naughtyb_videoram2_w)
 {
-	if (naughtyb_videoram2[offset] != data)
-	{
-		dirtybuffer[offset] = 1;
+    if (naughtyb_videoram2[offset] != data) {
+        dirtybuffer[offset] = 1;
 
-		naughtyb_videoram2[offset] = data;
-	}
+        naughtyb_videoram2[offset] = data;
+    }
 }
 
 
 
-WRITE_HANDLER( naughtyb_videoreg_w )
+WRITE_HANDLER(naughtyb_videoreg_w)
 {
-	/* bits 4+5 control the sound circuit */
-	pleiads_sound_control_c_w(offset,data);
+    /* bits 4+5 control the sound circuit */
+    pleiads_sound_control_c_w(offset, data);
 
-    if ((videoreg & 0x0f) != (data & 0x0f))
-	{
-		videoreg = data;
+    if ((videoreg & 0x0f) != (data & 0x0f)) {
+        videoreg = data;
 
-		palreg  = (data >> 1) & 0x03;	/* pallette sel is bit 1 & 2 */
-		bankreg = (data >> 2) & 0x01;	/* banksel is just bit 2 */
+        palreg  = (data >> 1) & 0x03;	/* pallette sel is bit 1 & 2 */
+        bankreg = (data >> 2) & 0x01;	/* banksel is just bit 2 */
 
-		memset (dirtybuffer, 1, videoram_size);
-	}
+        memset(dirtybuffer, 1, videoram_size);
+    }
 }
 
-WRITE_HANDLER( popflame_videoreg_w )
+WRITE_HANDLER(popflame_videoreg_w)
 {
-	/* bits 4+5 control the sound circuit */
-	pleiads_sound_control_c_w(offset,data);
+    /* bits 4+5 control the sound circuit */
+    pleiads_sound_control_c_w(offset, data);
 
-    if ((videoreg & 0x0f) != (data & 0x0f))
-	{
-		videoreg = data;
+    if ((videoreg & 0x0f) != (data & 0x0f)) {
+        videoreg = data;
 
-		palreg  = (data >> 1) & 0x03;	/* pallette sel is bit 1 & 2 */
-		bankreg = (data >> 3) & 0x01;	/* banksel is just bit 3 */
+        palreg  = (data >> 1) & 0x03;	/* pallette sel is bit 1 & 2 */
+        bankreg = (data >> 3) & 0x01;	/* banksel is just bit 3 */
 
-		memset (dirtybuffer, 1, videoram_size);
-	}
+        memset(dirtybuffer, 1, videoram_size);
+    }
 }
 
 
@@ -258,59 +246,54 @@ WRITE_HANDLER( popflame_videoreg_w )
 
 
 ***************************************************************************/
-void naughtyb_vh_screenrefresh(struct osd_bitmap *bitmap,int full_refresh)
+void naughtyb_vh_screenrefresh(struct osd_bitmap *bitmap, int full_refresh)
 {
-	int offs;
+    int offs;
 
 
-	/* for every character in the Video RAM, check if it has been modified */
-	/* since last time and update it accordingly. */
-	for (offs = videoram_size - 1;offs >= 0;offs--)
-	{
-		if (dirtybuffer[offs])
-		{
-			int sx,sy;
+    /* for every character in the Video RAM, check if it has been modified */
+    /* since last time and update it accordingly. */
+    for (offs = videoram_size - 1; offs >= 0; offs--) {
+        if (dirtybuffer[offs]) {
+            int sx, sy;
 
 
-			dirtybuffer[offs] = 0;
+            dirtybuffer[offs] = 0;
 
-			if (offs < 0x700)
-			{
-				sx = offs % 64;
-				sy = offs / 64;
-			}
-			else
-			{
-				sx = 64 + (offs - 0x700) % 4;
-				sy = (offs - 0x700) / 4;
-			}
+            if (offs < 0x700) {
+                sx = offs % 64;
+                sy = offs / 64;
+            } else {
+                sx = 64 + (offs - 0x700) % 4;
+                sy = (offs - 0x700) / 4;
+            }
 
-			drawgfx(tmpbitmap,Machine->gfx[0],
-					naughtyb_videoram2[offs] + 256 * bankreg,
-					(naughtyb_videoram2[offs] >> 5) + 8 * palreg,
-					0,0,
-					8*sx,8*sy,
-					0,TRANSPARENCY_NONE,0);
+            drawgfx(tmpbitmap, Machine->gfx[0],
+                    naughtyb_videoram2[offs] + 256 * bankreg,
+                    (naughtyb_videoram2[offs] >> 5) + 8 * palreg,
+                    0, 0,
+                    8 * sx, 8 * sy,
+                    0, TRANSPARENCY_NONE, 0);
 
-			drawgfx(tmpbitmap,Machine->gfx[1],
-					videoram[offs] + 256*bankreg,
-					(videoram[offs] >> 5) + 8 * palreg,
-					0,0,
-					8*sx,8*sy,
-					0,TRANSPARENCY_PEN,0);
-		}
-	}
+            drawgfx(tmpbitmap, Machine->gfx[1],
+                    videoram[offs] + 256 * bankreg,
+                    (videoram[offs] >> 5) + 8 * palreg,
+                    0, 0,
+                    8 * sx, 8 * sy,
+                    0, TRANSPARENCY_PEN, 0);
+        }
+    }
 
 
-	/* copy the temporary bitmap to the screen */
-	{
-		int scrollx;
+    /* copy the temporary bitmap to the screen */
+    {
+        int scrollx;
 
 
-		copybitmap(bitmap,tmpbitmap,0,0,-66*8,0,&leftvisiblearea,TRANSPARENCY_NONE,0);
-		copybitmap(bitmap,tmpbitmap,0,0,-30*8,0,&rightvisiblearea,TRANSPARENCY_NONE,0);
+        copybitmap(bitmap, tmpbitmap, 0, 0, -66 * 8, 0, &leftvisiblearea, TRANSPARENCY_NONE, 0);
+        copybitmap(bitmap, tmpbitmap, 0, 0, -30 * 8, 0, &rightvisiblearea, TRANSPARENCY_NONE, 0);
 
-		scrollx = -*naughtyb_scrollreg + 16;
-		copyscrollbitmap(bitmap,tmpbitmap,1,&scrollx,0,0,&scrollvisiblearea,TRANSPARENCY_NONE,0);
-	}
+        scrollx = -*naughtyb_scrollreg + 16;
+        copyscrollbitmap(bitmap, tmpbitmap, 1, &scrollx, 0, 0, &scrollvisiblearea, TRANSPARENCY_NONE, 0);
+    }
 }

@@ -19,13 +19,12 @@ extern unsigned char *copsnrob_carimage;
 // I read out the current gun position via the sprite image locations,
 // and then decrement/increment it if the up/down keys are pressed.
 
-READ_HANDLER( copsnrob_gun_position_r )
+READ_HANDLER(copsnrob_gun_position_r)
 {
     int keys, current_car_image, current_gun_pos = 0;
 
     // Determine which player we need
-    switch (offset)
-    {
+    switch (offset) {
     default:
     case 0x00:
         current_car_image = copsnrob_carimage[0];
@@ -44,12 +43,9 @@ READ_HANDLER( copsnrob_gun_position_r )
         keys = input_port_7_r(0);
     }
 
-    if (current_car_image < 7)
-    {
+    if (current_car_image < 7) {
         current_gun_pos = 6 - current_car_image;
-    }
-    else if (current_car_image < 14)
-    {
+    } else if (current_car_image < 14) {
         current_gun_pos = 13 - current_car_image;
     }
 

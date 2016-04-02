@@ -51,12 +51,12 @@ static int motor_amp_new;
 static int motor_amp_step;
 static int motor_amp_counter;
 
-WRITE_HANDLER( bzone_sounds_w )
+WRITE_HANDLER(bzone_sounds_w)
 {
-	if( data == latch )
-		return;
+    if (data == latch)
+        return;
 
-	stream_update(channel, 0);
+    stream_update(channel, 0);
     latch = data;
 
     mixer_sound_enable_global_w(latch & 0x20);
@@ -64,220 +64,203 @@ WRITE_HANDLER( bzone_sounds_w )
 
 static void bzone_sound_update(int param, INT16 *buffer, int length)
 {
-	while( length-- )
-	{
-		static int last_val = 0;
-		int sum = 0;
+    while (length--) {
+        static int last_val = 0;
+        int sum = 0;
 
-		/* polynome shifter H5 and H4 (LS164) clocked with 6kHz */
-		poly_counter -= 6000;
-		while( poly_counter <= 0 )
-		{
-			int clock;
+        /* polynome shifter H5 and H4 (LS164) clocked with 6kHz */
+        poly_counter -= 6000;
+        while (poly_counter <= 0) {
+            int clock;
 
-			poly_counter += Machine->sample_rate;
-			if( ((poly_shift & 0x0008) == 0) == ((poly_shift & 0x4000) == 0) )
-				poly_shift = (poly_shift << 1) | 1;
-			else
-				poly_shift <<= 1;
+            poly_counter += Machine->sample_rate;
+            if (((poly_shift & 0x0008) == 0) == ((poly_shift & 0x4000) == 0))
+                poly_shift = (poly_shift << 1) | 1;
+            else
+                poly_shift <<= 1;
 
-			/* NAND gate J4 */
-			clock = ((poly_shift & 0x7000) == 0x7000) ? 0 : 1;
+            /* NAND gate J4 */
+            clock = ((poly_shift & 0x7000) == 0x7000) ? 0 : 1;
 
-			/* raising edge on pin 3 of J5 (LS74)? */
-			if( clock && !explosion_clock )
-				explosion_out ^= 1;
+            /* raising edge on pin 3 of J5 (LS74)? */
+            if (clock && !explosion_clock)
+                explosion_out ^= 1;
 
-			/* save explo clock level */
-			explosion_clock = clock;
+            /* save explo clock level */
+            explosion_clock = clock;
 
-			/* input 11 of J5 (LS74) */
-			clock = (poly_shift >> 15) & 1;
+            /* input 11 of J5 (LS74) */
+            clock = (poly_shift >> 15) & 1;
 
-			/* raising edge on pin 11 of J5 (LS74)? */
-			if( clock && !shell_clock )
-				shell_out ^= 1;
+            /* raising edge on pin 11 of J5 (LS74)? */
+            if (clock && !shell_clock)
+                shell_out ^= 1;
 
-			/* save shell clock level */
-			shell_clock = clock;
-		}
+            /* save shell clock level */
+            shell_clock = clock;
+        }
 
-		/* explosion enable: charge C14 */
-		if( latch & 0x01 )
-			explosion_amp = 32767;
+        /* explosion enable: charge C14 */
+        if (latch & 0x01)
+            explosion_amp = 32767;
 
-		/* explosion output? */
-		if( explosion_out )
-		{
-			if( explosion_amp > 0 )
-			{
-				/*
-				 * discharge C14 through R17 + R16
-				 * time constant is 10e-6 * 23000 = 0.23 seconds
-				 * (samples were decaying much slower: 1/4th rate? )
-				 */
-				explosion_amp_counter -= (int)(32767 / (0.23*4));
-				if( explosion_amp_counter < 0 )
-				{
-					int n = (-explosion_amp_counter / Machine->sample_rate) + 1;
-					explosion_amp_counter += n * Machine->sample_rate;
-					if( (explosion_amp -= n) < 0 )
-						explosion_amp = 0;
-				}
-			}
-			/*
-			 * I don't know the amplification of the op-amp
-			 * and feedback, so the loud/soft values are arbitrary
-			 */
-			if( latch & 0x02 )	/* explosion loud ? */
-				sum += EXP(0,explosion_amp)/3;
-			else
-				sum += EXP(0,explosion_amp)/4;
-		}
+        /* explosion output? */
+        if (explosion_out) {
+            if (explosion_amp > 0) {
+                /*
+                 * discharge C14 through R17 + R16
+                 * time constant is 10e-6 * 23000 = 0.23 seconds
+                 * (samples were decaying much slower: 1/4th rate? )
+                 */
+                explosion_amp_counter -= (int)(32767 / (0.23 * 4));
+                if (explosion_amp_counter < 0) {
+                    int n = (-explosion_amp_counter / Machine->sample_rate) + 1;
+                    explosion_amp_counter += n * Machine->sample_rate;
+                    if ((explosion_amp -= n) < 0)
+                        explosion_amp = 0;
+                }
+            }
+            /*
+             * I don't know the amplification of the op-amp
+             * and feedback, so the loud/soft values are arbitrary
+             */
+            if (latch & 0x02)	/* explosion loud ? */
+                sum += EXP(0, explosion_amp) / 3;
+            else
+                sum += EXP(0, explosion_amp) / 4;
+        }
 
-		/* shell enable: charge C9 */
-		if( latch & 0x04 )
-			shell_amp = 32767;
+        /* shell enable: charge C9 */
+        if (latch & 0x04)
+            shell_amp = 32767;
 
-		/* shell output? */
-		if( shell_out )
-		{
-			if( shell_amp > 0 )
-			{
-				/*
-				 * discharge C9 through R14 + R15
-				 * time constant is 4.7e-6 * 23000 = 0.1081 seconds
-				 * (samples were decaying much slower: 1/4th rate? )
-				 */
-				shell_amp_counter -= (int)(32767 / (0.1081*4));
-				if( shell_amp_counter < 0 )
-				{
-					int n = (-shell_amp_counter / Machine->sample_rate) + 1;
-					shell_amp_counter += n * Machine->sample_rate;
-					if( (shell_amp -= n) < 0 )
-						shell_amp = 0;
-				}
-			}
-			/*
-			 * I don't know the amplification of the op-amp
-			 * and feedback, so the loud/soft values are arbitrary
-			 */
-			if( latch & 0x08 )	/* shell loud ? */
-				sum += EXP(0,shell_amp)/3;
-			else
-				sum += EXP(0,shell_amp)/4;
-		}
+        /* shell output? */
+        if (shell_out) {
+            if (shell_amp > 0) {
+                /*
+                 * discharge C9 through R14 + R15
+                 * time constant is 4.7e-6 * 23000 = 0.1081 seconds
+                 * (samples were decaying much slower: 1/4th rate? )
+                 */
+                shell_amp_counter -= (int)(32767 / (0.1081 * 4));
+                if (shell_amp_counter < 0) {
+                    int n = (-shell_amp_counter / Machine->sample_rate) + 1;
+                    shell_amp_counter += n * Machine->sample_rate;
+                    if ((shell_amp -= n) < 0)
+                        shell_amp = 0;
+                }
+            }
+            /*
+             * I don't know the amplification of the op-amp
+             * and feedback, so the loud/soft values are arbitrary
+             */
+            if (latch & 0x08)	/* shell loud ? */
+                sum += EXP(0, shell_amp) / 3;
+            else
+                sum += EXP(0, shell_amp) / 4;
+        }
 
-		if( latch & 0x80 )
-		{
-			static float r0 = 1.0/1e12, r1 = 1.0/1e12;
+        if (latch & 0x80) {
+            static float r0 = 1.0 / 1e12, r1 = 1.0 / 1e12;
 
-			/* NE5555 timer
-			 * C = 0.018u, Ra = 100k, Rb = 125k
-			 * charge time = 0.693 * (Ra + Rb) * C = 3870us
-			 * discharge time = 0.693 * Rb * C = 1559.25us
-			 * freq approx. 184 Hz
-			 * I have no idea what frequencies are coming from the NE555
-			 * with "MOTOR REV EN" being high or low. I took 240Hz as
-			 * higher rate and sweep up or down to the new rate in 0.25s
-			 */
-			motor_rate_new = (latch & 0x10) ? 240 : 184;
-			if( motor_rate != motor_rate_new )
-			{
-				/* sweep rate to new rate */
-				motor_rate_counter -= (int)((240 - 184) / 0.25);
-				while( motor_rate_counter <= 0 )
-				{
-					motor_rate_counter += Machine->sample_rate;
-					motor_rate += (motor_rate < motor_rate_new) ? +1 : -1;
-				}
-			}
-			motor_counter -= motor_rate;
-			while( motor_counter <= 0 )
-			{
-				motor_counter += Machine->sample_rate;
+            /* NE5555 timer
+             * C = 0.018u, Ra = 100k, Rb = 125k
+             * charge time = 0.693 * (Ra + Rb) * C = 3870us
+             * discharge time = 0.693 * Rb * C = 1559.25us
+             * freq approx. 184 Hz
+             * I have no idea what frequencies are coming from the NE555
+             * with "MOTOR REV EN" being high or low. I took 240Hz as
+             * higher rate and sweep up or down to the new rate in 0.25s
+             */
+            motor_rate_new = (latch & 0x10) ? 240 : 184;
+            if (motor_rate != motor_rate_new) {
+                /* sweep rate to new rate */
+                motor_rate_counter -= (int)((240 - 184) / 0.25);
+                while (motor_rate_counter <= 0) {
+                    motor_rate_counter += Machine->sample_rate;
+                    motor_rate += (motor_rate < motor_rate_new) ? +1 : -1;
+                }
+            }
+            motor_counter -= motor_rate;
+            while (motor_counter <= 0) {
+                motor_counter += Machine->sample_rate;
 
-				r0 = 1.0/1e12;
-				r1 = 1.0/1e12;
+                r0 = 1.0 / 1e12;
+                r1 = 1.0 / 1e12;
 
-				if( ++motor_counter_a == 16 )
-					motor_counter_a = 6;
-				if( ++motor_counter_b == 16 )
-					motor_counter_b = 4;
+                if (++motor_counter_a == 16)
+                    motor_counter_a = 6;
+                if (++motor_counter_b == 16)
+                    motor_counter_b = 4;
 
-				if( motor_counter_a & 8 )	/* bit 3 */
-					r1 += 1.0/33000;
-				else
-					r0 += 1.0/33000;
-				if( motor_counter_a == 15 ) /* ripple carry */
-					r1 += 1.0/33000;
-				else
-					r0 += 1.0/33000;
+                if (motor_counter_a & 8)	/* bit 3 */
+                    r1 += 1.0 / 33000;
+                else
+                    r0 += 1.0 / 33000;
+                if (motor_counter_a == 15)   /* ripple carry */
+                    r1 += 1.0 / 33000;
+                else
+                    r0 += 1.0 / 33000;
 
-				if( motor_counter_b & 8 )	/* bit 3 */
-					r1 += 1.0/33000;
-				else
-					r0 += 1.0/33000;
-				if( motor_counter_b == 15 ) /* ripple carry */
-					r1 += 1.0/33000;
-				else
-					r0 += 1.0/33000;
+                if (motor_counter_b & 8)	/* bit 3 */
+                    r1 += 1.0 / 33000;
+                else
+                    r0 += 1.0 / 33000;
+                if (motor_counter_b == 15)   /* ripple carry */
+                    r1 += 1.0 / 33000;
+                else
+                    r0 += 1.0 / 33000;
 
-				/* new voltage at C29 */
-				r0 = 1.0/r0;
-				r1 = 1.0/r1;
-				motor_amp_new = (int)(32767 * r0 / (r0 + r1));
+                /* new voltage at C29 */
+                r0 = 1.0 / r0;
+                r1 = 1.0 / r1;
+                motor_amp_new = (int)(32767 * r0 / (r0 + r1));
 
-				/* charge/discharge C29 (0.47uF) */
-				if( motor_amp_new > motor_amp )
-					motor_amp_step = (int)((motor_amp_new - motor_amp) / (r1*0.47e-6));
-				else
-					motor_amp_step = (int)((motor_amp - motor_amp_new) / (r0*0.47e-6));
-			}
-			if( motor_amp != motor_amp_new )
-			{
-				motor_amp_counter -= motor_amp_step;
-				if( motor_amp_counter < 0 )
-				{
-					int n = (-motor_amp_counter / Machine->sample_rate) + 1;
-					motor_amp_counter += n * Machine->sample_rate;
-					if( motor_amp > motor_amp_new )
-					{
-						motor_amp -= n;
-						if( motor_amp < motor_amp_new )
-							motor_amp = motor_amp_new;
-					}
-					else
-					{
-						motor_amp += n;
-						if( motor_amp > motor_amp_new )
-							motor_amp = motor_amp_new;
-					}
-				}
-			}
-			sum += EXP((motor_amp<motor_amp_new),motor_amp)/3;
-		}
+                /* charge/discharge C29 (0.47uF) */
+                if (motor_amp_new > motor_amp)
+                    motor_amp_step = (int)((motor_amp_new - motor_amp) / (r1 * 0.47e-6));
+                else
+                    motor_amp_step = (int)((motor_amp - motor_amp_new) / (r0 * 0.47e-6));
+            }
+            if (motor_amp != motor_amp_new) {
+                motor_amp_counter -= motor_amp_step;
+                if (motor_amp_counter < 0) {
+                    int n = (-motor_amp_counter / Machine->sample_rate) + 1;
+                    motor_amp_counter += n * Machine->sample_rate;
+                    if (motor_amp > motor_amp_new) {
+                        motor_amp -= n;
+                        if (motor_amp < motor_amp_new)
+                            motor_amp = motor_amp_new;
+                    } else {
+                        motor_amp += n;
+                        if (motor_amp > motor_amp_new)
+                            motor_amp = motor_amp_new;
+                    }
+                }
+            }
+            sum += EXP((motor_amp < motor_amp_new), motor_amp) / 3;
+        }
 
-		*buffer++ = (sum + last_val) / 2;
+        *buffer++ = (sum + last_val) / 2;
 
-		/* crude 75% low pass filter */
-		last_val = (sum + last_val * 3) / 4;
-	}
+        /* crude 75% low pass filter */
+        last_val = (sum + last_val * 3) / 4;
+    }
 }
 
 int bzone_sh_start(const struct MachineSound *msound)
 {
     int i;
 
-	discharge = (INT16 *)malloc(32768 * sizeof(INT16));
-	if( !discharge )
+    discharge = (INT16 *) malloc(32768 * sizeof(INT16));
+    if (!discharge)
         return 1;
 
-    for( i = 0; i < 0x8000; i++ )
-		discharge[0x7fff-i] = (INT16) (0x7fff/exp(1.0*i/4096));
+    for (i = 0; i < 0x8000; i++)
+        discharge[0x7fff - i] = (INT16)(0x7fff / exp(1.0 * i / 4096));
 
-	channel = stream_init("Custom", 50, Machine->sample_rate, 0, bzone_sound_update);
-    if( channel == -1 )
+    channel = stream_init("Custom", 50, Machine->sample_rate, 0, bzone_sound_update);
+    if (channel == -1)
         return 1;
 
     return 0;
@@ -285,14 +268,14 @@ int bzone_sh_start(const struct MachineSound *msound)
 
 void bzone_sh_stop(void)
 {
-	if( discharge )
-		free(discharge);
-	discharge = NULL;
+    if (discharge)
+        free(discharge);
+    discharge = NULL;
 }
 
 void bzone_sh_update(void)
 {
-	stream_update(channel, 0);
+    stream_update(channel, 0);
 }
 
 

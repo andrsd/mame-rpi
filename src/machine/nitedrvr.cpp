@@ -20,17 +20,17 @@ static int nitedrvr_steering_val = 0x00;
 /***************************************************************************
 nitedrvr_ram_r
 ***************************************************************************/
-READ_HANDLER( nitedrvr_ram_r )
+READ_HANDLER(nitedrvr_ram_r)
 {
-	return nitedrvr_ram[offset];
+    return nitedrvr_ram[offset];
 }
 
 /***************************************************************************
 nitedrvr_ram_w
 ***************************************************************************/
-WRITE_HANDLER( nitedrvr_ram_w )
+WRITE_HANDLER(nitedrvr_ram_w)
 {
-	nitedrvr_ram[offset]=data;
+    nitedrvr_ram[offset] = data;
 }
 
 /***************************************************************************
@@ -44,49 +44,44 @@ change in-between can affect the direction you move.
 ***************************************************************************/
 static int nitedrvr_steering(void)
 {
-	static int last_val=0;
-	int this_val;
-	int delta;
+    static int last_val = 0;
+    int this_val;
+    int delta;
 
-	this_val=input_port_5_r(0);
+    this_val = input_port_5_r(0);
 
-	delta=this_val-last_val;
-	last_val=this_val;
-	if (delta>128) delta-=256;
-	else if (delta<-128) delta+=256;
-	/* Divide by four to make our steering less sensitive */
-	nitedrvr_steering_buf+=(delta/4);
+    delta = this_val - last_val;
+    last_val = this_val;
+    if (delta > 128) delta -= 256;
+    else if (delta < -128) delta += 256;
+    /* Divide by four to make our steering less sensitive */
+    nitedrvr_steering_buf += (delta / 4);
 
-	if (nitedrvr_steering_buf>0)
-	{
-		nitedrvr_steering_buf--;
-		nitedrvr_steering_val=0xC0;
-	}
-	else if (nitedrvr_steering_buf<0)
-	{
-		nitedrvr_steering_buf++;
-		nitedrvr_steering_val=0x80;
-	}
-	else
-	{
-		nitedrvr_steering_val=0x00;
-	}
+    if (nitedrvr_steering_buf > 0) {
+        nitedrvr_steering_buf--;
+        nitedrvr_steering_val = 0xC0;
+    } else if (nitedrvr_steering_buf < 0) {
+        nitedrvr_steering_buf++;
+        nitedrvr_steering_val = 0x80;
+    } else {
+        nitedrvr_steering_val = 0x00;
+    }
 
-	return nitedrvr_steering_val;
+    return nitedrvr_steering_val;
 }
 
 /***************************************************************************
 nitedrvr_steering_reset
 ***************************************************************************/
-READ_HANDLER( nitedrvr_steering_reset_r )
+READ_HANDLER(nitedrvr_steering_reset_r)
 {
-	nitedrvr_steering_val=0x00;
-	return 0;
+    nitedrvr_steering_val = 0x00;
+    return 0;
 }
 
-WRITE_HANDLER( nitedrvr_steering_reset_w )
+WRITE_HANDLER(nitedrvr_steering_reset_w)
 {
-	nitedrvr_steering_val=0x00;
+    nitedrvr_steering_val = 0x00;
 }
 
 
@@ -118,32 +113,31 @@ Night Driver looks for the following:
 Fill in the steering and gear bits in a special way.
 ***************************************************************************/
 
-READ_HANDLER( nitedrvr_in0_r )
+READ_HANDLER(nitedrvr_in0_r)
 {
-	int gear;
+    int gear;
 
-	gear=input_port_2_r(0);
-	if (gear & 0x10)				nitedrvr_gear=1;
-	else if (gear & 0x20)			nitedrvr_gear=2;
-	else if (gear & 0x40)			nitedrvr_gear=3;
-	else if (gear & 0x80)			nitedrvr_gear=4;
+    gear = input_port_2_r(0);
+    if (gear & 0x10)				nitedrvr_gear = 1;
+    else if (gear & 0x20)			nitedrvr_gear = 2;
+    else if (gear & 0x40)			nitedrvr_gear = 3;
+    else if (gear & 0x80)			nitedrvr_gear = 4;
 
-	switch (offset & 0x03)
-	{
-		case 0x00:						/* No remapping necessary */
-			return input_port_0_r(0);
-		case 0x01:						/* No remapping necessary */
-			return input_port_1_r(0);
-		case 0x02:						/* Remap our gear shift */
-			if (nitedrvr_gear==1)		return 0xE0;
-			else if (nitedrvr_gear==2)	return 0xD0;
-			else if (nitedrvr_gear==3)	return 0xB0;
-			else						return 0x70;
-		case 0x03:						/* Remap our steering */
-			return (input_port_3_r(0) | nitedrvr_steering());
-		default:
-			return 0xFF;
-	}
+    switch (offset & 0x03) {
+    case 0x00:						/* No remapping necessary */
+        return input_port_0_r(0);
+    case 0x01:						/* No remapping necessary */
+        return input_port_1_r(0);
+    case 0x02:						/* Remap our gear shift */
+        if (nitedrvr_gear == 1)		return 0xE0;
+        else if (nitedrvr_gear == 2)	return 0xD0;
+        else if (nitedrvr_gear == 3)	return 0xB0;
+        else						return 0x70;
+    case 0x03:						/* Remap our steering */
+        return (input_port_3_r(0) | nitedrvr_steering());
+    default:
+        return 0xFF;
+    }
 }
 
 /***************************************************************************
@@ -178,40 +172,42 @@ Night Driver looks for the following:
 Fill in the track difficulty switch and special signal in a special way.
 ***************************************************************************/
 
-READ_HANDLER( nitedrvr_in1_r )
+READ_HANDLER(nitedrvr_in1_r)
 {
-	static int ac_line=0x00;
-	int port;
+    static int ac_line = 0x00;
+    int port;
 
-	ac_line=(ac_line+1) % 3;
+    ac_line = (ac_line + 1) % 3;
 
-	port=input_port_4_r(0);
-	if (port & 0x10)				nitedrvr_track=0;
-	else if (port & 0x20)			nitedrvr_track=1;
-	else if (port & 0x40)			nitedrvr_track=2;
+    port = input_port_4_r(0);
+    if (port & 0x10)				nitedrvr_track = 0;
+    else if (port & 0x20)			nitedrvr_track = 1;
+    else if (port & 0x40)			nitedrvr_track = 2;
 
-	switch (offset & 0x07)
-	{
-		case 0x00:
-			return ((port & 0x01) << 7);
-		case 0x01:
-			return ((port & 0x02) << 6);
-		case 0x02:
-			return ((port & 0x04) << 5);
-		case 0x03:
-			return ((port & 0x08) << 4);
-		case 0x04:
-			if (nitedrvr_track == 1) return 0x80; else return 0x00;
-		case 0x05:
-			if (nitedrvr_track == 0) return 0x80; else return 0x00;
-		case 0x06:
-			/* TODO: fix alternating signal? */
-			if (ac_line==0) return 0x80; else return 0x00;
-		case 0x07:
-			return 0x00;
-		default:
-			return 0xFF;
-	}
+    switch (offset & 0x07) {
+    case 0x00:
+        return ((port & 0x01) << 7);
+    case 0x01:
+        return ((port & 0x02) << 6);
+    case 0x02:
+        return ((port & 0x04) << 5);
+    case 0x03:
+        return ((port & 0x08) << 4);
+    case 0x04:
+        if (nitedrvr_track == 1) return 0x80;
+        else return 0x00;
+    case 0x05:
+        if (nitedrvr_track == 0) return 0x80;
+        else return 0x00;
+    case 0x06:
+        /* TODO: fix alternating signal? */
+        if (ac_line == 0) return 0x80;
+        else return 0x00;
+    case 0x07:
+        return 0x00;
+    default:
+        return 0xFF;
+    }
 }
 
 /***************************************************************************
@@ -226,9 +222,9 @@ D3 = !SPEED4
 D4 = SKID1
 D5 = SKID2
 ***************************************************************************/
-WRITE_HANDLER( nitedrvr_out0_w )
+WRITE_HANDLER(nitedrvr_out0_w)
 {
-	/* TODO: put sound bits here */
+    /* TODO: put sound bits here */
 }
 
 /***************************************************************************
@@ -241,9 +237,9 @@ D3 = Not used?
 D4 = LED START
 D5 = Spare (Not used)
 ***************************************************************************/
-WRITE_HANDLER( nitedrvr_out1_w )
+WRITE_HANDLER(nitedrvr_out1_w)
 {
-	osd_led_w(0,(data & 0x10)>>4);
-	/* TODO: put sound bits here */
+    osd_led_w(0, (data & 0x10) >> 4);
+    /* TODO: put sound bits here */
 }
 

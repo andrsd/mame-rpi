@@ -320,22 +320,21 @@
 #define READ_PDP_18BIT(A) ((signed)cpu_readmem16(A))
 #define WRITE_PDP_18BIT(A,V) (cpu_writemem16(A,V))
 
-int intern_iot (int *io, int md);
-int (*extern_iot) (int *, int) = intern_iot;
-int execute_instruction (int md);
+int intern_iot(int *io, int md);
+int (*extern_iot)(int *, int) = intern_iot;
+int execute_instruction(int md);
 
 /* PDP1 Registers */
-typedef struct
-{
-	UINT32 pc;
-	int ac;
-	int io;
-	int y;
-	int ib;
-	int ov;
-	int f;
-	int flag[8];
-	int sense[8];
+typedef struct {
+    UINT32 pc;
+    int ac;
+    int io;
+    int y;
+    int ib;
+    int ov;
+    int f;
+    int flag[8];
+    int sense[8];
 }
 pdp1_Regs;
 
@@ -372,541 +371,572 @@ signed int pdp1_ICount = 50000;
 /****************************************************************************/
 /* Return program counter                                                   */
 /****************************************************************************/
-unsigned pdp1_get_pc (void)
+unsigned pdp1_get_pc(void)
 {
-	return PC;
+    return PC;
 }
 
-void pdp1_set_pc (UINT32 newpc)
+void pdp1_set_pc(UINT32 newpc)
 {
-	PC = newpc;
+    PC = newpc;
 }
 
-unsigned pdp1_get_sp (void)
+unsigned pdp1_get_sp(void)
 {
-	/* nothing to do */
-	return 0;
+    /* nothing to do */
+    return 0;
 }
 
-void pdp1_set_sp (UINT32 newsp)
+void pdp1_set_sp(UINT32 newsp)
 {
-	/* nothing to do */
+    /* nothing to do */
 }
 
-void pdp1_set_nmi_line (int state)
+void pdp1_set_nmi_line(int state)
 {
-	/* no NMI line */
+    /* no NMI line */
 }
 
-void pdp1_set_irq_line (int irqline, int state)
+void pdp1_set_irq_line(int irqline, int state)
 {
-	/* no IRQ line */
+    /* no IRQ line */
 }
 
-void pdp1_set_irq_callback (int (*callback) (int irqline))
+void pdp1_set_irq_callback(int (*callback)(int irqline))
 {
-	/* no IRQ line */
+    /* no IRQ line */
 }
 
 
-void pdp1_reset (void *param)
+void pdp1_reset(void *param)
 {
-	memset (&pdp1, 0, sizeof (pdp1));
-	PC = 4;
-	SENSE[5] = 1;					   /* for lisp... typewriter input */
+    memset(&pdp1, 0, sizeof(pdp1));
+    PC = 4;
+    SENSE[5] = 1;					   /* for lisp... typewriter input */
 }
 
-void pdp1_exit (void)
+void pdp1_exit(void)
 {
-	/* nothing to do */
+    /* nothing to do */
 }
 
-unsigned pdp1_get_context (void *dst)
+unsigned pdp1_get_context(void *dst)
 {
-	if (dst)
-		*(pdp1_Regs *) dst = pdp1;
-	return sizeof (pdp1_Regs);
+    if (dst)
+        * (pdp1_Regs *) dst = pdp1;
+    return sizeof(pdp1_Regs);
 }
 
-void pdp1_set_context (void *src)
+void pdp1_set_context(void *src)
 {
-	if (src)
-		pdp1 = *(pdp1_Regs *) src;
+    if (src)
+        pdp1 = * (pdp1_Regs *) src;
 }
 
-unsigned pdp1_get_reg (int regnum)
+unsigned pdp1_get_reg(int regnum)
 {
-	switch (regnum)
-	{
-	case PDP1_PC: return PC;
-	case PDP1_AC: return AC;
-	case PDP1_IO: return IO;
-	case PDP1_Y:  return Y;
-	case PDP1_IB: return IB;
-	case PDP1_OV: return OV;
-	case PDP1_F:  return F;
-	case PDP1_F1: return F1;
-	case PDP1_F2: return F2;
-	case PDP1_F3: return F3;
-	case PDP1_F4: return F4;
-	case PDP1_F5: return F5;
-	case PDP1_F6: return F6;
-	case PDP1_S1: return S1;
-	case PDP1_S2: return S2;
-	case PDP1_S3: return S3;
-	case PDP1_S4: return S4;
-	case PDP1_S5: return S5;
-	case PDP1_S6: return S6;
-	}
-	return 0;
+    switch (regnum) {
+    case PDP1_PC:
+        return PC;
+    case PDP1_AC:
+        return AC;
+    case PDP1_IO:
+        return IO;
+    case PDP1_Y:
+        return Y;
+    case PDP1_IB:
+        return IB;
+    case PDP1_OV:
+        return OV;
+    case PDP1_F:
+        return F;
+    case PDP1_F1:
+        return F1;
+    case PDP1_F2:
+        return F2;
+    case PDP1_F3:
+        return F3;
+    case PDP1_F4:
+        return F4;
+    case PDP1_F5:
+        return F5;
+    case PDP1_F6:
+        return F6;
+    case PDP1_S1:
+        return S1;
+    case PDP1_S2:
+        return S2;
+    case PDP1_S3:
+        return S3;
+    case PDP1_S4:
+        return S4;
+    case PDP1_S5:
+        return S5;
+    case PDP1_S6:
+        return S6;
+    }
+    return 0;
 }
 
-void pdp1_set_reg (int regnum, unsigned val)
+void pdp1_set_reg(int regnum, unsigned val)
 {
-	switch (regnum)
-	{
-	case PDP1_PC: PC = val; break;
-	case PDP1_AC: AC = val; break;
-	case PDP1_IO: IO = val; break;
-	case PDP1_Y:  Y  = val; break;
-	case PDP1_IB: IB = val; break;
-	case PDP1_OV: OV = val; break;
-	case PDP1_F:  F  = val; break;
-	case PDP1_F1: F1 = val; break;
-	case PDP1_F2: F2 = val; break;
-	case PDP1_F3: F3 = val; break;
-	case PDP1_F4: F4 = val; break;
-	case PDP1_F5: F5 = val; break;
-	case PDP1_F6: F6 = val; break;
-	case PDP1_S1: S1 = val; break;
-	case PDP1_S2: S2 = val; break;
-	case PDP1_S3: S3 = val; break;
-	case PDP1_S4: S4 = val; break;
-	case PDP1_S5: S5 = val; break;
-	case PDP1_S6: S6 = val; break;
-	}
+    switch (regnum) {
+    case PDP1_PC:
+        PC = val;
+        break;
+    case PDP1_AC:
+        AC = val;
+        break;
+    case PDP1_IO:
+        IO = val;
+        break;
+    case PDP1_Y:
+        Y  = val;
+        break;
+    case PDP1_IB:
+        IB = val;
+        break;
+    case PDP1_OV:
+        OV = val;
+        break;
+    case PDP1_F:
+        F  = val;
+        break;
+    case PDP1_F1:
+        F1 = val;
+        break;
+    case PDP1_F2:
+        F2 = val;
+        break;
+    case PDP1_F3:
+        F3 = val;
+        break;
+    case PDP1_F4:
+        F4 = val;
+        break;
+    case PDP1_F5:
+        F5 = val;
+        break;
+    case PDP1_F6:
+        F6 = val;
+        break;
+    case PDP1_S1:
+        S1 = val;
+        break;
+    case PDP1_S2:
+        S2 = val;
+        break;
+    case PDP1_S3:
+        S3 = val;
+        break;
+    case PDP1_S4:
+        S4 = val;
+        break;
+    case PDP1_S5:
+        S5 = val;
+        break;
+    case PDP1_S6:
+        S6 = val;
+        break;
+    }
 }
 
 /* execute instructions on this CPU until icount expires */
-int pdp1_execute (int cycles)
+int pdp1_execute(int cycles)
 {
-	int word18;
+    int word18;
 
-	pdp1_ICount = cycles;
+    pdp1_ICount = cycles;
 
-	do
-	{
+    do {
 
-		word18 = READ_PDP_18BIT (PC++);
-/*
-		logerror("PC:0%06o ",PC-1);
-		logerror("I:0%06o  ",word18);
-		logerror("1:%i "    ,FLAG[1]);
-		logerror("2:%i "    ,FLAG[2]);
-		logerror("3:%i "    ,FLAG[3]);
-		logerror("4:%i "    ,FLAG[4]);
-		logerror("5:%i "    ,FLAG[5]);
-		logerror("6:%i \n"  ,FLAG[6]);
-*/
-		pdp1_ICount -= execute_instruction (word18);
+        word18 = READ_PDP_18BIT(PC++);
+        /*
+        		logerror("PC:0%06o ",PC-1);
+        		logerror("I:0%06o  ",word18);
+        		logerror("1:%i "    ,FLAG[1]);
+        		logerror("2:%i "    ,FLAG[2]);
+        		logerror("3:%i "    ,FLAG[3]);
+        		logerror("4:%i "    ,FLAG[4]);
+        		logerror("5:%i "    ,FLAG[5]);
+        		logerror("6:%i \n"  ,FLAG[6]);
+        */
+        pdp1_ICount -= execute_instruction(word18);
 
-	}
-	while (pdp1_ICount > 0);
+    } while (pdp1_ICount > 0);
 
-	return cycles - pdp1_ICount;
+    return cycles - pdp1_ICount;
 }
 
-unsigned pdp1_dasm (char *buffer, unsigned pc)
+unsigned pdp1_dasm(char *buffer, unsigned pc)
 {
-	sprintf (buffer, "0%06o", READ_PDP_18BIT (pc));
-	return 1;
+    sprintf(buffer, "0%06o", READ_PDP_18BIT(pc));
+    return 1;
 }
 
 static int etime = 0;
-INLINE void ea (void)
+INLINE void ea(void)
 {
-	while (1)
-	{
-		if (IB == 0)
-			return;
+    while (1) {
+        if (IB == 0)
+            return;
 
-		etime += 5;
-		IB = (READ_PDP_18BIT (Y) >> 12) & 1;
-		Y = READ_PDP_18BIT (Y) & 07777;
-		if (etime > 100)
-		{
-			logerror("Massive indirection (>20), assuming emulator fault... bye at:\n");
-			logerror("PC:0%06o Y=0%06o\n", PC - 1, Y);
-			exit (1);
-		}
-	}
+        etime += 5;
+        IB = (READ_PDP_18BIT(Y) >> 12) & 1;
+        Y = READ_PDP_18BIT(Y) & 07777;
+        if (etime > 100) {
+            logerror("Massive indirection (>20), assuming emulator fault... bye at:\n");
+            logerror("PC:0%06o Y=0%06o\n", PC - 1, Y);
+            exit(1);
+        }
+    }
 }
 
 /****************************************************************************
  * Return a formatted string for a register
  ****************************************************************************/
-const char *pdp1_info (void *context, int regnum)
+const char *pdp1_info(void *context, int regnum)
 {
-	switch (regnum)
-	{
-	case CPU_INFO_NAME: return "PDP1";
-	case CPU_INFO_FAMILY: return "DEC PDP-1";
-	case CPU_INFO_VERSION: return "1.1";
-	case CPU_INFO_FILE: return __FILE__;
-	case CPU_INFO_CREDITS: return
-			"Brian Silverman (original Java Source)\n"
-			"Vadim Gerasimov (original Java Source)\n"
-			"Chris Salomon (MESS driver)\n";
-	}
-	return "";
+    switch (regnum) {
+    case CPU_INFO_NAME:
+        return "PDP1";
+    case CPU_INFO_FAMILY:
+        return "DEC PDP-1";
+    case CPU_INFO_VERSION:
+        return "1.1";
+    case CPU_INFO_FILE:
+        return __FILE__;
+    case CPU_INFO_CREDITS:
+        return
+            "Brian Silverman (original Java Source)\n"
+            "Vadim Gerasimov (original Java Source)\n"
+            "Chris Salomon (MESS driver)\n";
+    }
+    return "";
 }
 
 
-int execute_instruction (int md)
+int execute_instruction(int md)
 {
-	etime = 0;
-	Y = md & 07777;
-	IB = (md >> 12) & 1;			   /* */
-	switch (md >> 13)
-	{
-	case AND:
-		ea ();
-		AC &= READ_PDP_18BIT (Y);
-		etime += 10;
-		break;
-	case IOR:
-		ea ();
-		AC |= READ_PDP_18BIT (Y);
-		etime += 10;
-		break;
-	case XOR:
-		ea ();
-		AC ^= READ_PDP_18BIT (Y);
-		etime += 10;
-		break;
-	case XCT:
-		ea ();
-		etime += 5 + execute_instruction (READ_PDP_18BIT (Y));
-		break;
-	case CALJDA:
-		{
-			int target = (IB == 0) ? 64 : Y;
+    etime = 0;
+    Y = md & 07777;
+    IB = (md >> 12) & 1;			   /* */
+    switch (md >> 13) {
+    case AND:
+        ea();
+        AC &= READ_PDP_18BIT(Y);
+        etime += 10;
+        break;
+    case IOR:
+        ea();
+        AC |= READ_PDP_18BIT(Y);
+        etime += 10;
+        break;
+    case XOR:
+        ea();
+        AC ^= READ_PDP_18BIT(Y);
+        etime += 10;
+        break;
+    case XCT:
+        ea();
+        etime += 5 + execute_instruction(READ_PDP_18BIT(Y));
+        break;
+    case CALJDA: {
+        int target = (IB == 0) ? 64 : Y;
 
-			WRITE_PDP_18BIT (target, AC);
-			AC = (OV << 17) + PC;
-			PC = target + 1;
-			etime += 10;
-			break;
-		}
-	case LAC:
-		ea ();
-		AC = READ_PDP_18BIT (Y);
-		etime += 10;
-		break;
-	case LIO:
-		ea ();
-		IO = READ_PDP_18BIT (Y);
-		etime += 10;
-		break;
-	case DAC:
-		ea ();
-		WRITE_PDP_18BIT (Y, AC);
-		etime += 10;
-		break;
-	case DAP:
-		ea ();
-		WRITE_PDP_18BIT (Y, (READ_PDP_18BIT (Y) & 0770000) + (AC & 07777));
-		etime += 10;
-		break;
-	case DIO:
-		ea ();
-		WRITE_PDP_18BIT (Y, IO);
-		etime += 10;
-		break;
-	case DZM:
-		ea ();
-		WRITE_PDP_18BIT (Y, 0);
-		etime += 10;
-		break;
-	case ADD:
-		ea ();
-		AC = AC + READ_PDP_18BIT (Y);
-		OV = AC >> 18;
-		AC = (AC + OV) & 0777777;
-		if (AC == 0777777)
-			AC = 0;
-		etime += 10;
-		break;
-	case SUB:
-		{
-			int diffsigns;
+        WRITE_PDP_18BIT(target, AC);
+        AC = (OV << 17) + PC;
+        PC = target + 1;
+        etime += 10;
+        break;
+    }
+    case LAC:
+        ea();
+        AC = READ_PDP_18BIT(Y);
+        etime += 10;
+        break;
+    case LIO:
+        ea();
+        IO = READ_PDP_18BIT(Y);
+        etime += 10;
+        break;
+    case DAC:
+        ea();
+        WRITE_PDP_18BIT(Y, AC);
+        etime += 10;
+        break;
+    case DAP:
+        ea();
+        WRITE_PDP_18BIT(Y, (READ_PDP_18BIT(Y) & 0770000) + (AC & 07777));
+        etime += 10;
+        break;
+    case DIO:
+        ea();
+        WRITE_PDP_18BIT(Y, IO);
+        etime += 10;
+        break;
+    case DZM:
+        ea();
+        WRITE_PDP_18BIT(Y, 0);
+        etime += 10;
+        break;
+    case ADD:
+        ea();
+        AC = AC + READ_PDP_18BIT(Y);
+        OV = AC >> 18;
+        AC = (AC + OV) & 0777777;
+        if (AC == 0777777)
+            AC = 0;
+        etime += 10;
+        break;
+    case SUB: {
+        int diffsigns;
 
-			ea ();
-			diffsigns = ((AC >> 17) ^ (READ_PDP_18BIT (Y) >> 17)) == 1;
-			AC = AC + (READ_PDP_18BIT (Y) ^ 0777777);
-			AC = (AC + (AC >> 18)) & 0777777;
-			if (AC == 0777777)
-				AC = 0;
-			if (diffsigns && (READ_PDP_18BIT (Y) >> 17 == AC >> 17))
-				OV = 1;
-			etime += 10;
-			break;
-		}
-	case IDX:
-		ea ();
-		AC = READ_PDP_18BIT (Y) + 1;
-		if (AC == 0777777)
-			AC = 0;
-		WRITE_PDP_18BIT (Y, AC);
-		etime += 10;
-		break;
-	case ISP:
-		ea ();
-		AC = READ_PDP_18BIT (Y) + 1;
-		if (AC == 0777777)
-			AC = 0;
-		WRITE_PDP_18BIT (Y, AC);
-		if ((AC & 0400000) == 0)
-			PC++;
-		etime += 10;
-		break;
-	case SAD:
-		ea ();
-		if (AC != READ_PDP_18BIT (Y))
-			PC++;
-		etime += 10;
-		break;
-	case SAS:
-		ea ();
-		if (AC == READ_PDP_18BIT (Y))
-			PC++;
-		etime += 10;
-		break;
-	case MUS:
-		ea ();
-		if ((IO & 1) == 1)
-		{
-			AC = AC + READ_PDP_18BIT (Y);
-			AC = (AC + (AC >> 18)) & 0777777;
-			if (AC == 0777777)
-				AC = 0;
-		}
-		IO = (IO >> 1 | AC << 17) & 0777777;
-		AC >>= 1;
-		etime += 10;
-		break;
-	case DIS:
-		{
-			int acl;
+        ea();
+        diffsigns = ((AC >> 17) ^ (READ_PDP_18BIT(Y) >> 17)) == 1;
+        AC = AC + (READ_PDP_18BIT(Y) ^ 0777777);
+        AC = (AC + (AC >> 18)) & 0777777;
+        if (AC == 0777777)
+            AC = 0;
+        if (diffsigns && (READ_PDP_18BIT(Y) >> 17 == AC >> 17))
+            OV = 1;
+        etime += 10;
+        break;
+    }
+    case IDX:
+        ea();
+        AC = READ_PDP_18BIT(Y) + 1;
+        if (AC == 0777777)
+            AC = 0;
+        WRITE_PDP_18BIT(Y, AC);
+        etime += 10;
+        break;
+    case ISP:
+        ea();
+        AC = READ_PDP_18BIT(Y) + 1;
+        if (AC == 0777777)
+            AC = 0;
+        WRITE_PDP_18BIT(Y, AC);
+        if ((AC & 0400000) == 0)
+            PC++;
+        etime += 10;
+        break;
+    case SAD:
+        ea();
+        if (AC != READ_PDP_18BIT(Y))
+            PC++;
+        etime += 10;
+        break;
+    case SAS:
+        ea();
+        if (AC == READ_PDP_18BIT(Y))
+            PC++;
+        etime += 10;
+        break;
+    case MUS:
+        ea();
+        if ((IO & 1) == 1) {
+            AC = AC + READ_PDP_18BIT(Y);
+            AC = (AC + (AC >> 18)) & 0777777;
+            if (AC == 0777777)
+                AC = 0;
+        }
+        IO = (IO >> 1 | AC << 17) & 0777777;
+        AC >>= 1;
+        etime += 10;
+        break;
+    case DIS: {
+        int acl;
 
-			ea ();
-			acl = AC >> 17;
-			AC = (AC << 1 | IO >> 17) & 0777777;
-			IO = ((IO << 1 | acl) & 0777777) ^ 1;
-			if ((IO & 1) == 1)
-			{
-				AC = AC + (READ_PDP_18BIT (Y) ^ 0777777);
-				AC = (AC + (AC >> 18)) & 0777777;
-			}
-			else
-			{
-				AC = AC + 1 + READ_PDP_18BIT (Y);
-				AC = (AC + (AC >> 18)) & 0777777;
-			}
-			if (AC == 0777777)
-				AC = 0;
-			etime += 10;
-			break;
-		}
-	case JMP:
-		ea ();
-		PC = Y;
-		etime += 5;
-		break;
-	case JSP:
-		ea ();
-		AC = (OV << 17) + PC;
-		PC = Y;
-		etime += 5;
-		break;
-	case SKP:
-		{
-			int cond = (((Y & 0100) == 0100) && (AC == 0)) ||
-			(((Y & 0200) == 0200) && (AC >> 17 == 0)) ||
-			(((Y & 0400) == 0400) && (AC >> 17 == 1)) ||
-			(((Y & 01000) == 01000) && (OV == 0)) ||
-			(((Y & 02000) == 02000) && (IO >> 17 == 0)) ||
-			(((Y & 7) != 0) && !FLAG[Y & 7]) ||
-			(((Y & 070) != 0) && !SENSE[(Y & 070) >> 3]) ||
-			((Y & 070) == 010);
+        ea();
+        acl = AC >> 17;
+        AC = (AC << 1 | IO >> 17) & 0777777;
+        IO = ((IO << 1 | acl) & 0777777) ^ 1;
+        if ((IO & 1) == 1) {
+            AC = AC + (READ_PDP_18BIT(Y) ^ 0777777);
+            AC = (AC + (AC >> 18)) & 0777777;
+        } else {
+            AC = AC + 1 + READ_PDP_18BIT(Y);
+            AC = (AC + (AC >> 18)) & 0777777;
+        }
+        if (AC == 0777777)
+            AC = 0;
+        etime += 10;
+        break;
+    }
+    case JMP:
+        ea();
+        PC = Y;
+        etime += 5;
+        break;
+    case JSP:
+        ea();
+        AC = (OV << 17) + PC;
+        PC = Y;
+        etime += 5;
+        break;
+    case SKP: {
+        int cond = (((Y & 0100) == 0100) && (AC == 0)) ||
+                   (((Y & 0200) == 0200) && (AC >> 17 == 0)) ||
+                   (((Y & 0400) == 0400) && (AC >> 17 == 1)) ||
+                   (((Y & 01000) == 01000) && (OV == 0)) ||
+                   (((Y & 02000) == 02000) && (IO >> 17 == 0)) ||
+                   (((Y & 7) != 0) && !FLAG[Y & 7]) ||
+                   (((Y & 070) != 0) && !SENSE[(Y & 070) >> 3]) ||
+                   ((Y & 070) == 010);
 
-			if (IB == 0)
-			{
-				if (cond)
-					PC++;
-			}
-			else
-			{
-				if (!cond)
-					PC++;
-			}
-			if ((Y & 01000) == 01000)
-				OV = 0;
-			etime += 5;
-			break;
-		}
-	case SFT:
-		{
-			int nshift = 0;
-			int mask = md & 0777;
+        if (IB == 0) {
+            if (cond)
+                PC++;
+        } else {
+            if (!cond)
+                PC++;
+        }
+        if ((Y & 01000) == 01000)
+            OV = 0;
+        etime += 5;
+        break;
+    }
+    case SFT: {
+        int nshift = 0;
+        int mask = md & 0777;
 
-			while (mask != 0)
-			{
-				nshift += mask & 1;
-				mask = mask >> 1;
-			}
-			switch ((md >> 9) & 017)
-			{
-				int i;
+        while (mask != 0) {
+            nshift += mask & 1;
+            mask = mask >> 1;
+        }
+        switch ((md >> 9) & 017) {
+            int i;
 
-			case 1:
-				for (i = 0; i < nshift; i++)
-					AC = (AC << 1 | AC >> 17) & 0777777;
-				break;
-			case 2:
-				for (i = 0; i < nshift; i++)
-					IO = (IO << 1 | IO >> 17) & 0777777;
-				break;
-			case 3:
-				for (i = 0; i < nshift; i++)
-				{
-					int tmp = AC;
+        case 1:
+            for (i = 0; i < nshift; i++)
+                AC = (AC << 1 | AC >> 17) & 0777777;
+            break;
+        case 2:
+            for (i = 0; i < nshift; i++)
+                IO = (IO << 1 | IO >> 17) & 0777777;
+            break;
+        case 3:
+            for (i = 0; i < nshift; i++) {
+                int tmp = AC;
 
-					AC = (AC << 1 | IO >> 17) & 0777777;
-					IO = (IO << 1 | tmp >> 17) & 0777777;
-				}
-				break;
-			case 5:
-				for (i = 0; i < nshift; i++)
-					AC = ((AC << 1 | AC >> 17) & 0377777) + (AC & 0400000);
-				break;
-			case 6:
-				for (i = 0; i < nshift; i++)
-					IO = ((IO << 1 | IO >> 17) & 0377777) + (IO & 0400000);
-				break;
-			case 7:
-				for (i = 0; i < nshift; i++)
-				{
-					int tmp = AC;
+                AC = (AC << 1 | IO >> 17) & 0777777;
+                IO = (IO << 1 | tmp >> 17) & 0777777;
+            }
+            break;
+        case 5:
+            for (i = 0; i < nshift; i++)
+                AC = ((AC << 1 | AC >> 17) & 0377777) + (AC & 0400000);
+            break;
+        case 6:
+            for (i = 0; i < nshift; i++)
+                IO = ((IO << 1 | IO >> 17) & 0377777) + (IO & 0400000);
+            break;
+        case 7:
+            for (i = 0; i < nshift; i++) {
+                int tmp = AC;
 
-					AC = ((AC << 1 | IO >> 17) & 0377777) + (AC & 0400000);		/* shouldn't that be IO?, no it is the sign! */
-					IO = (IO << 1 | tmp >> 17) & 0777777;
-				}
-				break;
-			case 9:
-				for (i = 0; i < nshift; i++)
-					AC = (AC >> 1 | AC << 17) & 0777777;
-				break;
-			case 10:
-				for (i = 0; i < nshift; i++)
-					IO = (IO >> 1 | IO << 17) & 0777777;
-				break;
-			case 11:
-				for (i = 0; i < nshift; i++)
-				{
-					int tmp = AC;
+                AC = ((AC << 1 | IO >> 17) & 0377777) + (AC & 0400000);		/* shouldn't that be IO?, no it is the sign! */
+                IO = (IO << 1 | tmp >> 17) & 0777777;
+            }
+            break;
+        case 9:
+            for (i = 0; i < nshift; i++)
+                AC = (AC >> 1 | AC << 17) & 0777777;
+            break;
+        case 10:
+            for (i = 0; i < nshift; i++)
+                IO = (IO >> 1 | IO << 17) & 0777777;
+            break;
+        case 11:
+            for (i = 0; i < nshift; i++) {
+                int tmp = AC;
 
-					AC = (AC >> 1 | IO << 17) & 0777777;
-					IO = (IO >> 1 | tmp << 17) & 0777777;
-				}
-				break;
-			case 13:
-				for (i = 0; i < nshift; i++)
-					AC = (AC >> 1) + (AC & 0400000);
-				break;
-			case 14:
-				for (i = 0; i < nshift; i++)
-					IO = (IO >> 1) + (IO & 0400000);
-				break;
-			case 15:
-				for (i = 0; i < nshift; i++)
-				{
-					int tmp = AC;
+                AC = (AC >> 1 | IO << 17) & 0777777;
+                IO = (IO >> 1 | tmp << 17) & 0777777;
+            }
+            break;
+        case 13:
+            for (i = 0; i < nshift; i++)
+                AC = (AC >> 1) + (AC & 0400000);
+            break;
+        case 14:
+            for (i = 0; i < nshift; i++)
+                IO = (IO >> 1) + (IO & 0400000);
+            break;
+        case 15:
+            for (i = 0; i < nshift; i++) {
+                int tmp = AC;
 
-					AC = (AC >> 1) + (AC & 0400000);	/* shouldn't that be IO, no it is the sign */
-					IO = (IO >> 1 | tmp << 17) & 0777777;
-				}
-				break;
-			default:
-				logerror("Undefined shift: ");
-				logerror("0%06o at ", md);
-				logerror("0%06o\n", PC - 1);
-				exit (1);
-			}
-			etime += 5;
-			break;
-		}
-	case LAW:
-		AC = (IB == 0) ? Y : Y ^ 0777777;
-		etime += 5;
-		break;
-	case IOT:
-		etime += extern_iot (&IO, md);
-		break;
-	case OPR:
-		{
-			int nflag;
-			int state;
-			int i;
+                AC = (AC >> 1) + (AC & 0400000);	/* shouldn't that be IO, no it is the sign */
+                IO = (IO >> 1 | tmp << 17) & 0777777;
+            }
+            break;
+        default:
+            logerror("Undefined shift: ");
+            logerror("0%06o at ", md);
+            logerror("0%06o\n", PC - 1);
+            exit(1);
+        }
+        etime += 5;
+        break;
+    }
+    case LAW:
+        AC = (IB == 0) ? Y : Y ^ 0777777;
+        etime += 5;
+        break;
+    case IOT:
+        etime += extern_iot(&IO, md);
+        break;
+    case OPR: {
+        int nflag;
+        int state;
+        int i;
 
-			etime += 5;
-			if ((Y & 0200) == 0200)
-				AC = 0;
-			if ((Y & 04000) == 04000)
-				IO = 0;
-			if ((Y & 01000) == 01000)
-				AC ^= 0777777;
-			if ((Y & 0400) == 0400)
-			{
-				/* ignored till I emulate the extention switches... with
-				 * continue...
-				 */
-				//logerror("PDP1 Program executed HALT: at ");
-				//logerror("0%06o\n", PC - 1);
-				//logerror("HALT ignored...\n");
-				/* exit(1); */
-			}
-			nflag = Y & 7;
-			if (nflag < 1)			   /* was 2 */
-				break;
-			state = (Y & 010) == 010;
-			if (nflag == 7)
-			{
-				for (i = 1; i < 7; i++)		/* was 2 */
-				{
-					FLAG[i] = state;
-				}
-				break;
-			}
-			FLAG[nflag] = state;
-			F = 0;
-			for (i = 1; i < 7; i++)
-			{
-				F += (1 << (i - 1)) * (FLAG[i] != 0);
-			}
-			break;
-		}
-	default:
-		logerror("Undefined instruction: ");
-		logerror("0%06o at ", md);
-		logerror("0%06o\n", PC - 1);
-		exit (1);
-	}
-	return etime;
+        etime += 5;
+        if ((Y & 0200) == 0200)
+            AC = 0;
+        if ((Y & 04000) == 04000)
+            IO = 0;
+        if ((Y & 01000) == 01000)
+            AC ^= 0777777;
+        if ((Y & 0400) == 0400) {
+            /* ignored till I emulate the extention switches... with
+             * continue...
+             */
+            //logerror("PDP1 Program executed HALT: at ");
+            //logerror("0%06o\n", PC - 1);
+            //logerror("HALT ignored...\n");
+            /* exit(1); */
+        }
+        nflag = Y & 7;
+        if (nflag < 1)			   /* was 2 */
+            break;
+        state = (Y & 010) == 010;
+        if (nflag == 7) {
+            for (i = 1; i < 7; i++) {	/* was 2 */
+                FLAG[i] = state;
+            }
+            break;
+        }
+        FLAG[nflag] = state;
+        F = 0;
+        for (i = 1; i < 7; i++) {
+            F += (1 << (i - 1)) * (FLAG[i] != 0);
+        }
+        break;
+    }
+    default:
+        logerror("Undefined instruction: ");
+        logerror("0%06o at ", md);
+        logerror("0%06o\n", PC - 1);
+        exit(1);
+    }
+    return etime;
 }
 
-int intern_iot (int *iio, int md)
+int intern_iot(int *iio, int md)
 {
-	logerror("No external IOT function given (IO=0%06o) -> EXIT(1) invoked in PDP1\\PDP1.C\n", *iio);
-	exit (1);
+    logerror("No external IOT function given (IO=0%06o) -> EXIT(1) invoked in PDP1\\PDP1.C\n", *iio);
+    exit(1);
 }

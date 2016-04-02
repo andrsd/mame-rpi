@@ -70,9 +70,8 @@ int 	h6280_ICount = 0;
 /****************************************************************************
  * The 6280 registers.
  ****************************************************************************/
-typedef struct
-{
-	PAIR  ppc;			/* previous program counter */
+typedef struct {
+    PAIR  ppc;			/* previous program counter */
     PAIR  pc;           /* program counter */
     PAIR  sp;           /* stack pointer (always 100 - 1FF) */
     PAIR  zp;           /* zero page address */
@@ -84,10 +83,10 @@ typedef struct
     UINT8 mmr[8];       /* Hu6280 memory mapper registers */
     UINT8 irq_mask;     /* interrupt enable/disable */
     UINT8 timer_status; /* timer status */
-	UINT8 timer_ack;	/* timer acknowledge */
+    UINT8 timer_ack;	/* timer acknowledge */
     int timer_value;    /* timer interrupt */
     int timer_load;		/* reload value */
-	int extra_cycles;	/* cycles used taking an interrupt */
+    int extra_cycles;	/* cycles used taking an interrupt */
     int nmi_state;
     int irq_state[3];
     int (*irq_callback)(int irqline);
@@ -110,170 +109,199 @@ static  h6280_Regs  h6280;
 
 void h6280_reset(void *param)
 {
-	int i;
+    int i;
 
-	/* wipe out the h6280 structure */
-	memset(&h6280, 0, sizeof(h6280_Regs));
+    /* wipe out the h6280 structure */
+    memset(&h6280, 0, sizeof(h6280_Regs));
 
-	/* set I and Z flags */
-	P = _fI | _fZ;
+    /* set I and Z flags */
+    P = _fI | _fZ;
 
     /* stack starts at 0x01ff */
-	h6280.sp.d = 0x1ff;
+    h6280.sp.d = 0x1ff;
 
     /* read the reset vector into PC */
-	PCL = RDMEM(H6280_RESET_VEC);
-	PCH = RDMEM((H6280_RESET_VEC+1));
+    PCL = RDMEM(H6280_RESET_VEC);
+    PCH = RDMEM((H6280_RESET_VEC + 1));
 
-	/* timer off by default */
-	h6280.timer_status=0;
-	h6280.timer_ack=1;
+    /* timer off by default */
+    h6280.timer_status = 0;
+    h6280.timer_ack = 1;
 
     /* clear pending interrupts */
-	for (i = 0; i < 3; i++)
-		h6280.irq_state[i] = CLEAR_LINE;
+    for (i = 0; i < 3; i++)
+        h6280.irq_state[i] = CLEAR_LINE;
 }
 
 void h6280_exit(void)
 {
-	/* nothing */
+    /* nothing */
 }
 
 int h6280_execute(int cycles)
 {
-	int in,lastcycle,deltacycle;
-	h6280_ICount = cycles;
+    int in, lastcycle, deltacycle;
+    h6280_ICount = cycles;
 
     /* Subtract cycles used for taking an interrupt */
     h6280_ICount -= h6280.extra_cycles;
-	h6280.extra_cycles = 0;
-	lastcycle = h6280_ICount;
+    h6280.extra_cycles = 0;
+    lastcycle = h6280_ICount;
 
-	/* Execute instructions */
-	do
-    {
-		h6280.ppc = h6280.pc;
+    /* Execute instructions */
+    do {
+        h6280.ppc = h6280.pc;
 
-		/* Execute 1 instruction */
-		in=RDOP();
-		PCW++;
-		insnh6280[in]();
+        /* Execute 1 instruction */
+        in = RDOP();
+        PCW++;
+        insnh6280[in]();
 
-		/* Check internal timer */
-		if(h6280.timer_status)
-		{
-			deltacycle = lastcycle - h6280_ICount;
-			h6280.timer_value -= deltacycle;
-			if(h6280.timer_value<=0 && h6280.timer_ack==1)
-			{
-				h6280.timer_ack=0;
-				h6280_set_irq_line(2,ASSERT_LINE);
-			}
-		}
-		lastcycle = h6280_ICount;
+        /* Check internal timer */
+        if (h6280.timer_status) {
+            deltacycle = lastcycle - h6280_ICount;
+            h6280.timer_value -= deltacycle;
+            if (h6280.timer_value <= 0 && h6280.timer_ack == 1) {
+                h6280.timer_ack = 0;
+                h6280_set_irq_line(2, ASSERT_LINE);
+            }
+        }
+        lastcycle = h6280_ICount;
 
-		/* If PC has not changed we are stuck in a tight loop, may as well finish */
-		if( h6280.pc.d == h6280.ppc.d )
-		{
-			if (h6280_ICount > 0) h6280_ICount=0;
-		}
+        /* If PC has not changed we are stuck in a tight loop, may as well finish */
+        if (h6280.pc.d == h6280.ppc.d) {
+            if (h6280_ICount > 0) h6280_ICount = 0;
+        }
 
-	} while (h6280_ICount > 0);
+    } while (h6280_ICount > 0);
 
-	/* Subtract cycles used for taking an interrupt */
+    /* Subtract cycles used for taking an interrupt */
     h6280_ICount -= h6280.extra_cycles;
     h6280.extra_cycles = 0;
 
     return cycles - h6280_ICount;
 }
 
-unsigned h6280_get_context (void *dst)
+unsigned h6280_get_context(void *dst)
 {
-	if( dst )
-		*(h6280_Regs*)dst = h6280;
-	return sizeof(h6280_Regs);
+    if (dst)
+        * (h6280_Regs*) dst = h6280;
+    return sizeof(h6280_Regs);
 }
 
-void h6280_set_context (void *src)
+void h6280_set_context(void *src)
 {
-	if( src )
-		h6280 = *(h6280_Regs*)src;
+    if (src)
+        h6280 = * (h6280_Regs*) src;
 }
 
-unsigned h6280_get_pc (void)
+unsigned h6280_get_pc(void)
 {
     return PCD;
 }
 
-void h6280_set_pc (unsigned val)
+void h6280_set_pc(unsigned val)
 {
-	PCW = val;
+    PCW = val;
 }
 
-unsigned h6280_get_sp (void)
+unsigned h6280_get_sp(void)
 {
-	return S;
+    return S;
 }
 
-void h6280_set_sp (unsigned val)
+void h6280_set_sp(unsigned val)
 {
-	S = val;
+    S = val;
 }
 
-unsigned h6280_get_reg (int regnum)
+unsigned h6280_get_reg(int regnum)
 {
-	switch( regnum )
-	{
-		case H6280_PC: return PCD;
-		case H6280_S: return S;
-		case H6280_P: return P;
-		case H6280_A: return A;
-		case H6280_X: return X;
-		case H6280_Y: return Y;
-		case H6280_IRQ_MASK: return h6280.irq_mask;
-		case H6280_TIMER_STATE: return h6280.timer_status;
-		case H6280_NMI_STATE: return h6280.nmi_state;
-		case H6280_IRQ1_STATE: return h6280.irq_state[0];
-		case H6280_IRQ2_STATE: return h6280.irq_state[1];
-		case H6280_IRQT_STATE: return h6280.irq_state[2];
-		case REG_PREVIOUSPC: return h6280.ppc.d;
-		default:
-			if( regnum <= REG_SP_CONTENTS )
-			{
-				unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
-				if( offset < 0x1ff )
-					return RDMEM( offset ) | ( RDMEM( offset+1 ) << 8 );
-			}
-	}
-	return 0;
+    switch (regnum) {
+    case H6280_PC:
+        return PCD;
+    case H6280_S:
+        return S;
+    case H6280_P:
+        return P;
+    case H6280_A:
+        return A;
+    case H6280_X:
+        return X;
+    case H6280_Y:
+        return Y;
+    case H6280_IRQ_MASK:
+        return h6280.irq_mask;
+    case H6280_TIMER_STATE:
+        return h6280.timer_status;
+    case H6280_NMI_STATE:
+        return h6280.nmi_state;
+    case H6280_IRQ1_STATE:
+        return h6280.irq_state[0];
+    case H6280_IRQ2_STATE:
+        return h6280.irq_state[1];
+    case H6280_IRQT_STATE:
+        return h6280.irq_state[2];
+    case REG_PREVIOUSPC:
+        return h6280.ppc.d;
+    default:
+        if (regnum <= REG_SP_CONTENTS) {
+            unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
+            if (offset < 0x1ff)
+                return RDMEM(offset) | (RDMEM(offset + 1) << 8);
+        }
+    }
+    return 0;
 }
 
-void h6280_set_reg (int regnum, unsigned val)
+void h6280_set_reg(int regnum, unsigned val)
 {
-	switch( regnum )
-	{
-		case H6280_PC: PCW = val; break;
-		case H6280_S: S = val; break;
-		case H6280_P: P = val; break;
-		case H6280_A: A = val; break;
-		case H6280_X: X = val; break;
-		case H6280_Y: Y = val; break;
-		case H6280_IRQ_MASK: h6280.irq_mask = val; CHECK_IRQ_LINES; break;
-		case H6280_TIMER_STATE: h6280.timer_status = val; break;
-		case H6280_NMI_STATE: h6280_set_nmi_line( val ); break;
-		case H6280_IRQ1_STATE: h6280_set_irq_line( 0, val ); break;
-		case H6280_IRQ2_STATE: h6280_set_irq_line( 1, val ); break;
-		case H6280_IRQT_STATE: h6280_set_irq_line( 2, val ); break;
-		default:
-			if( regnum <= REG_SP_CONTENTS )
-			{
-				unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
-				if( offset < 0x1ff )
-				{
-					WRMEM( offset, val & 0xff );
-					WRMEM( offset+1, (val >> 8) & 0xff );
-				}
-			}
+    switch (regnum) {
+    case H6280_PC:
+        PCW = val;
+        break;
+    case H6280_S:
+        S = val;
+        break;
+    case H6280_P:
+        P = val;
+        break;
+    case H6280_A:
+        A = val;
+        break;
+    case H6280_X:
+        X = val;
+        break;
+    case H6280_Y:
+        Y = val;
+        break;
+    case H6280_IRQ_MASK:
+        h6280.irq_mask = val;
+        CHECK_IRQ_LINES;
+        break;
+    case H6280_TIMER_STATE:
+        h6280.timer_status = val;
+        break;
+    case H6280_NMI_STATE:
+        h6280_set_nmi_line(val);
+        break;
+    case H6280_IRQ1_STATE:
+        h6280_set_irq_line(0, val);
+        break;
+    case H6280_IRQ2_STATE:
+        h6280_set_irq_line(1, val);
+        break;
+    case H6280_IRQT_STATE:
+        h6280_set_irq_line(2, val);
+        break;
+    default:
+        if (regnum <= REG_SP_CONTENTS) {
+            unsigned offset = S + 2 * (REG_SP_CONTENTS - regnum);
+            if (offset < 0x1ff) {
+                WRMEM(offset, val & 0xff);
+                WRMEM(offset + 1, (val >> 8) & 0xff);
+            }
+        }
     }
 }
 
@@ -281,28 +309,27 @@ void h6280_set_reg (int regnum, unsigned val)
 
 void h6280_set_nmi_line(int state)
 {
-	if (h6280.nmi_state == state) return;
-	h6280.nmi_state = state;
-	if (state != CLEAR_LINE)
-    {
-		DO_INTERRUPT(H6280_NMI_VEC);
-	}
+    if (h6280.nmi_state == state) return;
+    h6280.nmi_state = state;
+    if (state != CLEAR_LINE) {
+        DO_INTERRUPT(H6280_NMI_VEC);
+    }
 }
 
 void h6280_set_irq_line(int irqline, int state)
 {
     h6280.irq_state[irqline] = state;
 
-	/* If line is cleared, just exit */
-	if (state == CLEAR_LINE) return;
+    /* If line is cleared, just exit */
+    if (state == CLEAR_LINE) return;
 
-	/* Check if interrupts are enabled and the IRQ mask is clear */
-	CHECK_IRQ_LINES;
+    /* Check if interrupts are enabled and the IRQ mask is clear */
+    CHECK_IRQ_LINES;
 }
 
 void h6280_set_irq_callback(int (*callback)(int irqline))
 {
-	h6280.irq_callback = callback;
+    h6280.irq_callback = callback;
 }
 
 /****************************************************************************
@@ -310,89 +337,91 @@ void h6280_set_irq_callback(int (*callback)(int irqline))
  ****************************************************************************/
 const char *h6280_info(void *context, int regnum)
 {
-	switch( regnum )
-	{
-		case CPU_INFO_NAME: return "HuC6280";
-		case CPU_INFO_FAMILY: return "Hudsonsoft 6280";
-		case CPU_INFO_VERSION: return "1.06";
-		case CPU_INFO_FILE: return __FILE__;
-		case CPU_INFO_CREDITS: return "Copyright (c) 1999, 2000 Bryan McPhail, mish@tendril.co.uk";
+    switch (regnum) {
+    case CPU_INFO_NAME:
+        return "HuC6280";
+    case CPU_INFO_FAMILY:
+        return "Hudsonsoft 6280";
+    case CPU_INFO_VERSION:
+        return "1.06";
+    case CPU_INFO_FILE:
+        return __FILE__;
+    case CPU_INFO_CREDITS:
+        return "Copyright (c) 1999, 2000 Bryan McPhail, mish@tendril.co.uk";
     }
-	return "";
+    return "";
 }
 
 unsigned h6280_dasm(char *buffer, unsigned pc)
 {
-	sprintf( buffer, "$%02X", cpu_readop(pc) );
-	return 1;
+    sprintf(buffer, "$%02X", cpu_readop(pc));
+    return 1;
 }
 
 /*****************************************************************************/
 
-READ_HANDLER( H6280_irq_status_r )
+READ_HANDLER(H6280_irq_status_r)
 {
-	int status;
+    int status;
 
-	switch (offset)
-	{
-		case 0: /* Read irq mask */
-			return h6280.irq_mask;
+    switch (offset) {
+    case 0: /* Read irq mask */
+        return h6280.irq_mask;
 
-		case 1: /* Read irq status */
-			status=0;
-			if(h6280.irq_state[1]!=CLEAR_LINE) status|=1; /* IRQ 2 */
-			if(h6280.irq_state[0]!=CLEAR_LINE) status|=2; /* IRQ 1 */
-			if(h6280.irq_state[2]!=CLEAR_LINE) status|=4; /* TIMER */
-			return status;
-	}
+    case 1: /* Read irq status */
+        status = 0;
+        if (h6280.irq_state[1] != CLEAR_LINE) status |= 1; /* IRQ 2 */
+        if (h6280.irq_state[0] != CLEAR_LINE) status |= 2; /* IRQ 1 */
+        if (h6280.irq_state[2] != CLEAR_LINE) status |= 4; /* TIMER */
+        return status;
+    }
 
-	return 0;
+    return 0;
 }
 
-WRITE_HANDLER( H6280_irq_status_w )
+WRITE_HANDLER(H6280_irq_status_w)
 {
-	switch (offset)
-	{
-		case 0: /* Write irq mask */
-			h6280.irq_mask=data&0x7;
-			CHECK_IRQ_LINES;
-			break;
+    switch (offset) {
+    case 0: /* Write irq mask */
+        h6280.irq_mask = data & 0x7;
+        CHECK_IRQ_LINES;
+        break;
 
-		case 1: /* Timer irq ack - timer is reloaded here */
-			h6280.timer_value = h6280.timer_load;
-			h6280.timer_ack=1; /* Timer can't refire until ack'd */
-			break;
-	}
+    case 1: /* Timer irq ack - timer is reloaded here */
+        h6280.timer_value = h6280.timer_load;
+        h6280.timer_ack = 1; /* Timer can't refire until ack'd */
+        break;
+    }
 }
 
-READ_HANDLER( H6280_timer_r )
+READ_HANDLER(H6280_timer_r)
 {
-	switch (offset) {
-		case 0: /* Counter value */
-			return (h6280.timer_value/1024)&127;
+    switch (offset) {
+    case 0: /* Counter value */
+        return (h6280.timer_value / 1024) & 127;
 
-		case 1: /* Read counter status */
-			return h6280.timer_status;
-	}
+    case 1: /* Read counter status */
+        return h6280.timer_status;
+    }
 
-	return 0;
+    return 0;
 }
 
-WRITE_HANDLER( H6280_timer_w )
+WRITE_HANDLER(H6280_timer_w)
 {
-	switch (offset) {
-		case 0: /* Counter preload */
-			h6280.timer_load=h6280.timer_value=((data&127)+1)*1024;
-			return;
+    switch (offset) {
+    case 0: /* Counter preload */
+        h6280.timer_load = h6280.timer_value = ((data & 127) + 1) * 1024;
+        return;
 
-		case 1: /* Counter enable */
-			if(data&1)
-			{	/* stop -> start causes reload */
-				if(h6280.timer_status==0) h6280.timer_value=h6280.timer_load;
-			}
-			h6280.timer_status=data&1;
-			return;
-	}
+    case 1: /* Counter enable */
+        if (data & 1) {
+            /* stop -> start causes reload */
+            if (h6280.timer_status == 0) h6280.timer_value = h6280.timer_load;
+        }
+        h6280.timer_status = data & 1;
+        return;
+    }
 }
 
 /*****************************************************************************/

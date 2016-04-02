@@ -23,15 +23,15 @@ UINT8 *cchasm_ram;
 
 static int xcenter, ycenter;
 
-static void cchasm_refresh_end (int dummy)
+static void cchasm_refresh_end(int dummy)
 {
-    cpu_set_irq_line (0, 2, ASSERT_LINE);
+    cpu_set_irq_line(0, 2, ASSERT_LINE);
 }
 
-static void cchasm_refresh (void)
+static void cchasm_refresh(void)
 {
 
-	int pc = 0;
+    int pc = 0;
     int done = 0;
     int opcode, data;
     int currentx = 0, currenty = 0;
@@ -40,23 +40,21 @@ static void cchasm_refresh (void)
     int total_length = 1;   /* length of all lines drawn in a frame */
     int move = 0;
 
-	vector_clear_list();
+    vector_clear_list();
 
-	while (!done)
-	{
+    while (!done) {
 
-        data = READ_WORD (&cchasm_ram[pc]);
-   		opcode = data >> 12;
+        data = READ_WORD(&cchasm_ram[pc]);
+        opcode = data >> 12;
         data &= 0xfff;
         if ((opcode > COLOR) && (data & 0x800))
-          data |= 0xfffff000;
+            data |= 0xfffff000;
 
-		pc += 2;
+        pc += 2;
 
-		switch (opcode)
-		{
+        switch (opcode) {
         case HALT:
-            done=1;
+            done = 1;
             break;
         case JUMP:
             pc = data - 0xb00;
@@ -64,7 +62,7 @@ static void cchasm_refresh (void)
             break;
         case COLOR:
             data = data ^ 0xfff;
-            color = ((data >> 4) & 0xe0) | ((data >> 3 ) &0x1c) | ((data >> 2 ) &0x3);
+            color = ((data >> 4) & 0xe0) | ((data >> 3) & 0x1c) | ((data >> 2) & 0x3);
             break;
         case SCALEY:
             scaley = data << 5;
@@ -81,9 +79,8 @@ static void cchasm_refresh (void)
             currentx = xcenter - (data << 16);
             break;
         case LENGTH:
-            if (move)
-            {
-                vector_add_point (currentx, currenty, 0, 0);
+            if (move) {
+                vector_add_point(currentx, currenty, 0, 0);
                 move = 0;
             }
 
@@ -93,7 +90,7 @@ static void cchasm_refresh (void)
             total_length += abs(data);
 
             if (color)
-                vector_add_point (currentx, currenty, color, 0xff);
+                vector_add_point(currentx, currenty, color, 0xff);
             else
                 move = 1;
             break;
@@ -101,59 +98,57 @@ static void cchasm_refresh (void)
             //logerror("Unknown refresh proc opcode %x with data %x at pc = %x\n", opcode, data, pc-2);
             done = 1;
             break;
-		}
-	}
+        }
+    }
     /* Refresh processor runs with 6 MHz */
-    timer_set (TIME_IN_NSEC(166) * total_length, 0, cchasm_refresh_end);
+    timer_set(TIME_IN_NSEC(166) * total_length, 0, cchasm_refresh_end);
 }
 
 
-WRITE_HANDLER( cchasm_refresh_control_w )
+WRITE_HANDLER(cchasm_refresh_control_w)
 {
-    switch (data)
-    {
+    switch (data) {
     case 0x37ff:
         cchasm_refresh();
         break;
     case 0xf7ff:
-        cpu_set_irq_line (0, 2, CLEAR_LINE);
+        cpu_set_irq_line(0, 2, CLEAR_LINE);
         break;
     }
 }
 
-void cchasm_init_colors (unsigned char *palette, unsigned short *colortable,const unsigned char *color_prom)
+void cchasm_init_colors(unsigned char *palette, unsigned short *colortable, const unsigned char *color_prom)
 {
-    int i= 0, r, g, b;
+    int i = 0, r, g, b;
 
-    for (r=0; r<8; r++)
-        for (g=0; g<8; g++)
-            for (b=0; b<4; b++)
-            {
-                palette[3*i  ] = (255 * r) / 7;
-                palette[3*i+1] = (255 * g) / 7;
-                palette[3*i+2] = (255 * b) /3;
+    for (r = 0; r < 8; r++)
+        for (g = 0; g < 8; g++)
+            for (b = 0; b < 4; b++) {
+                palette[3 * i  ] = (255 * r) / 7;
+                palette[3 * i + 1] = (255 * g) / 7;
+                palette[3 * i + 2] = (255 * b) / 3;
                 i++;
             }
 }
 
-int cchasm_vh_start (void)
+int cchasm_vh_start(void)
 {
     int xmin, xmax, ymin, ymax;
 
-	xmin=Machine->visible_area.min_x;
-	ymin=Machine->visible_area.min_y;
-	xmax=Machine->visible_area.max_x;
-	ymax=Machine->visible_area.max_y;
+    xmin = Machine->visible_area.min_x;
+    ymin = Machine->visible_area.min_y;
+    xmax = Machine->visible_area.max_x;
+    ymax = Machine->visible_area.max_y;
 
-	xcenter=((xmax+xmin)/2) << VEC_SHIFT;
-	ycenter=((ymax+ymin)/2) << VEC_SHIFT;
+    xcenter = ((xmax + xmin) / 2) << VEC_SHIFT;
+    ycenter = ((ymax + ymin) / 2) << VEC_SHIFT;
 
-	vector_set_shift (VEC_SHIFT);
-	return vector_vh_start();
+    vector_set_shift(VEC_SHIFT);
+    return vector_vh_start();
 }
 
 
-void cchasm_vh_stop (void)
+void cchasm_vh_stop(void)
 {
-	vector_vh_stop();
+    vector_vh_stop();
 }

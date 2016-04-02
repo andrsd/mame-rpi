@@ -13,15 +13,14 @@
 
 #define AUDIO_CONV16(A) ((A)-0x8000)
 
-static int sinetable[64]=
-{
-	128,140,153,165,177,188,199,209,218,226,234,240,245,250,253,254,
-	255,254,253,250,245,240,234,226,218,209,199,188,177,165,153,140,
-	128,116,103, 91, 79, 68, 57, 47, 38, 30, 22, 16, 11,  6,  3,  2,
-	1  ,2  ,3  ,  6, 11, 16, 22, 30, 38, 47, 57, 68, 79, 91,103,116
+static int sinetable[64] = {
+    128, 140, 153, 165, 177, 188, 199, 209, 218, 226, 234, 240, 245, 250, 253, 254,
+    255, 254, 253, 250, 245, 240, 234, 226, 218, 209, 199, 188, 177, 165, 153, 140,
+    128, 116, 103, 91, 79, 68, 57, 47, 38, 30, 22, 16, 11,  6,  3,  2,
+    1  , 2  , 3  ,  6, 11, 16, 22, 30, 38, 47, 57, 68, 79, 91, 103, 116
 };
 
-static int llander_volume[8]={0x00,0x20,0x40,0x60,0x80,0xa0,0xc0,0xff};
+static int llander_volume[8] = {0x00, 0x20, 0x40, 0x60, 0x80, 0xa0, 0xc0, 0xff};
 static int buffer_len;
 static int emulation_rate;
 static long multiplier;
@@ -38,66 +37,65 @@ static int llander_explosion;
 
 int llander_sh_start(const struct MachineSound *msound)
 {
-	int loop,lfsrtmp,nor1,nor2,bit14,bit6;
-	long fraction,remainder;
+    int loop, lfsrtmp, nor1, nor2, bit14, bit6;
+    long fraction, remainder;
 
-        /* Dont initialise if no sound system */
-        if (Machine->sample_rate == 0) return 0;
+    /* Dont initialise if no sound system */
+    if (Machine->sample_rate == 0) return 0;
 
-	/* Initialise the simple vars */
+    /* Initialise the simple vars */
 
-	volume=0;
-	tone_3khz=0;
-	tone_6khz=0;
-	llander_explosion=0;
+    volume = 0;
+    tone_3khz = 0;
+    tone_6khz = 0;
+    llander_explosion = 0;
 
-	buffer_len = Machine->sample_rate / Machine->drv->frames_per_second;
-	emulation_rate = buffer_len * Machine->drv->frames_per_second;
-	sample_pos = 0;
+    buffer_len = Machine->sample_rate / Machine->drv->frames_per_second;
+    emulation_rate = buffer_len * Machine->drv->frames_per_second;
+    sample_pos = 0;
 
-	/* Calculate the multipler to convert output sample number to the oversample rate (768khz) number */
-	/* multipler is held as a fixed point number 16:16                                                */
+    /* Calculate the multipler to convert output sample number to the oversample rate (768khz) number */
+    /* multipler is held as a fixed point number 16:16                                                */
 
-	multiplier=LANDER_OVERSAMPLE_RATE/(long)emulation_rate;
-	remainder=multiplier*LANDER_OVERSAMPLE_RATE;
-	fraction=remainder<<16;
-	fraction/=emulation_rate;
+    multiplier = LANDER_OVERSAMPLE_RATE / (long) emulation_rate;
+    remainder = multiplier * LANDER_OVERSAMPLE_RATE;
+    fraction = remainder << 16;
+    fraction /= emulation_rate;
 
-	multiplier=(multiplier<<16)+fraction;
+    multiplier = (multiplier << 16) + fraction;
 
 //	logerror("LANDER: Multiplier=%lx remainder=%lx fraction=%lx rate=%x\n",multiplier,remainder,fraction,emulation_rate);
 
-	/* Generate the LFSR lookup table for the lander white noise generator */
+    /* Generate the LFSR lookup table for the lander white noise generator */
 
-	lfsr_index=0;
-	if ((lfsr_buffer = (unsigned short*)malloc(65536*2)) == 0) return 1;
+    lfsr_index = 0;
+    if ((lfsr_buffer = (unsigned short*) malloc(65536 * 2)) == 0) return 1;
 
-	for(loop=0;loop<65536;loop++)
-	{
-		/* Calc next LFSR value from current value */
+    for (loop = 0; loop < 65536; loop++) {
+        /* Calc next LFSR value from current value */
 
-		lfsrtmp=(short)loop<<1;
+        lfsrtmp = (short) loop << 1;
 
-		bit14=(loop&0x04000)?1:0;
-		bit6=(loop&0x0040)?1:0;
+        bit14 = (loop & 0x04000) ? 1 : 0;
+        bit6 = (loop & 0x0040) ? 1 : 0;
 
-		nor1=(!( bit14 &&  bit6 ) )?0:1;			/* Note the inversion for the NOR gate */
-		nor2=(!(!bit14 && !bit6 ) )?0:1;
-		lfsrtmp|=nor1|nor2;
+        nor1 = (!(bit14 &&  bit6)) ? 0 : 1;			/* Note the inversion for the NOR gate */
+        nor2 = (!(!bit14 && !bit6)) ? 0 : 1;
+        lfsrtmp |= nor1 | nor2;
 
-		lfsr_buffer[loop]=lfsrtmp;
+        lfsr_buffer[loop] = lfsrtmp;
 
 //		logerror("LFSR Buffer: %04x    Next=%04x\n",loop, lfsr_buffer[loop]);
-	}
+    }
 
-	/* Allocate channel and buffer */
+    /* Allocate channel and buffer */
 
-	channel = mixer_allocate_channel(25);
+    channel = mixer_allocate_channel(25);
 
-	if ((sample_buffer = (INT16*)malloc(sizeof(INT16)*buffer_len)) == 0) return 1;
-	memset(sample_buffer,0,sizeof(INT16)*buffer_len);
+    if ((sample_buffer = (INT16*) malloc(sizeof(INT16) * buffer_len)) == 0) return 1;
+    memset(sample_buffer, 0, sizeof(INT16) *buffer_len);
 
-	return 0;
+    return 0;
 }
 
 void llander_sh_stop(void)
@@ -175,109 +173,103 @@ void llander_sh_stop(void)
 
 ***************************************************************************/
 
-void llander_process(INT16 *buffer,int start, int n)
+void llander_process(INT16 *buffer, int start, int n)
 {
-	static int sampnum=0;
-	static long noisetarg=0,noisecurrent=0;
-	static long lastoversampnum=0;
-	int loop,sample;
-	long oversampnum,loop2;
+    static int sampnum = 0;
+    static long noisetarg = 0, noisecurrent = 0;
+    static long lastoversampnum = 0;
+    int loop, sample;
+    long oversampnum, loop2;
 
-	for(loop=0;loop<n;loop++)
-	{
-		oversampnum=(long)(sampnum*multiplier)>>16;
+    for (loop = 0; loop < n; loop++) {
+        oversampnum = (long)(sampnum * multiplier) >> 16;
 
 //		logerror("LANDER: sampnum=%x oversampnum=%lx\n",sampnum, oversampnum);
 
-		/* Pick up new noise target value whenever 12khz changes */
+        /* Pick up new noise target value whenever 12khz changes */
 
-		if(lastoversampnum>>6!=oversampnum>>6)
-		{
-			lfsr_index=lfsr_buffer[lfsr_index];
-			noisetarg=(lfsr_buffer[lfsr_index]&0x4000)?llander_volume[volume]:0x00;
-			noisetarg<<=16;
-		}
+        if (lastoversampnum >> 6 != oversampnum >> 6) {
+            lfsr_index = lfsr_buffer[lfsr_index];
+            noisetarg = (lfsr_buffer[lfsr_index] & 0x4000) ? llander_volume[volume] : 0x00;
+            noisetarg <<= 16;
+        }
 
-		/* Do tracking of noisetarg to noise current done in fixed point 16:16    */
-		/* each step takes us 1/256 of the difference between desired and current */
+        /* Do tracking of noisetarg to noise current done in fixed point 16:16    */
+        /* each step takes us 1/256 of the difference between desired and current */
 
-		for(loop2=lastoversampnum;loop2<oversampnum;loop2++)
-		{
-			noisecurrent+=(noisetarg-noisecurrent)>>7;	/* Equiv of multiply by 1/256 */
-		}
+        for (loop2 = lastoversampnum; loop2 < oversampnum; loop2++) {
+            noisecurrent += (noisetarg - noisecurrent) >> 7;	/* Equiv of multiply by 1/256 */
+        }
 
-		sample=(int)(noisecurrent>>16);
-		sample<<=1;	/* Gain = 2 */
+        sample = (int)(noisecurrent >> 16);
+        sample <<= 1;	/* Gain = 2 */
 
-		if(tone_3khz)
-		{
-			sample+=sinetable[(oversampnum>>2)&0x3f];
-		}
-		if(tone_6khz)
-		{
-			sample+=sinetable[(oversampnum>>1)&0x3f];
-		}
-		if(llander_explosion)
-		{
-			sample+=(int)(noisecurrent>>(16-2));	/* Gain of 4 */
-		}
+        if (tone_3khz) {
+            sample += sinetable[(oversampnum >> 2) & 0x3f];
+        }
+        if (tone_6khz) {
+            sample += sinetable[(oversampnum >> 1) & 0x3f];
+        }
+        if (llander_explosion) {
+            sample += (int)(noisecurrent >> (16 - 2));	/* Gain of 4 */
+        }
 
-		/* Scale ouput down to buffer */
+        /* Scale ouput down to buffer */
 
-		buffer[start+loop] = AUDIO_CONV16(sample<<5);
+        buffer[start + loop] = AUDIO_CONV16(sample << 5);
 
-		sampnum++;
-		lastoversampnum=oversampnum;
-	}
+        sampnum++;
+        lastoversampnum = oversampnum;
+    }
 }
 
 
 void llander_sh_update_partial(void)
 {
-	int newpos;
+    int newpos;
 
-	if (Machine->sample_rate == 0) return;
+    if (Machine->sample_rate == 0) return;
 
-	newpos = sound_scalebufferpos(buffer_len); /* get current position based on the timer */
+    newpos = sound_scalebufferpos(buffer_len);    /* get current position based on the timer */
 
-	if(newpos-sample_pos<MIN_SLICE) return;
+    if (newpos - sample_pos < MIN_SLICE) return;
 
-	/* Process count samples into the buffer */
+    /* Process count samples into the buffer */
 
-	llander_process (sample_buffer, sample_pos, newpos - sample_pos);
+    llander_process(sample_buffer, sample_pos, newpos - sample_pos);
 
-	/* Update sample position */
+    /* Update sample position */
 
-	sample_pos = newpos;
+    sample_pos = newpos;
 }
 
 
 void llander_sh_update(void)
 {
-	if (Machine->sample_rate == 0) return;
+    if (Machine->sample_rate == 0) return;
 
-	if (sample_pos < buffer_len)
-		llander_process (sample_buffer, sample_pos, buffer_len - sample_pos);
-	sample_pos = 0;
+    if (sample_pos < buffer_len)
+        llander_process(sample_buffer, sample_pos, buffer_len - sample_pos);
+    sample_pos = 0;
 
-	mixer_play_streamed_sample_16(channel,sample_buffer,2*buffer_len,emulation_rate);
+    mixer_play_streamed_sample_16(channel, sample_buffer, 2 * buffer_len, emulation_rate);
 }
 
-WRITE_HANDLER( llander_snd_reset_w )
+WRITE_HANDLER(llander_snd_reset_w)
 {
-        lfsr_index=0;
+    lfsr_index = 0;
 }
 
-WRITE_HANDLER( llander_sounds_w )
+WRITE_HANDLER(llander_sounds_w)
 {
-	/* Update sound to present */
-	llander_sh_update_partial();
+    /* Update sound to present */
+    llander_sh_update_partial();
 
-	/* Lunar Lander sound breakdown */
+    /* Lunar Lander sound breakdown */
 
-	volume    = data & 0x07;
-	tone_3khz = data & 0x10;
-	tone_6khz = data & 0x20;
-	llander_explosion = data & 0x08;
+    volume    = data & 0x07;
+    tone_3khz = data & 0x10;
+    tone_6khz = data & 0x20;
+    llander_explosion = data & 0x08;
 }
 

@@ -46,79 +46,76 @@ Shisensho II                  1993  Rev 3.34 M81
 */
 
 
-enum
-{
-	VECTOR_INIT,
-	YM2151_ASSERT,
-	YM2151_CLEAR,
-	Z80_ASSERT,
-	Z80_CLEAR
+enum {
+    VECTOR_INIT,
+    YM2151_ASSERT,
+    YM2151_CLEAR,
+    Z80_ASSERT,
+    Z80_CLEAR
 };
 
 static void setvector_callback(int param)
 {
-	static int irqvector;
+    static int irqvector;
 
-	switch(param)
-	{
-		case VECTOR_INIT:
-			irqvector = 0xff;
-			break;
+    switch (param) {
+    case VECTOR_INIT:
+        irqvector = 0xff;
+        break;
 
-		case YM2151_ASSERT:
-			irqvector &= 0xef;
-			break;
+    case YM2151_ASSERT:
+        irqvector &= 0xef;
+        break;
 
-		case YM2151_CLEAR:
-			irqvector |= 0x10;
-			break;
+    case YM2151_CLEAR:
+        irqvector |= 0x10;
+        break;
 
-		case Z80_ASSERT:
-			irqvector &= 0xdf;
-			break;
+    case Z80_ASSERT:
+        irqvector &= 0xdf;
+        break;
 
-		case Z80_CLEAR:
-			irqvector |= 0x20;
-			break;
-	}
+    case Z80_CLEAR:
+        irqvector |= 0x20;
+        break;
+    }
 
-	cpu_irq_line_vector_w(1,0,irqvector);
-	if (irqvector == 0xff)	/* no IRQs pending */
-		cpu_set_irq_line(1,0,CLEAR_LINE);
-	else	/* IRQ pending */
-		cpu_set_irq_line(1,0,ASSERT_LINE);
+    cpu_irq_line_vector_w(1, 0, irqvector);
+    if (irqvector == 0xff)	/* no IRQs pending */
+        cpu_set_irq_line(1, 0, CLEAR_LINE);
+    else	/* IRQ pending */
+        cpu_set_irq_line(1, 0, ASSERT_LINE);
 }
 
-static UINT8 *m72_region=NULL;
-static int m72_region_length=0;
+static UINT8 *m72_region = NULL;
+static int m72_region_length = 0;
 
 void m72_init_sound(void)
 {
-    m72_region=NULL;
-    m72_region_length=0;
-	setvector_callback(VECTOR_INIT);
+    m72_region = NULL;
+    m72_region_length = 0;
+    setvector_callback(VECTOR_INIT);
 }
 
 void m72_ym2151_irq_handler(int irq)
 {
-	if (irq)
-		timer_set(TIME_NOW,YM2151_ASSERT,setvector_callback);
-	else
-		timer_set(TIME_NOW,YM2151_CLEAR,setvector_callback);
+    if (irq)
+        timer_set(TIME_NOW, YM2151_ASSERT, setvector_callback);
+    else
+        timer_set(TIME_NOW, YM2151_CLEAR, setvector_callback);
 }
 
-WRITE_HANDLER( m72_sound_command_w )
+WRITE_HANDLER(m72_sound_command_w)
 {
-	if (offset == 0)
-	{
-		soundlatch_w(offset,data);
-		timer_set(TIME_NOW,Z80_ASSERT,setvector_callback);
-	}
+    if (offset == 0) {
+        soundlatch_w(offset, data);
+        timer_set(TIME_NOW, Z80_ASSERT, setvector_callback);
+    }
 }
 
-WRITE_HANDLER( m72_sound_irq_ack_w )
+WRITE_HANDLER(m72_sound_irq_ack_w)
 {
-	timer_set(TIME_NOW,Z80_CLEAR,setvector_callback);
+    timer_set(TIME_NOW, Z80_CLEAR, setvector_callback);
 }
 
 
@@ -127,52 +124,52 @@ static int sample_addr;
 
 void m72_set_sample_start(int start)
 {
-	sample_addr = start;
+    sample_addr = start;
 }
 
-WRITE_HANDLER( vigilant_sample_addr_w )
+WRITE_HANDLER(vigilant_sample_addr_w)
 {
-	if (offset == 1)
-		sample_addr = (sample_addr & 0x00ff) | ((data << 8) & 0xff00);
-	else
-		sample_addr = (sample_addr & 0xff00) | ((data << 0) & 0x00ff);
+    if (offset == 1)
+        sample_addr = (sample_addr & 0x00ff) | ((data << 8) & 0xff00);
+    else
+        sample_addr = (sample_addr & 0xff00) | ((data << 0) & 0x00ff);
 }
 
-WRITE_HANDLER( shisen_sample_addr_w )
+WRITE_HANDLER(shisen_sample_addr_w)
 {
-	sample_addr >>= 2;
+    sample_addr >>= 2;
 
-	if (offset == 1)
-		sample_addr = (sample_addr & 0x00ff) | ((data << 8) & 0xff00);
-	else
-		sample_addr = (sample_addr & 0xff00) | ((data << 0) & 0x00ff);
+    if (offset == 1)
+        sample_addr = (sample_addr & 0x00ff) | ((data << 8) & 0xff00);
+    else
+        sample_addr = (sample_addr & 0xff00) | ((data << 0) & 0x00ff);
 
-	sample_addr <<= 2;
+    sample_addr <<= 2;
 }
 
-WRITE_HANDLER( rtype2_sample_addr_w )
+WRITE_HANDLER(rtype2_sample_addr_w)
 {
-	sample_addr >>= 5;
+    sample_addr >>= 5;
 
-	if (offset == 1)
-		sample_addr = (sample_addr & 0x00ff) | ((data << 8) & 0xff00);
-	else
-		sample_addr = (sample_addr & 0xff00) | ((data << 0) & 0x00ff);
+    if (offset == 1)
+        sample_addr = (sample_addr & 0x00ff) | ((data << 8) & 0xff00);
+    else
+        sample_addr = (sample_addr & 0xff00) | ((data << 0) & 0x00ff);
 
-	sample_addr <<= 5;
+    sample_addr <<= 5;
 }
 
-READ_HANDLER( m72_sample_r )
+READ_HANDLER(m72_sample_r)
 {
-    if (m72_region==NULL)
-        m72_region=memory_region(REGION_SOUND1);
-	return m72_region[sample_addr];
+    if (m72_region == NULL)
+        m72_region = memory_region(REGION_SOUND1);
+    return m72_region[sample_addr];
 }
 
-WRITE_HANDLER( m72_sample_w )
+WRITE_HANDLER(m72_sample_w)
 {
-	DAC_signed_data_w(0,data);
-	if (m72_region_length==0)
-	    m72_region_length=memory_region_length(REGION_SOUND1);
-	sample_addr = (sample_addr + 1) & (m72_region_length - 1);
+    DAC_signed_data_w(0, data);
+    if (m72_region_length == 0)
+        m72_region_length = memory_region_length(REGION_SOUND1);
+    sample_addr = (sample_addr + 1) & (m72_region_length - 1);
 }
