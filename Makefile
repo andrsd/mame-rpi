@@ -84,6 +84,12 @@ $(sort $(OBJDIRS)):
 
 maketree: $(sort $(OBJDIRS))
 
+install:
+	cp $(EMULATOR) $(DESTDIR)/bin
+
+uninstall:
+	rm $(DESTDIR)/bin$(EMULATOR)
+
 clean:
 	$(RM) -r $(OBJ)
 	$(RM) $(EMULATOR)
